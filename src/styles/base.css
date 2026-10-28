@@ -1,0 +1,89 @@
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background-color: var(--bg);
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+
+  body {
+    min-height: 100svh;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--ff-body);
+    font-size: var(--fs-body);
+    line-height: 1.65;
+    text-shadow: var(--text-glow);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--ff-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    line-height: 1.05;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  p,
+  li,
+  dd,
+  dt,
+  figcaption {
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+
+  img,
+  svg,
+  canvas,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background-color: var(--highlight);
+    color: var(--fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c1);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  [tabindex="-1"]:focus {
+    outline: none;
+  }
+
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none;
+  }
+
+  html.has-custom-cursor :is(input, textarea, select, [contenteditable="true"]) {
+    cursor: text;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

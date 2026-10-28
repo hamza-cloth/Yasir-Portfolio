@@ -1,0 +1,166 @@
+:root {
+  color-scheme: dark;
+
+  --bg: #05070b;
+  --bg-2: #0a0e15;
+  --surface: rgba(17, 23, 33, 0.72);
+  --surface-solid: #0f151f;
+  --surface-2: #141b27;
+  --fg: #e9eef6;
+  --muted: #8c97aa;
+  --faint: #5d6779;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --c1: #3be8ff;
+  --c1-ink: #001a1f;
+  /* Cyan for small text; only Paper needs a darker value to reach 4.5:1. */
+  --c1-text: var(--c1);
+  --amber: #ffb020;
+  --amber-ink: #170d00;
+  --highlight: rgba(255, 176, 32, 0.32);
+  --ok: #3ce38b;
+  --red: #ff5c6c;
+  --glow: rgba(59, 232, 255, 0.22);
+  --curtain: #05070b;
+  --curtain-fg: #e9eef6;
+  --curtain-muted: #8c97aa;
+  --text-glow: none;
+
+  --shiki-foreground: var(--fg);
+  --shiki-background: var(--bg-2);
+  --shiki-token-keyword: var(--c1);
+  --shiki-token-parameter: #ffc65c;
+  --shiki-token-function: #8fdcff;
+  --shiki-token-constant: var(--ok);
+  --shiki-token-string: #ffc65c;
+  --shiki-token-string-expression: #ffc65c;
+  --shiki-token-comment: var(--muted);
+  --shiki-token-punctuation: var(--muted);
+  --shiki-token-link: var(--c1);
+
+  /* The résumé sheet is always white paper, whatever the skin. */
+  --sheet-bg: #ffffff;
+  --sheet-fg: #0a0e15;
+  --sheet-muted: #4a5466;
+  --sheet-line: #d9dee6;
+  --sheet-accent: #00707f;
+
+  --ff-display: var(--font-unbounded), "Arial Black", system-ui, sans-serif;
+  --ff-body: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-mono: var(--font-jetbrains), ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --display-weight: 700;
+  --display-tracking: -0.025em;
+  --display-leading: 0.95;
+
+  --fs-hero-split: clamp(2.5rem, 8.2vw, 8rem);
+  --fs-hero-stack: clamp(2.4rem, 15vw, 7rem);
+  --fs-h1: clamp(2.3rem, 6.2vw, 5.6rem);
+  --fs-h2: clamp(1.8rem, 3.8vw, 3.1rem);
+  --fs-body: 1.0625rem;
+  --fs-label: 0.76rem;
+
+  --r-pill: 999px;
+  --r-panel: 28px;
+  --r-tile: 24px;
+  --r-card: 20px;
+  --r-field: 14px;
+  --r-chip: 8px;
+
+  --gutter: clamp(20px, 4vw, 48px);
+  --header-h: 72px;
+
+  --easing-entrance: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --z-preview: 60;
+  --z-mobile-menu: 75;
+  --z-header: 80;
+  --z-terminal: 115;
+  --z-command: 120;
+  --z-cursor: 140;
+  --z-scanlines: 145;
+  --z-curtain: 150;
+}
+
+:root[data-skin="paper"] {
+  color-scheme: light;
+
+  --bg: #eef2f6;
+  --bg-2: #e3e8ef;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-solid: #ffffff;
+  --surface-2: #f5f7fa;
+  --fg: #0a0e15;
+  --muted: #566174;
+  --faint: #7c8798;
+  --line: rgba(10, 14, 21, 0.09);
+  --line-2: rgba(10, 14, 21, 0.18);
+  --c1: #0091a6;
+  --c1-ink: #ffffff;
+  --c1-text: #00707f;
+  --amber: #ffb020;
+  --amber-ink: #170d00;
+  --highlight: rgba(255, 176, 32, 0.38);
+  --ok: #12854a;
+  --red: #d43b4a;
+  --glow: rgba(0, 145, 166, 0.14);
+  --curtain: #05070b;
+
+  --shiki-token-keyword: #00707f;
+  --shiki-token-parameter: #8a4b00;
+  --shiki-token-function: #1d4ed8;
+  --shiki-token-constant: #12854a;
+  --shiki-token-string: #8a4b00;
+  --shiki-token-string-expression: #8a4b00;
+}
+
+:root[data-skin="terminal"] {
+  color-scheme: dark;
+
+  --bg: #010401;
+  --bg-2: #021006;
+  --surface: rgba(3, 16, 6, 0.82);
+  --surface-solid: #020b04;
+  --surface-2: #041508;
+  --fg: #39ff7a;
+  --muted: #22b456;
+  --faint: #187a3c;
+  --line: rgba(57, 255, 122, 0.18);
+  --line-2: rgba(57, 255, 122, 0.34);
+  --c1: #39ff7a;
+  --c1-ink: #010401;
+  --c1-text: #39ff7a;
+  --amber: #ffb000;
+  --amber-ink: #170d00;
+  --highlight: rgba(255, 176, 0, 0.3);
+  --ok: #39ff7a;
+  --red: #ff5c6c;
+  --glow: rgba(57, 255, 122, 0.26);
+  --curtain: #010401;
+  --curtain-fg: #39ff7a;
+  --curtain-muted: #22b456;
+  --text-glow: 0 0 6px rgba(57, 255, 122, 0.45);
+
+  --shiki-token-keyword: #39ff7a;
+  --shiki-token-parameter: #ffb000;
+  --shiki-token-function: #b6ffcc;
+  --shiki-token-constant: #ffb000;
+  --shiki-token-string: #ffb000;
+  --shiki-token-string-expression: #ffb000;
+
+  --ff-display: var(--font-vt323), ui-monospace, monospace;
+  --ff-body: var(--font-jetbrains), ui-monospace, monospace;
+  --display-weight: 400;
+  --display-tracking: 0;
+  --display-leading: 0.85;
+
+  --fs-hero-split: clamp(3.6rem, 13vw, 13rem);
+  --fs-hero-stack: clamp(3.4rem, 22vw, 10rem);
+
+  --r-pill: 0;
+  --r-panel: 0;
+  --r-tile: 0;
+  --r-card: 0;
+  --r-field: 0;
+  --r-chip: 0;
+}

@@ -1,0 +1,255 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// The connection URL lives in prisma.config.ts.
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectCategory {
+  PRODUCT
+  WEB
+  NETWORKING
+}
+
+// Picks the code-drawn mockup and architecture diagram for a project.
+enum ProjectVisual {
+  CLINIC_CONSOLE
+  STOREFRONT
+  SEAT_MAP
+}
+
+enum LabTopology {
+  INTER_VLAN
+  OSPF_SINGLE_AREA
+  ACL_PAT_EDGE
+  DHCP_RELAY
+}
+
+enum CredentialKind {
+  DEGREE
+  TRAINING
+  CERTIFICATION
+}
+
+enum CredentialStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SkillDomain {
+  ROUTING_SWITCHING
+  NETWORK_SERVICES
+  SECURITY
+  FRONTEND
+  BACKEND
+  SUPPORT_HARDWARE
+}
+
+enum MessageTopic {
+  HIRING
+  PROJECT
+  NETWORK_HELP
+  OTHER
+}
+
+model SiteSettings {
+  id           Int       @id @default(1)
+  name         String
+  roleLine     String
+  email        String
+  location     String
+  availability String
+  linkedinUrl  String?
+  githubUrl    String?
+  photoUrl     String?
+  photoKey     String?
+  aboutStory   String    @db.Text
+  principles   Json      @default("[]")
+  nowItems     String[]
+  nowUpdatedAt DateTime?
+  updatedAt    DateTime  @updatedAt
+}
+
+model Project {
+  id            String            @id @default(cuid())
+  slug          String            @unique
+  title         String
+  tagline       String
+  summary       String
+  statusLabel   String
+  categories    ProjectCategory[]
+  role          String?
+  type          String?
+  stack         String[]
+  visual        ProjectVisual
+  overview      String            @db.Text
+  decisions     Json              @default("[]")
+  coverImageUrl String?
+  published     Boolean           @default(false)
+  publishedAt   DateTime?
+  order         Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([published, order])
+}
+
+model Note {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String
+  body        String    @db.Text
+  tags        String[]
+  featured    Boolean   @default(false)
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, publishedAt])
+}
+
+model Lab {
+  id             String      @id @default(cuid())
+  slug           String      @unique
+  title          String
+  summary        String
+  topology       LabTopology
+  configs        Json        @default("[]")
+  verifyCommands String[]
+  published      Boolean     @default(false)
+  publishedAt    DateTime?
+  order          Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([published, order])
+}
+
+model Certification {
+  id            String           @id @default(cuid())
+  title         String
+  issuer        String
+  kind          CredentialKind
+  status        CredentialStatus
+  location      String?
+  startYear     Int?
+  endYear       Int?
+  credentialUrl String?
+  published     Boolean          @default(false)
+  publishedAt   DateTime?
+  order         Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([published, order])
+}
+
+model Experience {
+  id          String    @id @default(cuid())
+  role        String
+  company     String
+  location    String?
+  summary     String    @db.Text
+  highlights  String[]
+  startDate   DateTime?
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, order])
+}
+
+model Skill {
+  id          String       @id @default(cuid())
+  name        String
+  layer       Int?
+  domain      SkillDomain?
+  published   Boolean      @default(true)
+  publishedAt DateTime?
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([layer, order])
+  @@index([domain, order])
+}
+
+model Message {
+  id        String       @id @default(cuid())
+  name      String
+  email     String
+  topic     MessageTopic
+  body      String       @db.Text
+  ipHash    String
+  read      Boolean      @default(false)
+  emailSent Boolean      @default(false)
+  createdAt DateTime     @default(now())
+
+  @@index([read, createdAt])
+}
+
+model RateLimitHit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}

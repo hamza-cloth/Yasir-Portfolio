@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+@import "../styles/tokens.css";
+@import "../styles/base.css";
+@import "../styles/components.css";
+@import "../styles/home.css";
+@import "../styles/prose.css";
+@import "../styles/pages.css";
+
+@custom-variant terminal (&:where([data-skin="terminal"], [data-skin="terminal"] *));
+@custom-variant paper (&:where([data-skin="paper"], [data-skin="paper"] *));
+
+@theme {
+  --color-*: initial;
+  --breakpoint-*: initial;
+  --breakpoint-sm: 45rem;
+  --breakpoint-md: 60rem;
+  --breakpoint-lg: 70rem;
+  --breakpoint-xl: 82.5rem;
+  --breakpoint-2xl: 120rem;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-solid: var(--surface-solid);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-c1: var(--c1);
+  --color-c1-ink: var(--c1-ink);
+  --color-c1-text: var(--c1-text);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-highlight: var(--highlight);
+  --color-ok: var(--ok);
+  --color-red: var(--red);
+  --color-glow: var(--glow);
+  --color-curtain: var(--curtain);
+  --color-curtain-fg: var(--curtain-fg);
+  --color-curtain-muted: var(--curtain-muted);
+
+  --font-display: var(--ff-display);
+  --font-body: var(--ff-body);
+  --font-mono: var(--ff-mono);
+
+  --radius-pill: var(--r-pill);
+  --radius-panel: var(--r-panel);
+  --radius-tile: var(--r-tile);
+  --radius-card: var(--r-card);
+  --radius-field: var(--r-field);
+  --radius-chip: var(--r-chip);
+
+  --ease-entrance: var(--easing-entrance);
+  --ease-wipe: var(--easing-wipe);
+
+  --text-h1: var(--fs-h1);
+  --text-h2: var(--fs-h2);
+  --text-label: var(--fs-label);
+}
