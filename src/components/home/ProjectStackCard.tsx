@@ -20,16 +20,21 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
 
   return (
     <li className="stack-card md:sticky" style={cssVars({ "--stack-index": index })}>
-      <article className="grid gap-8 rounded-panel border border-line bg-surface-solid p-[clamp(20px,3.5vw,40px)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center">
+      <article className="surface grid gap-8 rounded-panel border border-line p-[clamp(20px,3.5vw,44px)] shadow-(--shadow-lift) md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center">
         <div className="flex min-w-0 flex-col items-start gap-5">
           <Tag tone={statusTone(project.statusLabel)}>{project.statusLabel}</Tag>
-          <h3 className="text-[clamp(1.7rem,3.6vw,2.8rem)] leading-none">{project.title}</h3>
+          <h3 className="text-[clamp(1.9rem,3.8vw,3rem)] leading-none tracking-[-0.045em]">
+            {project.title}
+          </h3>
           <p className="text-lg text-fg">{project.tagline}</p>
           <p className="text-muted">{project.summary}</p>
           {project.stack.length > 0 ? (
             <ul className="flex flex-wrap gap-2" aria-label="Stack">
               {project.stack.slice(0, STACK_PREVIEW).map((item) => (
-                <li key={item} className="label-mono rounded-chip border border-line px-2.5 py-1">
+                <li
+                  key={item}
+                  className="label-mono rounded-pill border border-line bg-surface-2/60 px-3 py-1.5"
+                >
                   {item}
                 </li>
               ))}
@@ -41,11 +46,15 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
           <Link
             href={`/work/${project.slug}`}
             data-cursor="View"
-            className="label-mono inline-flex min-h-11 items-center gap-2 text-c1-text hover:text-fg"
+            className="group/link label-mono inline-flex min-h-11 items-center gap-2 text-c1-text transition-colors hover:text-fg"
           >
             Read the case study
             <span className="sr-only">: {project.title}</span>
-            <Icon name="arrow-right" size={14} />
+            <Icon
+              name="arrow-right"
+              size={14}
+              className="transition-transform duration-300 group-hover/link:translate-x-1"
+            />
           </Link>
         </div>
         <PlayWhenVisible>

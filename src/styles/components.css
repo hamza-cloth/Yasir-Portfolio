@@ -9,52 +9,127 @@
 
   .glass {
     background-color: var(--surface);
+    background-image: var(--card-sheen);
     border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: var(--edge-light), var(--shadow-soft);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* The standard raised surface: cards, tiles and panels. */
+  .surface {
+    background-color: var(--surface-solid);
+    background-image: var(--card-sheen);
+    box-shadow: var(--edge-light), var(--shadow-soft);
+  }
+
+  /* Display text outside headings (spans, numbers) matches the heading weight and tracking. */
+  .font-display {
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
   }
 
   .label-mono {
     font-family: var(--ff-mono);
     font-size: var(--fs-label);
     font-weight: 500;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     line-height: 1.4;
   }
 
   .signal-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     flex: none;
+    border-radius: 999px;
     background-color: var(--c1);
+    box-shadow: 0 0 0 3px var(--highlight);
+  }
+
+  [data-skin="terminal"] .signal-dot {
+    border-radius: 0;
     box-shadow: 0 0 10px var(--c1);
   }
 
-  /* No horizontal padding: a highlight that ends a line must not overhang its heading. */
+  /* Accent words inside headings and leads: a serif italic in the accent gradient. */
   .highlight {
-    color: inherit;
-    background: linear-gradient(
-      transparent 52%,
-      var(--highlight) 52%,
-      var(--highlight) 92%,
-      transparent 92%
-    );
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    padding-right: 0.06em;
+    background-color: transparent;
+    background-image: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
 
+  /* In running text the serif reads small next to Geist, so it is nudged up. */
+  :is(p, li) > .highlight {
+    font-size: 1.12em;
+    line-height: 1;
+  }
+
+  [data-skin="terminal"] .highlight {
+    font-style: normal;
+    color: var(--amber);
+    background: none;
+  }
+
+  [data-skin="terminal"] :is(p, li) > .highlight {
+    font-size: inherit;
+  }
+
   .text-gradient {
-    background-image: linear-gradient(95deg, var(--fg) 0%, var(--c1) 52%, var(--amber) 100%);
+    background-image: var(--accent-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     text-shadow: none;
   }
 
+  .text-serif-accent {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  [data-skin="terminal"] .text-serif-accent {
+    font-style: normal;
+  }
+
+  /* A gradient hairline that fades out at both ends. */
+  .rule-fade {
+    height: 1px;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--line-2) 20%,
+      var(--line-2) 80%,
+      transparent
+    );
+  }
+
   .hero-name {
     font-size: var(--fs-hero-stack);
     line-height: var(--display-leading);
+    letter-spacing: -0.055em;
+  }
+
+  [data-skin="terminal"] .hero-name {
+    letter-spacing: 0;
+  }
+
+  /* The serif half of the name sits a touch larger so both lines share a cap height. */
+  .hero-name .text-serif-accent {
+    font-size: 1.08em;
+    letter-spacing: -0.02em;
   }
 
   .glow-hover {
@@ -70,7 +145,7 @@
     border-radius: inherit;
     box-shadow:
       0 0 0 1px var(--line-2),
-      0 0 36px var(--glow);
+      0 12px 40px -12px var(--glow);
     opacity: 0;
     transition: opacity 300ms var(--easing-entrance);
     pointer-events: none;
@@ -86,9 +161,9 @@
     inset: 0;
     border-radius: inherit;
     background: radial-gradient(
-      420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      480px circle at var(--spot-x, 50%) var(--spot-y, 50%),
       var(--glow),
-      transparent 65%
+      transparent 60%
     );
     opacity: 0;
     transition: opacity 400ms var(--easing-entrance);
@@ -103,15 +178,18 @@
 
   .reveal[data-reveal="hidden"] {
     opacity: 0;
-    transform: translate3d(0, 28px, 0);
+    transform: translate3d(0, 24px, 0);
+    filter: blur(6px);
   }
 
   .reveal[data-reveal="shown"] {
     opacity: 1;
     transform: none;
+    filter: none;
     transition:
-      opacity 900ms var(--easing-entrance),
-      transform 900ms var(--easing-entrance);
+      opacity 1000ms var(--easing-entrance),
+      transform 1000ms var(--easing-entrance),
+      filter 1000ms var(--easing-entrance);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
@@ -126,9 +204,11 @@
     height: 120%;
     pointer-events: none;
     background:
-      radial-gradient(42% 38% at 22% 30%, var(--glow), transparent 70%),
-      radial-gradient(36% 32% at 78% 62%, rgba(255, 176, 32, 0.1), transparent 70%);
-    filter: blur(24px);
+      radial-gradient(40% 36% at 70% 22%, var(--glow), transparent 70%),
+      radial-gradient(30% 30% at 18% 40%, var(--highlight), transparent 70%),
+      radial-gradient(28% 26% at 88% 70%, rgba(231, 195, 141, 0.07), transparent 70%);
+    filter: blur(40px);
+    opacity: 0.9;
     animation: aurora-drift 18s var(--easing-entrance) infinite alternate;
   }
 
@@ -224,7 +304,7 @@
   .scroll-progress {
     transform: scaleX(var(--progress, 0));
     transform-origin: left center;
-    background-image: linear-gradient(90deg, var(--c1), var(--amber));
+    background-image: var(--accent-gradient);
   }
 
   .back-to-top {
@@ -253,11 +333,10 @@
   }
 
   .cursor-dot {
-    width: 8px;
-    height: 8px;
-    margin: -4px 0 0 -4px;
-    background-color: var(--c1);
-    box-shadow: 0 0 12px var(--c1);
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    background-color: var(--fg);
     transform: translate3d(var(--dot-x, -100px), var(--dot-y, -100px), 0);
   }
 
@@ -284,11 +363,12 @@
 
   .cursor-ring[data-state="label"] .cursor-ring-inner {
     transform: scale(2.4);
-    background-color: var(--c1);
+    background-color: var(--fg);
+    border-color: transparent;
   }
 
   .cursor-label {
-    color: var(--c1-ink);
+    color: var(--bg);
     font-family: var(--ff-mono);
     font-size: 5px;
     letter-spacing: 0.08em;
@@ -317,26 +397,26 @@
   }
 
   .curtain-line {
-    height: 2px;
+    height: 1px;
     background-image: linear-gradient(
       90deg,
       transparent,
-      var(--c1) 25%,
-      var(--amber) 75%,
+      var(--c1) 30%,
+      var(--amber) 70%,
       transparent
     );
-    box-shadow:
-      0 0 18px var(--c1),
-      0 0 42px var(--glow);
   }
 
   .footer-name text {
     font-family: var(--ff-display);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    fill: url(#footer-name-fade);
+  }
+
+  [data-skin="terminal"] .footer-name text {
     font-weight: var(--display-weight);
-    fill: transparent;
-    stroke: var(--line-2);
-    stroke-width: 1px;
-    paint-order: stroke;
+    letter-spacing: 0;
   }
 }
 

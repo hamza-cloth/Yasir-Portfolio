@@ -34,7 +34,7 @@ export function CodeCopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={handleClick}
-      className="label-mono inline-flex min-h-11 items-center gap-2 rounded-chip px-3 text-muted hover:text-fg"
+      className="label-mono inline-flex min-h-11 items-center gap-2 rounded-pill px-3 text-muted hover:text-fg"
     >
       <Icon name="copy" size={14} />
       <span aria-live="polite">{LABELS[state]}</span>

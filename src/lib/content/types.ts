@@ -68,3 +68,7 @@ export type NoteSummary = {
   publishedAt: Date | null;
   readingMinutes: number;
 };
+
+export type NoteDetail = NoteSummary & {
+  body: string;
+};

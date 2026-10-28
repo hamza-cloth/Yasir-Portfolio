@@ -65,7 +65,11 @@ export function DecodingName({ name, id, className }: DecodingNameProps) {
         <span
           key={line}
           aria-hidden="true"
-          className={cn("block whitespace-nowrap", lineIndex === 1 && "text-gradient")}
+          className={cn(
+            "block whitespace-nowrap",
+            lineIndex === 1 &&
+              "text-gradient text-serif-accent -mt-[0.04em] pr-[0.08em] pb-[0.06em]",
+          )}
         >
           {[...line].map((char, charIndex) => {
             const cell = frames?.[lineIndex]?.[charIndex];

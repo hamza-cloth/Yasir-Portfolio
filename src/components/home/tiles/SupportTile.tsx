@@ -17,7 +17,7 @@ export function SupportTile({ companies, className }: SupportTileProps) {
       <p className="flex items-baseline gap-3">
         <CountUp
           value={companies.length}
-          className="text-gradient font-display text-[clamp(3.5rem,7vw,5rem)] leading-none"
+          className="text-gradient font-display text-[clamp(3.5rem,7vw,5rem)] leading-none font-medium tracking-[-0.05em]"
         />
         <span className="text-lg text-muted">technical support roles</span>
       </p>

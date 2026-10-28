@@ -8,6 +8,8 @@
   body {
     min-height: 100svh;
     background-color: var(--bg);
+    background-image: var(--page-wash);
+    background-repeat: no-repeat;
     color: var(--fg);
     font-family: var(--ff-body);
     font-size: var(--fs-body);
@@ -25,7 +27,7 @@
     font-family: var(--ff-display);
     font-weight: var(--display-weight);
     letter-spacing: var(--display-tracking);
-    line-height: 1.05;
+    line-height: 1.04;
     text-wrap: balance;
     overflow-wrap: anywhere;
   }
@@ -60,7 +62,23 @@
   :focus-visible {
     outline: 2px solid var(--c1);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 6px;
+  }
+
+  /* Fine film grain over the whole page; it keeps large dark areas from banding. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  [data-skin="terminal"] body::after,
+  [data-skin="paper"] body::after {
+    display: none;
   }
 
   [tabindex="-1"]:focus {

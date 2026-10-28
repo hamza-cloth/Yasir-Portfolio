@@ -88,7 +88,7 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
           {project.stack.length > 0 ? (
             <ul aria-label="Stack" className="flex flex-wrap gap-2">
               {project.stack.map((item) => (
-                <li key={item} className="label-mono rounded-chip border border-line px-3 py-1.5">
+                <li key={item} className="label-mono rounded-pill border border-line px-3 py-1.5">
                   {item}
                 </li>
               ))}

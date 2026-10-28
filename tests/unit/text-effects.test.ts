@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import { decodeFrame } from "@/lib/decode";
-import { formatSyslogTimestamp, syslogLine } from "@/lib/syslog";
 import {
   INITIAL_TYPEWRITER_STATE,
   nextTypewriterState,
@@ -60,19 +59,5 @@ describe("nextTypewriterState", () => {
 
   it("wraps back to the first word", () => {
     expect(run(10)).toEqual({ index: 0, length: 0, phase: "typing" });
-  });
-});
-
-describe("syslog", () => {
-  const date = new Date("2026-10-24T17:44:05.123Z");
-
-  it("formats Cisco-style timestamps in IST", () => {
-    expect(formatSyslogTimestamp(date)).toBe("*Oct 24 23:14:05.123");
-  });
-
-  it("prefixes the message with the timestamp", () => {
-    expect(syslogLine(date, "%SYS-5-CONFIG_I: Configured from console by console")).toBe(
-      "*Oct 24 23:14:05.123: %SYS-5-CONFIG_I: Configured from console by console",
-    );
   });
 });

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { Icon } from "@/components/ui/Icon";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 
 import { CommandButton } from "./CommandButton";
@@ -38,8 +39,9 @@ export function Header() {
           <div className="ml-auto flex min-w-0 items-center gap-2 lg:ml-0">
             <CommandButton />
             <SkinButton />
-            <Button href="/contact" variant="cyan" size="sm" className="max-lg:hidden">
+            <Button href="/contact" variant="primary" size="sm" className="max-lg:hidden">
               Let’s talk
+              <Icon name="arrow-up-right" size={15} />
             </Button>
             <MenuButton
               ref={menuButtonRef}

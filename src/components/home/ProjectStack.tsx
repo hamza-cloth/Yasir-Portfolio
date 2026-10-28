@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { Highlight } from "@/components/ui/Highlight";
+import { Icon } from "@/components/ui/Icon";
 import { SectionHead } from "@/components/ui/SectionHead";
 import type { ProjectSummary } from "@/lib/content/types";
 
@@ -10,9 +12,18 @@ export function ProjectStack({ projects }: { projects: ProjectSummary[] }) {
     <section aria-labelledby="projects-title" className="py-24">
       <Container className="flex flex-col gap-12">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHead eyebrow="Selected work" titleId="projects-title" title="What I’m building" />
+          <SectionHead
+            eyebrow="Selected work"
+            titleId="projects-title"
+            title={
+              <>
+                What I’m <Highlight>building</Highlight>
+              </>
+            }
+          />
           <Button href="/work" variant="line">
             All work
+            <Icon name="arrow-right" size={16} />
           </Button>
         </div>
         <ol className="flex flex-col gap-8">

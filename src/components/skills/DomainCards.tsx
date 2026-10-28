@@ -23,7 +23,7 @@ export function DomainCards({ domains }: { domains: DomainGroup[] }) {
                     {group.skills.map((skill) => (
                       <li
                         key={skill}
-                        className="label-mono rounded-chip border border-line px-2 py-1"
+                        className="label-mono rounded-pill border border-line px-2 py-1"
                       >
                         {skill}
                       </li>

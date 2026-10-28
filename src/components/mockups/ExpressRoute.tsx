@@ -27,7 +27,7 @@ export function ExpressRoute() {
           <circle className="route-dot" r="4" fill="var(--c1)" />
         </svg>
       </div>
-      <p className="label-mono rounded-chip border border-line px-2 py-1 text-muted">
+      <p className="label-mono rounded-pill border border-line px-2 py-1 text-muted">
         Paid to Hamza Cloth · credited after UTR approval
       </p>
     </div>

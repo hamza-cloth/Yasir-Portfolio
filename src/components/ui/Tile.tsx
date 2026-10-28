@@ -20,7 +20,7 @@ export function Tile({ className, onPointerMove, ...props }: ComponentProps<"div
     <div
       onPointerMove={handlePointerMove}
       className={cn(
-        "spotlight relative isolate min-w-0 overflow-hidden rounded-tile border border-line bg-surface-solid p-6",
+        "spotlight surface relative isolate min-w-0 overflow-hidden rounded-tile border border-line p-6 transition-colors duration-500 hover:border-line-2 md:p-7",
         className,
       )}
       {...props}

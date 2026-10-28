@@ -20,7 +20,7 @@ describe("statusTone", () => {
   it("maps status wording to a tag colour", () => {
     expect(statusTone("Working build")).toBe("ok");
     expect(statusTone("In development (MVP)")).toBe("amber");
-    expect(statusTone("v2 in progress")).toBe("cyan");
+    expect(statusTone("v2 in progress")).toBe("accent");
   });
 });
 

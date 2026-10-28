@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Container } from "@/components/ui/Container";
+import { Highlight } from "@/components/ui/Highlight";
 import { SectionHead } from "@/components/ui/SectionHead";
 import type { JourneyPanel as JourneyPanelData } from "@/lib/content/journey";
 
@@ -63,7 +64,15 @@ export function Journey({ panels }: { panels: JourneyPanelData[] }) {
     <section ref={sectionRef} aria-labelledby="journey-title" className="journey py-24">
       <div className="journey-sticky flex flex-col gap-12">
         <Container className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHead eyebrow="The journey" titleId="journey-title" title="Four rooms I work in" />
+          <SectionHead
+            eyebrow="The journey"
+            titleId="journey-title"
+            title={
+              <>
+                Four rooms <Highlight>I work in</Highlight>
+              </>
+            }
+          />
           <div aria-hidden="true" className="journey-meter w-56 flex-col gap-3">
             <p className="label-mono text-muted">
               <span className="text-fg">{active + 1}</span> / {panels.length}

@@ -54,7 +54,7 @@ export function OsiBand({ group, open, onToggle }: OsiBandProps) {
           {group.skills.map((skill) => (
             <li
               key={skill}
-              className="label-mono rounded-chip border border-line bg-surface-2 px-3 py-1.5"
+              className="label-mono rounded-pill border border-line bg-surface-2 px-3 py-1.5"
             >
               {skill}
             </li>

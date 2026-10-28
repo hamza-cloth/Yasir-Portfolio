@@ -26,7 +26,7 @@ export function buildJourneyPanels(
       title: "The network",
       body: "CCNA training put the theory on real Cisco IOS: VLANs and 802.1Q trunks, OSPF, ACLs, NAT/PAT and DHCP, built and verified in lab topologies.",
       tags: ["VLANs", "OSPF", "ACLs", "NAT/PAT", "DHCP"],
-      cta: { href: "/labs", label: "See the labs" },
+      cta: { href: "/skills", label: "See the skills" },
     },
     {
       label: "Room 03",

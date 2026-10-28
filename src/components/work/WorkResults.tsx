@@ -32,8 +32,8 @@ export function WorkResults({ filter, projects, previews }: WorkResultsProps) {
       ) : (
         <p className="max-w-xl border-y border-line py-10 text-lg text-muted">
           No projects here yet. The networking work lives in the{" "}
-          <Link href="/labs" className="text-c1-text underline underline-offset-4">
-            CCNA practice labs
+          <Link href="/notes" className="text-c1-text underline underline-offset-4">
+            CCNA lab notes
           </Link>
           .
         </p>

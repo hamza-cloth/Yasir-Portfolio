@@ -9,8 +9,8 @@ export const DEFAULT_SKIN: Skin = "ops";
 export const SKIN_STORAGE_KEY = "ya-skin";
 
 export const SKIN_LABELS: Record<Skin, string> = {
-  ops: "Ops",
-  paper: "Paper",
+  ops: "Dark",
+  paper: "Light",
   terminal: "Terminal",
 };
 

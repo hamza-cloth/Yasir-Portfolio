@@ -1,5 +1,4 @@
 import { PlayWhenVisible } from "@/components/ui/PlayWhenVisible";
-import { cn } from "@/lib/cn";
 
 const WORDS = [
   "Technical Support",
@@ -15,16 +14,14 @@ const WORDS = [
 
 function WordRun() {
   return (
-    <ul className="flex flex-none items-center gap-10 pr-10">
-      {WORDS.map((word, index) => (
+    <ul className="flex flex-none items-center">
+      {WORDS.map((word) => (
         <li
           key={word}
-          className={cn(
-            "font-display text-[clamp(2rem,6vw,4.5rem)] leading-none whitespace-nowrap",
-            index % 2 === 0 ? "text-fg" : "text-outline",
-          )}
+          className="flex items-center gap-10 pr-10 font-display text-[clamp(1.25rem,2.4vw,1.9rem)] leading-none font-medium tracking-[-0.03em] whitespace-nowrap text-muted"
         >
           {word}
+          <span className="text-serif-accent text-[1.2em] text-c1/70">✦</span>
         </li>
       ))}
     </ul>
@@ -34,7 +31,7 @@ function WordRun() {
 // Decorative: every word here is also stated in readable content elsewhere on the page.
 export function Marquee() {
   return (
-    <PlayWhenVisible className="overflow-hidden border-y border-line py-8">
+    <PlayWhenVisible className="relative overflow-hidden border-y border-line bg-bg-2/60 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)] py-7">
       <div aria-hidden="true" className="marquee-track flex w-max">
         <WordRun />
         <WordRun />

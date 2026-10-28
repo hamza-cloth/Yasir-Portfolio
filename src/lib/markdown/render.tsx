@@ -2,6 +2,7 @@ import "server-only";
 
 import type { ReactNode } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+
 import rehypeShikiFromHighlighter from "@shikijs/rehype/core";
 import type { Root } from "hast";
 import { toJsxRuntime, type Components } from "hast-util-to-jsx-runtime";
@@ -15,7 +16,7 @@ import { Callout } from "@/components/markdown/Callout";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
 import { MarkdownLink } from "@/components/markdown/MarkdownLink";
 import { TableScroll } from "@/components/markdown/TableScroll";
-import { CODE_THEME, getHighlighter } from "@/lib/code/highlighter";
+import { CODE_THEME_NAME, getHighlighter } from "@/lib/code/highlighter";
 
 import { remarkCallouts } from "./remark-callouts";
 
@@ -36,7 +37,7 @@ const keepSource: ShikiTransformer = {
 };
 
 const SHIKI_OPTIONS = {
-  theme: CODE_THEME.name,
+  theme: CODE_THEME_NAME,
   defaultLanguage: "text",
   fallbackLanguage: "text",
   transformers: [keepSource],
@@ -63,7 +64,7 @@ export async function renderCode(code: string, lang: string): Promise<ReactNode>
   const known = highlighter.getLoadedLanguages().includes(lang) ? lang : "text";
   const tree = highlighter.codeToHast(code, {
     lang: known,
-    theme: CODE_THEME.name,
+    theme: CODE_THEME_NAME,
     transformers: [keepSource],
   });
   return toReact(tree);

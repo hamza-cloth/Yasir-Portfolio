@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { cn } from "@/lib/cn";
 
-type ButtonVariant = "solid" | "cyan" | "line";
+type ButtonVariant = "primary" | "accent" | "line";
 type ButtonSize = "sm" | "md" | "lg";
 
 type SharedProps = {
@@ -22,21 +22,23 @@ type NativeButtonProps = SharedProps &
 export type ButtonProps = LinkButtonProps | NativeButtonProps;
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  solid: "bg-fg text-bg",
-  cyan: "bg-c1 text-c1-ink",
-  line: "border border-line-2 text-fg hover:border-c1",
+  primary:
+    "bg-fg text-bg shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_8px_24px_-8px_var(--glow)] hover:bg-fg/90 terminal:bg-c1 terminal:text-c1-ink",
+  accent: "bg-c1 text-c1-ink hover:bg-c1/90",
+  line: "border border-line-2 bg-surface/50 text-fg backdrop-blur-md hover:border-fg/25 hover:bg-surface-2",
 };
 
 const SIZES: Record<ButtonSize, string> = {
-  sm: "min-h-11 px-4 text-sm",
+  sm: "min-h-10 px-4 text-sm",
   md: "min-h-12 px-6 text-[0.95rem]",
-  lg: "min-h-14 px-8 text-base",
+  lg: "min-h-13 px-7 text-[0.98rem]",
 };
 
 export function buttonClassName(variant: ButtonVariant, size: ButtonSize, className?: string) {
   return cn(
-    "glow-hover inline-flex items-center justify-center gap-2 rounded-pill font-semibold whitespace-nowrap",
-    "transition-transform duration-300 ease-entrance active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50",
+    "group/button inline-flex items-center justify-center gap-2 rounded-pill font-medium tracking-[-0.01em] whitespace-nowrap",
+    "transition-[transform,background-color,border-color] duration-300 ease-entrance active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50",
+    "[&_svg]:transition-transform [&_svg]:duration-300 [&_svg]:ease-entrance hover:[&_svg]:translate-x-0.5",
     "terminal:text-shadow-none",
     VARIANTS[variant],
     SIZES[size],
@@ -50,7 +52,7 @@ function isInternalHref(href: string): boolean {
 
 export function Button(props: ButtonProps) {
   if (props.href !== undefined) {
-    const { variant = "solid", size = "md", className, children, href, ...rest } = props;
+    const { variant = "primary", size = "md", className, children, href, ...rest } = props;
     const classes = buttonClassName(variant, size, className);
     if (isInternalHref(href)) {
       return (
@@ -66,7 +68,7 @@ export function Button(props: ButtonProps) {
     );
   }
 
-  const { variant = "solid", size = "md", className, children, type = "button", ...rest } = props;
+  const { variant = "primary", size = "md", className, children, type = "button", ...rest } = props;
   return (
     <button type={type} className={buttonClassName(variant, size, className)} {...rest}>
       {children}

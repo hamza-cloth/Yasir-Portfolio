@@ -11,8 +11,9 @@ export function Card({ as: Tag = "div", interactive = false, className, ...props
   return (
     <Tag
       className={cn(
-        "relative min-w-0 rounded-card border border-line bg-surface-solid p-6",
-        interactive && "glow-hover focus-within:border-line-2 hover:border-line-2",
+        "surface relative min-w-0 rounded-card border border-line p-6",
+        interactive &&
+          "transition-[transform,border-color] duration-500 ease-entrance focus-within:border-line-2 hover:-translate-y-1 hover:border-line-2",
         className,
       )}
       {...props}

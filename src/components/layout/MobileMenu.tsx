@@ -52,7 +52,7 @@ export function MobileMenu({
         <motion.div
           ref={panelRef}
           id={id}
-          className="fixed inset-0 z-(--z-mobile-menu) overflow-y-auto overscroll-contain bg-bg pt-[calc(var(--header-h)+env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] lg:hidden"
+          className="fixed inset-0 z-(--z-mobile-menu) overflow-y-auto overscroll-contain bg-bg bg-(image:--page-wash) pt-[calc(var(--header-h)+env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] lg:hidden"
           initial={{ clipPath: "inset(0 0 100% 0)" }}
           animate={{ clipPath: "inset(0 0 0% 0)" }}
           exit={{ clipPath: "inset(0 0 100% 0)" }}
@@ -80,7 +80,7 @@ export function MobileMenu({
                         onClick={onClose}
                         aria-current={active ? "page" : undefined}
                         className={cn(
-                          "flex min-h-14 items-center justify-between gap-4 py-3 font-display text-[clamp(1.6rem,7vw,2.6rem)] leading-none",
+                          "flex min-h-14 items-center justify-between gap-4 py-3 font-display text-[clamp(1.6rem,7vw,2.6rem)] leading-none font-medium tracking-[-0.04em]",
                           active ? "text-c1-text" : "text-fg",
                         )}
                       >
@@ -95,7 +95,7 @@ export function MobileMenu({
               </ul>
             </nav>
             <div className="mt-auto flex flex-wrap gap-3">
-              <Button href="/contact" variant="cyan" onClick={onClose}>
+              <Button href="/contact" variant="primary" onClick={onClose}>
                 Let’s talk
               </Button>
             </div>
