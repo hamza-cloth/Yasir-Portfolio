@@ -32,17 +32,17 @@ export function ClinicConsole() {
           <div className="flex min-h-0 flex-1 flex-col gap-2.5 rounded-chip border border-line bg-surface p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="label-mono text-fg">AI draft · note</span>
-              <span className="label-mono rounded-chip bg-amber px-2 py-0.5 text-amber-ink">
+              <span className="label-mono rounded-pill bg-amber px-2 py-0.5 text-amber-ink">
                 Doctor review required
               </span>
             </div>
             <SkeletonLines count={5} />
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="label-mono rounded-chip border border-c1 px-2 py-0.5 text-c1-text">
+            <span className="label-mono rounded-pill border border-c1 px-2 py-0.5 text-c1-text">
               ABHA linked
             </span>
-            <span className="label-mono rounded-chip border border-line px-2 py-0.5 text-muted">
+            <span className="label-mono rounded-pill border border-line px-2 py-0.5 text-muted">
               Consent manager
             </span>
           </div>

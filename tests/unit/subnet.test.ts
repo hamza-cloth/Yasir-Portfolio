@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  calculateSubnet,
-  isSubnetError,
-  parseIpv4,
-  type SubnetResult,
-} from "@/lib/subnet";
+import { calculateSubnet, isSubnetError, parseIpv4, type SubnetResult } from "@/lib/subnet";
 
 function subnet(ip: string, prefix: number): SubnetResult {
   const result = calculateSubnet(ip, prefix);

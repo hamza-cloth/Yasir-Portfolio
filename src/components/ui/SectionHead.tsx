@@ -30,10 +30,10 @@ export function SectionHead({
       )}
     >
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 id={titleId} className="text-h2">
+      <h2 id={titleId} className="text-h2 leading-[1.02]">
         {title}
       </h2>
-      {lead ? <p className="max-w-2xl text-lg text-muted">{lead}</p> : null}
+      {lead ? <p className="max-w-2xl text-lg leading-relaxed text-muted">{lead}</p> : null}
     </header>
   );
 }

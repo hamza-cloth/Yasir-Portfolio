@@ -12,11 +12,11 @@ export function OpenToWorkBadge() {
         <defs>
           <path id="badge-circle" d="M100 100 m-78 0 a78 78 0 1 1 156 0 a78 78 0 1 1 -156 0" />
         </defs>
-        <text className="fill-fg font-mono text-[20px] tracking-[0.16em] uppercase">
+        <text className="fill-muted font-mono text-[18px] tracking-[0.2em] uppercase">
           <textPath href="#badge-circle">Open to work · Open to work ·</textPath>
         </text>
       </svg>
-      <span className="grid size-[44%] place-items-center rounded-full bg-amber text-amber-ink">
+      <span className="grid size-[44%] place-items-center rounded-full bg-fg text-bg shadow-(--shadow-soft) terminal:bg-amber terminal:text-amber-ink">
         <span className="sr-only">Open to work</span>
         <Icon name="arrow-up-right" className="size-1/2" />
       </span>

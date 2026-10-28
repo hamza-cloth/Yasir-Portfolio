@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/Container";
+import { Highlight } from "@/components/ui/Highlight";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHead } from "@/components/ui/SectionHead";
 import type { SiteSettingsData } from "@/lib/content/site-settings";
@@ -54,7 +55,11 @@ export function GlanceGrid({
         <SectionHead
           eyebrow="At a glance"
           titleId="glance-title"
-          title="The whole stack, one screen"
+          title={
+            <>
+              The whole stack, <Highlight>one screen</Highlight>
+            </>
+          }
         />
         <Reveal>
           <div className="grid grid-cols-12 gap-4">

@@ -1,7 +1,7 @@
 import { ConsoleSection } from "@/components/home/ConsoleSection";
 import { CtaBand } from "@/components/home/CtaBand";
 import { GlanceGrid } from "@/components/home/GlanceGrid";
-import { Hero } from "@/components/home/Hero";
+import { Hero, type HeroStat } from "@/components/home/Hero";
 import { Journey } from "@/components/home/Journey";
 import { LatestNotes } from "@/components/home/LatestNotes";
 import { Marquee } from "@/components/home/Marquee";
@@ -46,9 +46,21 @@ export default async function HomePage() {
     ...(projects[0] ? [{ label: "Building", value: projects[0].title }] : []),
   ];
 
+  const stats: HeroStat[] = [
+    ...(ccna ? [{ value: "CCNA", label: "Cisco routing & switching training" }] : []),
+    { value: experience.length, label: "Support roles in cloud & hosting" },
+    { value: projects.length, label: "Products in development" },
+    { value: skills.length, label: "Skills across the network and the app" },
+  ];
+
   return (
     <>
-      <Hero name={settings.name} statusRows={statusRows} />
+      <Hero
+        name={settings.name}
+        location={settings.location}
+        statusRows={statusRows}
+        stats={stats}
+      />
       <Marquee />
       <GlanceGrid
         settings={settings}

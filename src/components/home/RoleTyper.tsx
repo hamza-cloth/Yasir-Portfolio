@@ -35,7 +35,12 @@ export function RoleTyper({ roles, className }: RoleTyperProps) {
   const visible = reducedMotion ? first : (roles[state.index] ?? "").slice(0, state.length);
 
   return (
-    <p className={cn("label-mono flex min-h-[1.4em] items-center text-c1-text", className)}>
+    <p
+      className={cn(
+        "label-mono flex min-h-[1.4em] items-center gap-3 text-c1-text before:h-px before:w-8 before:bg-c1/60 before:content-['']",
+        className,
+      )}
+    >
       <span className="sr-only">{first}</span>
       <span aria-hidden="true">
         {visible}

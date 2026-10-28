@@ -43,7 +43,7 @@ export function SeatMap() {
             {SHIFTS.map((shift) => (
               <span
                 key={shift}
-                className="shift-tab label-mono rounded-chip border border-c1 px-2 py-0.5 text-c1-text"
+                className="shift-tab label-mono rounded-pill border border-c1 px-2 py-0.5 text-c1-text"
                 style={cssVars({ "--shift": shift })}
               >
                 Shift {shift + 1}

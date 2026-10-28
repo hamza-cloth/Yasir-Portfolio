@@ -1,75 +1,86 @@
 :root {
   color-scheme: dark;
 
-  --bg: #05070b;
-  --bg-2: #0a0e15;
-  --surface: rgba(17, 23, 33, 0.72);
-  --surface-solid: #0f151f;
-  --surface-2: #141b27;
-  --fg: #e9eef6;
-  --muted: #8c97aa;
-  --faint: #5d6779;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.16);
-  --c1: #3be8ff;
-  --c1-ink: #001a1f;
-  /* Cyan for small text; only Paper needs a darker value to reach 4.5:1. */
+  --bg: #07080b;
+  --bg-2: #0b0c10;
+  --surface: rgba(18, 19, 25, 0.66);
+  --surface-solid: #0f1015;
+  --surface-2: #16171e;
+  --fg: #f3f2ee;
+  --muted: #9c9da6;
+  --faint: #62636c;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --c1: #a5a6ff;
+  --c1-ink: #0b0b1d;
+  /* Accent for small text; only Paper needs a darker value to reach 4.5:1. */
   --c1-text: var(--c1);
-  --amber: #ffb020;
-  --amber-ink: #170d00;
-  --highlight: rgba(255, 176, 32, 0.32);
-  --ok: #3ce38b;
-  --red: #ff5c6c;
-  --glow: rgba(59, 232, 255, 0.22);
-  --curtain: #05070b;
-  --curtain-fg: #e9eef6;
-  --curtain-muted: #8c97aa;
+  --amber: #e7c38d;
+  --amber-ink: #1c1206;
+  --highlight: rgba(165, 166, 255, 0.22);
+  --ok: #5ee0a0;
+  --red: #ff7a85;
+  --glow: rgba(140, 142, 255, 0.16);
+  --curtain: #07080b;
+  --curtain-fg: #f3f2ee;
+  --curtain-muted: #9c9da6;
   --text-glow: none;
+
+  /* Depth: a hairline top highlight plus a long soft drop. */
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 60px -24px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 40px 80px -30px rgba(0, 0, 0, 0.75);
+  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%);
+  --accent-gradient: linear-gradient(100deg, #c9c4ff 0%, #a5a6ff 45%, #e7c38d 100%);
+  --page-wash:
+    radial-gradient(60rem 36rem at 78% -8%, rgba(120, 118, 255, 0.11), transparent 70%),
+    radial-gradient(44rem 28rem at 8% 2%, rgba(231, 195, 141, 0.05), transparent 70%);
 
   --shiki-foreground: var(--fg);
   --shiki-background: var(--bg-2);
   --shiki-token-keyword: var(--c1);
-  --shiki-token-parameter: #ffc65c;
-  --shiki-token-function: #8fdcff;
+  --shiki-token-parameter: #f0cf9c;
+  --shiki-token-function: #b9d4ff;
   --shiki-token-constant: var(--ok);
-  --shiki-token-string: #ffc65c;
-  --shiki-token-string-expression: #ffc65c;
+  --shiki-token-string: #f0cf9c;
+  --shiki-token-string-expression: #f0cf9c;
   --shiki-token-comment: var(--muted);
   --shiki-token-punctuation: var(--muted);
   --shiki-token-link: var(--c1);
 
   /* The résumé sheet is always white paper, whatever the skin. */
   --sheet-bg: #ffffff;
-  --sheet-fg: #0a0e15;
-  --sheet-muted: #4a5466;
-  --sheet-line: #d9dee6;
-  --sheet-accent: #00707f;
+  --sheet-fg: #0d0e13;
+  --sheet-muted: #50525c;
+  --sheet-line: #e2e2e8;
+  --sheet-accent: #4b45c6;
 
-  --ff-display: var(--font-unbounded), "Arial Black", system-ui, sans-serif;
-  --ff-body: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-mono: var(--font-jetbrains), ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --display-weight: 700;
-  --display-tracking: -0.025em;
-  --display-leading: 0.95;
+  --ff-display: var(--font-geist), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-body: var(--font-geist), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-mono: var(--font-geist-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --ff-serif: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
+  --display-weight: 500;
+  --display-tracking: -0.04em;
+  --display-leading: 0.92;
 
-  --fs-hero-split: clamp(2.5rem, 8.2vw, 8rem);
-  --fs-hero-stack: clamp(2.4rem, 15vw, 7rem);
-  --fs-h1: clamp(2.3rem, 6.2vw, 5.6rem);
-  --fs-h2: clamp(1.8rem, 3.8vw, 3.1rem);
+  --fs-hero-split: clamp(3rem, 8.4vw, 8.5rem);
+  --fs-hero-stack: clamp(3rem, 15vw, 6.5rem);
+  --fs-h1: clamp(2.6rem, 6.4vw, 5.75rem);
+  --fs-h2: clamp(2rem, 4.2vw, 3.5rem);
   --fs-body: 1.0625rem;
-  --fs-label: 0.76rem;
+  --fs-label: 0.72rem;
 
   --r-pill: 999px;
   --r-panel: 28px;
-  --r-tile: 24px;
-  --r-card: 20px;
-  --r-field: 14px;
-  --r-chip: 8px;
+  --r-tile: 22px;
+  --r-card: 18px;
+  --r-field: 12px;
+  --r-chip: 10px;
 
   --gutter: clamp(20px, 4vw, 48px);
-  --header-h: 72px;
+  --header-h: 76px;
 
-  --easing-entrance: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
 
   --z-preview: 60;
@@ -85,33 +96,44 @@
 :root[data-skin="paper"] {
   color-scheme: light;
 
-  --bg: #eef2f6;
-  --bg-2: #e3e8ef;
-  --surface: rgba(255, 255, 255, 0.78);
+  --bg: #f6f5f1;
+  --bg-2: #efede7;
+  --surface: rgba(255, 255, 255, 0.72);
   --surface-solid: #ffffff;
-  --surface-2: #f5f7fa;
-  --fg: #0a0e15;
-  --muted: #566174;
-  --faint: #7c8798;
-  --line: rgba(10, 14, 21, 0.09);
-  --line-2: rgba(10, 14, 21, 0.18);
-  --c1: #0091a6;
+  --surface-2: #f3f2ed;
+  --fg: #111216;
+  --muted: #5b5d66;
+  --faint: #8a8c95;
+  --line: rgba(17, 18, 22, 0.08);
+  --line-2: rgba(17, 18, 22, 0.16);
+  --c1: #4f49d6;
   --c1-ink: #ffffff;
-  --c1-text: #00707f;
-  --amber: #ffb020;
-  --amber-ink: #170d00;
-  --highlight: rgba(255, 176, 32, 0.38);
-  --ok: #12854a;
-  --red: #d43b4a;
-  --glow: rgba(0, 145, 166, 0.14);
-  --curtain: #05070b;
+  --c1-text: #463fc4;
+  --amber: #b07a2a;
+  --amber-ink: #ffffff;
+  --highlight: rgba(79, 73, 214, 0.16);
+  --ok: #138a52;
+  --red: #c93545;
+  --glow: rgba(79, 73, 214, 0.1);
+  --curtain: #111216;
+  --curtain-fg: #f6f5f1;
+  --curtain-muted: #a3a4ab;
 
-  --shiki-token-keyword: #00707f;
-  --shiki-token-parameter: #8a4b00;
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-soft: 0 1px 2px rgba(17, 18, 22, 0.05), 0 24px 50px -28px rgba(17, 18, 22, 0.18);
+  --shadow-lift: 0 2px 4px rgba(17, 18, 22, 0.06), 0 40px 70px -34px rgba(17, 18, 22, 0.28);
+  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 42%);
+  --accent-gradient: linear-gradient(100deg, #2b2795 0%, #4f49d6 50%, #b07a2a 100%);
+  --page-wash:
+    radial-gradient(60rem 36rem at 78% -8%, rgba(79, 73, 214, 0.08), transparent 70%),
+    radial-gradient(44rem 28rem at 8% 2%, rgba(176, 122, 42, 0.07), transparent 70%);
+
+  --shiki-token-keyword: #463fc4;
+  --shiki-token-parameter: #8a5200;
   --shiki-token-function: #1d4ed8;
-  --shiki-token-constant: #12854a;
-  --shiki-token-string: #8a4b00;
-  --shiki-token-string-expression: #8a4b00;
+  --shiki-token-constant: #138a52;
+  --shiki-token-string: #8a5200;
+  --shiki-token-string-expression: #8a5200;
 }
 
 :root[data-skin="terminal"] {
@@ -141,6 +163,13 @@
   --curtain-muted: #22b456;
   --text-glow: 0 0 6px rgba(57, 255, 122, 0.45);
 
+  --edge-light: none;
+  --shadow-soft: none;
+  --shadow-lift: none;
+  --card-sheen: none;
+  --accent-gradient: linear-gradient(90deg, #39ff7a, #39ff7a);
+  --page-wash: none;
+
   --shiki-token-keyword: #39ff7a;
   --shiki-token-parameter: #ffb000;
   --shiki-token-function: #b6ffcc;
@@ -149,7 +178,8 @@
   --shiki-token-string-expression: #ffb000;
 
   --ff-display: var(--font-vt323), ui-monospace, monospace;
-  --ff-body: var(--font-jetbrains), ui-monospace, monospace;
+  --ff-body: var(--font-geist-mono), ui-monospace, monospace;
+  --ff-serif: var(--font-vt323), ui-monospace, monospace;
   --display-weight: 400;
   --display-tracking: 0;
   --display-leading: 0.85;

@@ -10,11 +10,11 @@ export function SkinButton({ className }: { className?: string }) {
       type="button"
       onClick={() => cycleSkin()}
       className={cn(
-        "glow-hover label-mono inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-pill border border-line-2 px-3.5 text-fg",
+        "label-mono inline-flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-pill border border-line-2 bg-surface/50 px-3.5 text-fg backdrop-blur-md transition-colors hover:border-fg/25",
         className,
       )}
     >
-      <span aria-hidden="true" className="signal-dot rounded-full" />
+      <span aria-hidden="true" className="signal-dot" />
       <span className="sr-only">Skin: </span>
       {SKINS.map((skin) => (
         <span key={skin} className="skin-label" data-skin-label={skin}>

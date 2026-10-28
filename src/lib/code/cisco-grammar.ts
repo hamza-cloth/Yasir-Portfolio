@@ -6,6 +6,7 @@ export const CISCO_GRAMMAR: LanguageRegistration = {
   name: "cisco",
   scopeName: "source.cisco",
   aliases: ["ios"],
+  repository: {},
   patterns: [
     { match: "^\\s*!.*$", name: "comment.line.cisco" },
     {

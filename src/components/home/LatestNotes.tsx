@@ -1,6 +1,8 @@
 import { NoteCard } from "@/components/notes/NoteCard";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { Highlight } from "@/components/ui/Highlight";
+import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHead } from "@/components/ui/SectionHead";
 import type { NoteSummary } from "@/lib/content/types";
@@ -15,10 +17,15 @@ export function LatestNotes({ notes }: { notes: NoteSummary[] }) {
           <SectionHead
             eyebrow="Notes"
             titleId="notes-title"
-            title="Written down so I don’t forget"
+            title={
+              <>
+                Written down <Highlight>so I don’t forget</Highlight>
+              </>
+            }
           />
           <Button href="/notes" variant="line">
             All notes
+            <Icon name="arrow-right" size={16} />
           </Button>
         </div>
         <ul className="grid gap-4 md:grid-cols-3">

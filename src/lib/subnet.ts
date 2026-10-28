@@ -63,7 +63,7 @@ function addressClass(value: number): AddressClass {
 
 function privateRange(value: number): string | null {
   const match = PRIVATE_RANGES.find(
-    ({ base, prefix }) => ((value & prefixToMask(prefix)) >>> 0) === base,
+    ({ base, prefix }) => (value & prefixToMask(prefix)) >>> 0 === base,
   );
   return match?.range ?? null;
 }

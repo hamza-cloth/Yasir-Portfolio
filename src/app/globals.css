@@ -47,6 +47,7 @@
   --font-display: var(--ff-display);
   --font-body: var(--ff-body);
   --font-mono: var(--ff-mono);
+  --font-serif: var(--ff-serif);
 
   --radius-pill: var(--r-pill);
   --radius-panel: var(--r-panel);

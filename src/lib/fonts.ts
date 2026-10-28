@@ -1,23 +1,25 @@
-import { Figtree, JetBrains_Mono, Unbounded, VT323 } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif, VT323 } from "next/font/google";
 
-const unbounded = Unbounded({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-unbounded",
-  display: "swap",
-});
-
-const figtree = Figtree({
+const geist = Geist({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-figtree",
+  variable: "--font-geist",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-jetbrains",
+  variable: "--font-geist-mono",
+  display: "swap",
+});
+
+// The serif is only used for italic accent words inside headings.
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
   display: "swap",
 });
 
@@ -30,6 +32,6 @@ const vt323 = VT323({
   preload: false,
 });
 
-export const fontVariables = [unbounded, figtree, jetbrainsMono, vt323]
+export const fontVariables = [geist, geistMono, instrumentSerif, vt323]
   .map((font) => font.variable)
   .join(" ");

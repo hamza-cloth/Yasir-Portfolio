@@ -18,7 +18,10 @@ export function AboutTile({ headline, location, facts, className }: AboutTilePro
       <ul className="flex flex-col gap-2 text-muted">
         {facts.map((fact) => (
           <li key={fact} className="flex gap-3">
-            <span aria-hidden="true" className="mt-[0.7em] size-1 flex-none bg-c1" />
+            <span
+              aria-hidden="true"
+              className="mt-[0.65em] size-1.5 flex-none rounded-full bg-c1/70"
+            />
             {fact}
           </li>
         ))}

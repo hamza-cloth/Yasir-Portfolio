@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/Container";
+import { Highlight } from "@/components/ui/Highlight";
 import { SectionHead } from "@/components/ui/SectionHead";
 import type { TerminalContext, TerminalLine } from "@/lib/terminal/types";
 
@@ -17,7 +18,11 @@ export function ConsoleSection({ context, transcript }: ConsoleSectionProps) {
           <SectionHead
             eyebrow="Live console"
             titleId="console-title"
-            title="Ask the router"
+            title={
+              <>
+                Ask the <Highlight>router</Highlight>
+              </>
+            }
             lead="A real shell running in your browser. It plays a short demo, then it is yours: try help, skills, traceroute 8.8.8.8 or theme terminal."
           />
           <p className="label-mono text-muted">

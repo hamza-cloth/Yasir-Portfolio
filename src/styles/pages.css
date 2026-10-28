@@ -50,9 +50,11 @@
   .timeline-dot::after {
     content: "";
     position: absolute;
-    inset: -6px;
+    inset: -5px;
     border-radius: inherit;
-    box-shadow: 0 0 18px var(--glow);
+    box-shadow:
+      0 0 0 1px var(--line-2),
+      0 0 24px var(--glow);
     opacity: 0;
     transition: opacity 400ms var(--easing-entrance);
   }
@@ -100,5 +102,28 @@
   .preview-card[data-visible="true"] .preview-card-inner {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Printing is only offered on the résumé: keep the white sheet, drop everything around it. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  body::after,
+  .site-header,
+  .scroll-progress,
+  .back-to-top,
+  .cursor-dot,
+  .cursor-ring,
+  .page-curtain,
+  body footer {
+    display: none !important;
   }
 }

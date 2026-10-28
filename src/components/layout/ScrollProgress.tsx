@@ -12,7 +12,7 @@ export function ScrollProgress() {
     <div
       ref={ref}
       aria-hidden="true"
-      className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-(--z-header) h-[3px]"
+      className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-(--z-header) h-0.5"
     />
   );
 }

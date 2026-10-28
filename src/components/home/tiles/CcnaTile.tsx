@@ -19,13 +19,13 @@ export function CcnaTile({ issuer, topics, className }: CcnaTileProps) {
         {topics.map((topic) => (
           <li
             key={topic}
-            className="label-mono rounded-chip border border-line px-2.5 py-1 text-fg"
+            className="label-mono rounded-pill border border-line px-2.5 py-1 text-fg"
           >
             {topic}
           </li>
         ))}
       </ul>
-      <TileLink href="/labs">Practice labs</TileLink>
+      <TileLink href="/notes">Lab notes</TileLink>
     </Tile>
   );
 }

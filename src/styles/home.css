@@ -20,14 +20,13 @@
     transform: translateX(-50%);
     color: var(--c1);
     -webkit-text-fill-color: var(--c1);
-    text-shadow: 0 0 18px var(--glow);
     pointer-events: none;
   }
 
   .caret {
     display: inline-block;
-    width: 0.55em;
-    height: 1.05em;
+    width: 0.5em;
+    height: 1em;
     margin-left: 2px;
     vertical-align: -0.15em;
     background-color: var(--c1);
@@ -97,14 +96,15 @@
     background-image:
       linear-gradient(var(--line) 1px, transparent 1px),
       linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 56px 56px;
+    background-size: 64px 64px;
+    opacity: 0.6;
     -webkit-mask-image: radial-gradient(
-      340px circle at var(--grid-x, 70%) var(--grid-y, 40%),
+      420px circle at var(--grid-x, 70%) var(--grid-y, 40%),
       #000,
       transparent 70%
     );
     mask-image: radial-gradient(
-      340px circle at var(--grid-x, 70%) var(--grid-y, 40%),
+      420px circle at var(--grid-x, 70%) var(--grid-y, 40%),
       #000,
       transparent 70%
     );
@@ -257,6 +257,6 @@
   .journey-progress {
     transform: scaleX(var(--journey-progress, 0));
     transform-origin: left center;
-    background-image: linear-gradient(90deg, var(--c1), var(--amber));
+    background-image: var(--accent-gradient);
   }
 }

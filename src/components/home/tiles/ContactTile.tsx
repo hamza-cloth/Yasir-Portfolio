@@ -23,7 +23,7 @@ export function ContactTile({ email, availability, className }: ContactTileProps
         <IstClock />
       </div>
       <div className="flex flex-wrap gap-3">
-        <Button href="/contact" variant="cyan">
+        <Button href="/contact" variant="primary">
           Let’s talk
         </Button>
         <CopyButton value={email}>Copy email</CopyButton>

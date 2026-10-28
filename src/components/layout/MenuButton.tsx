@@ -19,7 +19,7 @@ export function MenuButton({ open, onToggle, controls, ref, className }: MenuBut
       aria-expanded={open}
       aria-controls={controls}
       className={cn(
-        "glow-hover relative size-11 flex-none rounded-pill border border-line-2 text-fg",
+        "relative size-11 flex-none rounded-pill border border-line-2 bg-surface/50 text-fg backdrop-blur-md",
         className,
       )}
     >
