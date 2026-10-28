@@ -49,7 +49,10 @@ export default function LoginPage() {
           </div>
         )}
 
-        <Link href="/" className="mt-8 inline-flex text-sm text-muted hover:text-fg">
+        <Link
+          href="/"
+          className="mt-8 inline-flex min-h-11 items-center text-sm text-muted hover:text-fg"
+        >
           ← Back to the site
         </Link>
       </div>

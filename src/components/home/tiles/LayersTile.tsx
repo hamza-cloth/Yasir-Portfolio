@@ -27,7 +27,7 @@ export function LayersTile({ layers, className }: LayersTileProps) {
           All skills
         </TileLink>
       </div>
-      <ol className="grid gap-2.5 sm:grid-cols-2 sm:gap-x-8">
+      <ol className="grid gap-2.5 @lg:grid-cols-2 @lg:gap-x-8">
         {layers.map((group) => (
           <li
             key={group.layer}

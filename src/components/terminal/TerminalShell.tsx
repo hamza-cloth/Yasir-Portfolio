@@ -64,7 +64,7 @@ export function TerminalShell({
         aria-live={announce ? "polite" : "off"}
         aria-label="Terminal output"
         data-lenis-prevent
-        className="h-[300px] overflow-auto overscroll-contain px-4 py-3 font-mono text-[0.8rem] leading-6"
+        className="h-[300px] overflow-auto overscroll-contain px-4 py-3 font-mono text-xs leading-6"
       >
         {session.lines.map((line, index) => (
           <p key={index} className={cn("w-max min-w-full whitespace-pre", LINE_TONES[line.kind])}>
@@ -73,7 +73,7 @@ export function TerminalShell({
         ))}
       </div>
       <form
-        className="flex items-center gap-2 border-t border-line px-4 py-2 font-mono text-[0.8rem]"
+        className="flex items-center gap-2 border-t border-line px-4 py-2 font-mono text-xs"
         onSubmit={(event) => {
           event.preventDefault();
           session.submit();

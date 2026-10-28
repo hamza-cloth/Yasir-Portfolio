@@ -5,7 +5,7 @@ export function Logo() {
     <Link
       href="/"
       aria-label="Yasir Abdullah, home"
-      className="group flex min-h-11 flex-none items-center gap-2.5"
+      className="group flex min-h-11 min-w-11 flex-none items-center gap-2.5"
     >
       <span
         aria-hidden="true"

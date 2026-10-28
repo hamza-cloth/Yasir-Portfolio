@@ -23,7 +23,7 @@ export function Steps({ id, eyebrow, title, steps }: StepsProps) {
     <section aria-labelledby={id} className="py-20 md:py-24">
       <Container className="flex flex-col gap-12">
         <SectionHead eyebrow={eyebrow} titleId={id} title={title} />
-        <ol className="relative grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <ol className="relative grid grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-4">
           <span
             aria-hidden="true"
             className="absolute top-[46px] right-[12%] left-[12%] hidden border-t-2 border-dashed border-c1/25 md:block"

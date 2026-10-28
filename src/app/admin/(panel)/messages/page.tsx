@@ -66,7 +66,7 @@ export default async function MessagesPage() {
               <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
                 <a
                   href={`mailto:${message.email}?subject=${encodeURIComponent("Re: your message")}`}
-                  className="inline-flex min-h-9 items-center rounded-pill bg-fg px-3.5 text-sm font-medium text-bg"
+                  className="inline-flex min-h-11 items-center rounded-pill bg-fg px-3.5 text-sm font-medium text-bg"
                 >
                   Reply
                 </a>

@@ -100,7 +100,7 @@ export function ContactForm({ email }: { email: string }) {
                   defaultChecked={values.topic ? values.topic === value : index === 0}
                   className="peer sr-only"
                 />
-                <span className="inline-flex min-h-10 items-center rounded-pill border border-line-2 px-4 text-sm text-muted transition-colors duration-300 peer-checked:border-fg peer-checked:bg-fg peer-checked:text-bg peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-c1 hover:text-fg">
+                <span className="inline-flex min-h-11 items-center rounded-pill border border-line-2 px-4 text-sm text-muted transition-colors duration-300 peer-checked:border-fg peer-checked:bg-fg peer-checked:text-bg peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-c1 hover:text-fg">
                   {label}
                 </span>
               </label>

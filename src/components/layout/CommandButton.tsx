@@ -10,7 +10,7 @@ export function CommandButton({ className }: { className?: string }) {
       onClick={requestCommandMenu}
       aria-keyshortcuts="Meta+K Control+K /"
       className={cn(
-        "label-mono inline-flex min-h-10 min-w-10 items-center justify-center gap-1 rounded-pill px-3 text-muted transition-colors hover:bg-fg/5 hover:text-fg",
+        "label-mono inline-flex min-h-11 min-w-10 items-center justify-center gap-1 rounded-pill px-3 text-muted transition-colors hover:bg-fg/5 hover:text-fg",
         className,
       )}
     >

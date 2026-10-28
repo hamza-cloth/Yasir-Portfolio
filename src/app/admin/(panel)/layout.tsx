@@ -34,14 +34,14 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
           <Link
             href="/"
             target="_blank"
-            className="flex min-h-10 items-center rounded-field px-3 text-sm text-muted hover:text-fg"
+            className="flex min-h-11 items-center rounded-field px-3 text-sm text-muted hover:text-fg"
           >
             View site ↗
           </Link>
           <form action={logout}>
             <button
               type="submit"
-              className="flex min-h-10 w-full items-center rounded-field px-3 text-sm text-muted hover:text-red"
+              className="flex min-h-11 w-full items-center rounded-field px-3 text-sm text-muted hover:text-red"
             >
               Sign out
             </button>

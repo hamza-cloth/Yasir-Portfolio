@@ -22,7 +22,7 @@ export function LogoStrip() {
               <span className="text-[clamp(1.05rem,1.6vw,1.35rem)] font-extrabold tracking-[-0.03em] text-fg/40 transition-colors duration-300 group-hover:text-fg">
                 {item.name}
               </span>
-              <span className="label-mono text-[0.62rem] text-faint opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="label-mono text-xs text-faint opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 {item.note}
               </span>
             </li>

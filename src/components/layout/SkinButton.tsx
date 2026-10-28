@@ -10,7 +10,7 @@ export function SkinButton({ className }: { className?: string }) {
       type="button"
       onClick={() => cycleSkin()}
       className={cn(
-        "label-mono inline-flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-pill px-3 text-fg transition-colors hover:bg-fg/5",
+        "label-mono inline-flex min-h-11 min-w-10 items-center justify-center gap-2 rounded-pill px-3 text-fg transition-colors hover:bg-fg/5",
         className,
       )}
     >

@@ -85,7 +85,7 @@ export function InlineAction({
       <button
         type="submit"
         className={cn(
-          "inline-flex min-h-9 items-center rounded-pill border px-3.5 text-sm transition-colors",
+          "inline-flex min-h-11 items-center rounded-pill border px-3.5 text-sm transition-colors",
           tone === "danger"
             ? "border-red/40 text-red hover:bg-red/10"
             : "border-line-2 text-muted hover:border-fg/30 hover:text-fg",

@@ -88,8 +88,8 @@ export function HeroGlobe({ className }: { className?: string }) {
                   </svg>
                 </span>
                 <span className="flex flex-col leading-tight">
-                  <span className="font-mono text-[0.72rem] font-medium text-fg">{card.title}</span>
-                  <span className="text-[0.8rem] text-muted">{card.detail}</span>
+                  <span className="font-mono text-xs font-medium text-fg">{card.title}</span>
+                  <span className="text-xs text-muted">{card.detail}</span>
                 </span>
               </div>
             </div>

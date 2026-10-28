@@ -29,7 +29,7 @@ export function MockupFrame({ label, title, children, className }: MockupFramePr
           <span className="size-2.5 rounded-full bg-[#febc2e]" />
           <span className="size-2.5 rounded-full bg-[#28c840]" />
         </span>
-        <span className="mx-auto flex max-w-full min-w-0 items-center gap-1.5 truncate rounded-md bg-surface-solid px-3 py-1 font-mono text-[0.68rem] text-muted shadow-(--edge-light)">
+        <span className="mx-auto flex max-w-full min-w-0 items-center gap-1.5 truncate rounded-md bg-surface-solid px-3 py-1 font-mono text-xs text-muted shadow-(--edge-light)">
           <svg viewBox="0 0 24 24" className="size-3 flex-none" fill="none">
             <path
               d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z"

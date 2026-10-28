@@ -67,7 +67,7 @@ export function SkillRow({ skill, domains, save, remove }: SkillRowProps) {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-9 items-center rounded-pill border border-line-2 px-3 text-sm text-muted hover:text-fg"
+          className="inline-flex min-h-11 items-center rounded-pill border border-line-2 px-3 text-sm text-muted hover:text-fg"
         >
           {pending ? "…" : state.error ? "Retry" : state.ok ? "Saved" : "Save"}
         </button>
@@ -82,7 +82,7 @@ export function SkillRow({ skill, domains, save, remove }: SkillRowProps) {
         <input type="hidden" name="id" value={skill.id} />
         <button
           type="submit"
-          className="inline-flex min-h-9 items-center px-2 text-sm text-red/80 hover:text-red"
+          className="inline-flex min-h-11 items-center px-2 text-sm text-red/80 hover:text-red"
         >
           Delete
         </button>

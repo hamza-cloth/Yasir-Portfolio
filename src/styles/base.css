@@ -1,6 +1,8 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /* Reserve the scrollbar's space, so locking scroll under an overlay never shifts the page. */
+    scrollbar-gutter: stable;
     background-color: var(--bg);
     scroll-padding-top: calc(var(--header-h) + 16px);
   }
@@ -107,5 +109,15 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Phones: nothing reads smaller than 14px. */
+@media (max-width: 44.99rem) {
+  /* Matches the skin selectors' specificity, so it wins on every skin. */
+  :root,
+  :root[data-skin] {
+    --fs-label: 0.875rem;
+    --text-xs: 0.875rem;
   }
 }

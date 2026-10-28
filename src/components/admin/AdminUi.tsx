@@ -25,7 +25,7 @@ export function AdminHeader({ title, description, action, back }: AdminHeaderPro
       {action ? (
         <Link
           href={action.href}
-          className="inline-flex min-h-10 items-center rounded-pill bg-fg px-4 text-sm font-medium text-bg hover:bg-fg/90"
+          className="inline-flex min-h-11 items-center rounded-pill bg-fg px-4 text-sm font-medium text-bg hover:bg-fg/90"
         >
           {action.label}
         </Link>

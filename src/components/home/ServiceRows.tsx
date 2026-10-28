@@ -34,7 +34,7 @@ export function ServiceRows({ services }: { services: Service[] }) {
             </>
           }
         />
-        <ol className="grid gap-4 md:grid-cols-3">
+        <ol className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),1fr))] gap-4">
           {services.map((service, index) => {
             const look = LOOKS[index % LOOKS.length];
             return (

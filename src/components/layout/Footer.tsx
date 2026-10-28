@@ -14,7 +14,7 @@ type FooterProps = {
 };
 
 const linkClass =
-  "inline-flex min-h-10 items-center gap-2 text-muted transition-colors duration-300 hover:text-fg";
+  "inline-flex min-h-11 min-w-11 items-center gap-2 text-muted transition-colors duration-300 hover:text-fg";
 
 export function Footer({ settings }: FooterProps) {
   const elsewhere = [

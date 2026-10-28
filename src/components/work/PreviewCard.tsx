@@ -44,7 +44,7 @@ export function PreviewCard({ active, previews, pointer }: PreviewCardProps) {
       ref={ref}
       aria-hidden="true"
       data-visible={active !== null}
-      className="preview-card pointer-events-none fixed top-0 left-0 z-(--z-preview) w-[360px]"
+      className="preview-card pointer-events-none fixed top-0 left-0 z-(--z-dropdown) w-[360px]"
     >
       <div className="preview-card-inner">
         {Object.entries(previews).map(([slug, preview]) => (

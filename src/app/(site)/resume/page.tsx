@@ -24,7 +24,7 @@ export async function generateMetadata() {
 
 function SheetHeading({ children }: { children: string }) {
   return (
-    <h2 className="mb-4 border-b border-(--sheet-line) pb-2 font-mono text-[0.72rem] font-medium tracking-[0.12em] text-(--sheet-accent) uppercase">
+    <h2 className="mb-4 border-b border-(--sheet-line) pb-2 font-mono text-xs font-medium tracking-[0.12em] text-(--sheet-accent) uppercase">
       {children}
     </h2>
   );

@@ -1,7 +1,7 @@
 @layer components {
   .shell {
     width: 100%;
-    max-width: calc(1320px + 2 * var(--gutter));
+    max-width: calc(var(--container) + 2 * var(--gutter));
     margin-inline: auto;
     padding-left: max(var(--gutter), env(safe-area-inset-left));
     padding-right: max(var(--gutter), env(safe-area-inset-right));
@@ -207,7 +207,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    z-index: var(--z-scanlines);
+    z-index: calc(var(--z-cursor) - 1);
     pointer-events: none;
     background:
       repeating-linear-gradient(
@@ -231,6 +231,11 @@
 
   .site-header {
     transition: transform 450ms var(--easing-entrance);
+  }
+
+  /* While the mobile menu is open the header sits above it, so the close button stays reachable. */
+  .site-header[data-menu-open="true"] {
+    z-index: calc(var(--z-overlay) + 1);
   }
 
   .site-header[data-hidden="true"]:not(:focus-within) {
@@ -373,13 +378,16 @@
     opacity: 0;
   }
 
+  /* Closed overlays never catch a click. */
   .page-curtain {
     clip-path: inset(100% 0 0 0);
     visibility: hidden;
+    pointer-events: none;
   }
 
   .page-curtain[data-active="true"] {
     visibility: visible;
+    pointer-events: auto;
   }
 
   .curtain-line {

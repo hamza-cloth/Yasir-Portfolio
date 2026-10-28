@@ -33,7 +33,7 @@ export function ShortcutsTile({ className }: { className?: string }) {
       <button
         type="button"
         onClick={requestTerminal}
-        className="mt-auto inline-flex min-h-10 items-center gap-2 self-start rounded-pill bg-white px-4 text-sm font-semibold text-[#0e1220] transition-transform hover:-translate-y-0.5"
+        className="mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-pill bg-white px-4 text-sm font-semibold text-[#0e1220] transition-transform hover:-translate-y-0.5"
       >
         <span aria-hidden="true" className="font-mono">
           &gt;_

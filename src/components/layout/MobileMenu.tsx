@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import Link from "next/link";
 
 import { AnimatePresence, motion } from "motion/react";
@@ -44,6 +44,14 @@ export function MobileMenu({
     onEscape: onClose,
   });
 
+  // Closes on any route change, including the browser's back button.
+  const openedOn = useRef(pathname);
+  useEffect(() => {
+    if (pathname === openedOn.current) return;
+    openedOn.current = pathname;
+    if (open) onClose();
+  }, [pathname, open, onClose]);
+
   const wipe = reducedMotion ? { duration: 0 } : { duration: 0.6, ease: EASE_WIPE };
 
   return (
@@ -52,7 +60,11 @@ export function MobileMenu({
         <motion.div
           ref={panelRef}
           id={id}
-          className="fixed inset-0 z-(--z-mobile-menu) overflow-y-auto overscroll-contain bg-bg bg-(image:--page-wash) pt-[calc(var(--header-h)+env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          data-lenis-prevent
+          className="fixed inset-y-0 left-0 z-(--z-overlay) h-dvh w-screen overflow-y-auto overscroll-contain bg-bg bg-(image:--page-wash) pt-[calc(var(--header-h)+env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] lg:hidden"
           initial={{ clipPath: "inset(0 0 100% 0)" }}
           animate={{ clipPath: "inset(0 0 0% 0)" }}
           exit={{ clipPath: "inset(0 0 100% 0)" }}

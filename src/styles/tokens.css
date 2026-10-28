@@ -79,8 +79,8 @@
   /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
   --fs-hero-split: clamp(2.6rem, min(5.4vw, 10svh), 5.4rem);
   --fs-hero-stack: clamp(2.4rem, 10.5vw, 4rem);
-  --fs-h1: clamp(2.5rem, 5.6vw, 5rem);
-  --fs-h2: clamp(2rem, 3.8vw, 3.25rem);
+  --fs-h1: clamp(2.25rem, 5vw + 1rem, 5rem);
+  --fs-h2: clamp(1.9rem, 3vw + 0.9rem, 3.25rem);
   --fs-body: 1.0625rem;
   --fs-label: 0.72rem;
 
@@ -91,20 +91,22 @@
   --r-field: 14px;
   --r-chip: 10px;
 
-  --gutter: clamp(20px, 4vw, 48px);
+  /* 16px on phones, growing to 32px; the content column tops out at 1280px. */
+  --gutter: clamp(16px, 3vw, 32px);
+  --container: 1280px;
   --header-h: 88px;
 
   --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
 
-  --z-preview: 60;
-  --z-mobile-menu: 75;
-  --z-header: 80;
-  --z-terminal: 115;
-  --z-command: 120;
-  --z-cursor: 140;
-  --z-scanlines: 145;
-  --z-curtain: 150;
+  /* One stacking scale for the whole site. */
+  --z-base: 0;
+  --z-header: 50;
+  --z-dropdown: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-cursor: 500;
 }
 
 :root[data-skin="ops"] {

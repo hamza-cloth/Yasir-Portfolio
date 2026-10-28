@@ -76,7 +76,7 @@ type CheckProps = Omit<ComponentProps<"input">, "className" | "type"> & {
 
 export function CheckField({ label, ...props }: CheckProps) {
   return (
-    <label className="inline-flex min-h-10 cursor-pointer items-center gap-2.5 text-sm text-fg">
+    <label className="inline-flex min-h-11 cursor-pointer items-center gap-2.5 text-sm text-fg">
       <input type="checkbox" className="size-4 accent-(--c1)" {...props} />
       {label}
     </label>

@@ -32,7 +32,7 @@ export default async function NotesPage() {
       <section aria-label="All notes" className="pb-12">
         <Container>
           {notes.length > 0 ? (
-            <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),1fr))] gap-4">
               {notes.map((note, index) => (
                 <li key={note.slug} className="min-w-0">
                   <Reveal delay={index * 80} className="h-full">

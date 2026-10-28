@@ -33,7 +33,7 @@ export function NavPills({ pathname, className }: NavPillsProps) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative inline-flex min-h-10 items-center rounded-pill px-3.5 text-[0.92rem] font-semibold tracking-[-0.01em] transition-colors duration-300",
+                  "relative inline-flex min-h-11 items-center rounded-pill px-3.5 text-[0.92rem] font-semibold tracking-[-0.01em] transition-colors duration-300",
                   active ? "text-c1-text" : "text-muted hover:text-fg",
                 )}
               >
