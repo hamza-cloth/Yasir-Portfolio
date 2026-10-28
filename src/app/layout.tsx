@@ -25,15 +25,15 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   colorScheme: "dark light",
-  themeColor: "#07080b",
+  themeColor: "#f5f6f8",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en-IN"
-      data-skin="ops"
-      data-theme="dark"
+      data-skin="paper"
+      data-theme="light"
       className={fontVariables}
       suppressHydrationWarning
     >

@@ -16,7 +16,7 @@ type NavPillsProps = {
 export function NavPills({ pathname, className }: NavPillsProps) {
   return (
     <nav aria-label="Main" className={className}>
-      <ul className="flex items-center gap-0.5 rounded-pill border border-line bg-surface/70 p-1 shadow-(--edge-light) backdrop-blur-xl">
+      <ul className="flex items-center gap-0.5">
         {NAV_ITEMS.map((item) => {
           const active = isActivePath(pathname, item.href);
           return (
@@ -25,7 +25,7 @@ export function NavPills({ pathname, className }: NavPillsProps) {
                 <motion.span
                   layoutId="nav-active-pill"
                   aria-hidden="true"
-                  className="absolute inset-0 rounded-pill border border-line-2 bg-fg/8 terminal:border-c1/50"
+                  className="absolute inset-0 rounded-pill bg-c1-soft terminal:border terminal:border-c1/50"
                   transition={{ duration: 0.5, ease: EASE_ENTRANCE }}
                 />
               ) : null}
@@ -33,8 +33,8 @@ export function NavPills({ pathname, className }: NavPillsProps) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative inline-flex min-h-10 items-center rounded-pill px-3.5 text-sm font-medium tracking-[-0.01em] transition-colors duration-300",
-                  active ? "text-fg" : "text-muted hover:text-fg",
+                  "relative inline-flex min-h-10 items-center rounded-pill px-3.5 text-[0.92rem] font-semibold tracking-[-0.01em] transition-colors duration-300",
+                  active ? "text-c1-text" : "text-muted hover:text-fg",
                 )}
               >
                 {item.label}

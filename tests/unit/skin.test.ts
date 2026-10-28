@@ -44,10 +44,10 @@ function runSkinScript(stored: string | null | Error) {
 }
 
 describe("skin state", () => {
-  it("cycles Ops → Paper → Terminal → Ops", () => {
-    expect(nextSkin("ops")).toBe("paper");
-    expect(nextSkin("paper")).toBe("terminal");
-    expect(nextSkin("terminal")).toBe("ops");
+  it("cycles Paper → Ops → Terminal → Paper", () => {
+    expect(nextSkin("paper")).toBe("ops");
+    expect(nextSkin("ops")).toBe("terminal");
+    expect(nextSkin("terminal")).toBe("paper");
   });
 
   it("recognises only known skins", () => {
@@ -73,13 +73,17 @@ describe("skin state", () => {
 
 describe("pre-paint skin script", () => {
   it("applies the stored skin and its colour theme", () => {
-    expect(runSkinScript("paper")).toEqual({ skin: "paper", theme: "light", js: "true" });
+    expect(runSkinScript("ops")).toEqual({ skin: "ops", theme: "dark", js: "true" });
     expect(runSkinScript("terminal")).toEqual({ skin: "terminal", theme: "dark", js: "true" });
   });
 
-  it("falls back to Ops for missing, unknown or blocked storage", () => {
-    expect(runSkinScript(null)).toEqual({ skin: "ops", theme: "dark", js: "true" });
-    expect(runSkinScript("__proto__")).toEqual({ skin: "ops", theme: "dark", js: "true" });
-    expect(runSkinScript(new Error("blocked"))).toEqual({ skin: "ops", theme: "dark", js: "true" });
+  it("falls back to Paper for missing, unknown or blocked storage", () => {
+    expect(runSkinScript(null)).toEqual({ skin: "paper", theme: "light", js: "true" });
+    expect(runSkinScript("__proto__")).toEqual({ skin: "paper", theme: "light", js: "true" });
+    expect(runSkinScript(new Error("blocked"))).toEqual({
+      skin: "paper",
+      theme: "light",
+      js: "true",
+    });
   });
 });

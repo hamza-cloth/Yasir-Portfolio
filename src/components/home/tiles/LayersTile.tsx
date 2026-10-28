@@ -1,5 +1,6 @@
 import { Tile } from "@/components/ui/Tile";
 import { cn } from "@/lib/cn";
+import { cssVars } from "@/lib/css-vars";
 import type { OsiLayerGroup } from "@/lib/osi";
 
 import { TileHead } from "./TileHead";
@@ -11,22 +12,41 @@ type LayersTileProps = {
 };
 
 export function LayersTile({ layers, className }: LayersTileProps) {
+  const most = Math.max(1, ...layers.map((group) => group.skills.length));
+
   return (
-    <Tile className={cn("flex flex-col gap-4", className)}>
-      <TileHead eyebrow="Skills by layer" />
-      <ol className="flex flex-col">
+    <Tile
+      className={cn(
+        "flex flex-col gap-5 border-transparent bg-tint-lilac text-tint-lilac-ink",
+        className,
+      )}
+    >
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <TileHead eyebrow="Skills by layer" title="All seven OSI layers" />
+        <TileLink href="/skills" className="mt-0 text-fg">
+          All skills
+        </TileLink>
+      </div>
+      <ol className="grid gap-2.5 sm:grid-cols-2 sm:gap-x-8">
         {layers.map((group) => (
           <li
             key={group.layer}
-            className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-baseline gap-3 border-b border-line py-1.5 last:border-b-0"
+            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3"
           >
-            <span className="label-mono text-c1-text">L{group.layer}</span>
-            <span className="truncate">{group.name}</span>
-            <span className="label-mono text-muted">{group.skills.length}</span>
+            <span className="label-mono font-semibold">L{group.layer}</span>
+            <span className="flex min-w-0 flex-col gap-1">
+              <span className="truncate text-sm font-semibold text-fg">{group.name}</span>
+              <span className="h-1.5 overflow-hidden rounded-full bg-surface-solid/70 terminal:bg-transparent">
+                <span
+                  className="layer-bar block h-full rounded-full bg-current"
+                  style={cssVars({ "--fill": group.skills.length / most })}
+                />
+              </span>
+            </span>
+            <span className="label-mono">{group.skills.length}</span>
           </li>
         ))}
       </ol>
-      <TileLink href="/skills">All skills</TileLink>
     </Tile>
   );
 }

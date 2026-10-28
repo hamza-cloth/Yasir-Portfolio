@@ -1,88 +1,72 @@
-import { Aurora } from "@/components/canvas/Aurora";
-import { GridSpotlight } from "@/components/canvas/GridSpotlight";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { CountUp } from "@/components/ui/CountUp";
-import { Highlight } from "@/components/ui/Highlight";
 import { Icon } from "@/components/ui/Icon";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { cn } from "@/lib/cn";
 import { cssVars } from "@/lib/css-vars";
 
-import { DecodingName } from "./DecodingName";
-import { RoleTyper } from "./RoleTyper";
-import { StatusPanel, type StatusRow } from "./StatusPanel";
-
-const ROLES = [
-  "Software & Network Engineer",
-  "Technical Support Engineer",
-  "CCNA-trained Network Engineer",
-  "Full-Stack Developer",
-] as const;
-
-export type HeroStat = {
-  value: number | string;
-  label: string;
-};
+import { HeroGlobe } from "./HeroGlobe";
 
 type HeroProps = {
   name: string;
-  location: string;
-  statusRows: StatusRow[];
-  stats: HeroStat[];
 };
 
-export function Hero({ name, location, statusRows, stats }: HeroProps) {
+export function Hero({ name }: HeroProps) {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden pt-[calc(var(--header-h)+40px)] pb-14 md:flex md:min-h-svh md:flex-col md:justify-center md:pt-[calc(var(--header-h)+24px)] md:pb-12"
+      className="relative isolate overflow-hidden pt-[calc(var(--header-h)+36px)] pb-16 md:flex md:min-h-svh md:flex-col md:justify-center md:pt-(--header-h) md:pb-10"
     >
-      <Aurora className="-z-10" />
-      <GridSpotlight className="-z-10" />
-      <div aria-hidden="true" className="hero-halo -top-[18%] -right-[14%] -z-10" />
-      <div
-        aria-hidden="true"
-        className="orb top-[58%] left-[-8%] -z-10 size-[28rem] bg-c1/10"
-        style={cssVars({ "--orb-x": "60px", "--orb-y": "-40px" })}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-b from-transparent to-bg"
-      />
-
-      <Container className="flex flex-col gap-10 md:gap-12">
-        <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(300px,0.7fr)] md:items-center lg:gap-16">
-          <div className="flex min-w-0 flex-col items-start gap-6">
+      <Container>
+        <div className="grid items-center gap-14 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10">
+          <div className="flex min-w-0 flex-col items-start gap-7">
             <p
-              className="intro glass label-mono inline-flex items-center gap-3 rounded-pill py-1.5 pr-4 pl-1.5 text-muted"
+              className="intro inline-flex items-center gap-2.5 rounded-pill border border-line bg-surface-solid py-2 pr-4 pl-3 text-sm font-semibold text-fg shadow-(--shadow-soft)"
               style={cssVars({ "--i": 0 })}
             >
-              <span className="inline-flex items-center gap-2 rounded-pill bg-ok/12 px-2.5 py-1 text-ok">
-                <span aria-hidden="true" className="status-dot" />
-                Open to work
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Icon name="map-pin" size={13} />
-                {location}
-              </span>
+              <span aria-hidden="true" className="status-dot" />
+              Hi, I’m {name}
             </p>
-            <DecodingName id="hero-title" name={name} className="hero-name--split" />
-            <div className="intro" style={cssVars({ "--i": 3 })}>
-              <RoleTyper roles={ROLES} />
-            </div>
-            <p
-              className="intro max-w-xl text-lg leading-relaxed text-muted sm:text-[1.2rem]"
-              style={cssVars({ "--i": 4 })}
+
+            <h1
+              id="hero-title"
+              className="intro hero-name hero-name--split max-w-[16ch] text-fg"
+              style={cssVars({ "--i": 1 })}
             >
-              Technical support for cloud business software and hosting, CCNA-trained on routing and
-              switching, and three products in development. I work{" "}
-              <Highlight>from the cable to the app</Highlight>.
+              I keep{" "}
+              <span className="relative inline-block whitespace-nowrap text-c1-text">
+                networks running
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 300 18"
+                  preserveAspectRatio="none"
+                  className="absolute -bottom-[0.14em] left-0 h-[0.26em] w-full overflow-visible"
+                >
+                  <path
+                    d="M3 12 C 60 4, 140 3, 200 7 S 280 11, 297 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    className="scribble-draw opacity-60"
+                    pathLength={1}
+                  />
+                </svg>
+              </span>{" "}
+              and build software people rely on.
+            </h1>
+
+            <p
+              className="intro max-w-lg text-lg leading-relaxed text-muted sm:text-[1.2rem]"
+              style={cssVars({ "--i": 2 })}
+            >
+              A CCNA-trained Software &amp; Network Engineer from India. Technical support for cloud
+              business software and hosting, and three products in development.
             </p>
-            <div className="intro flex flex-wrap gap-3 pt-1" style={cssVars({ "--i": 5 })}>
+
+            <div className="intro flex flex-wrap gap-3 pt-1" style={cssVars({ "--i": 3 })}>
               <Magnetic>
-                <Button href="/work" variant="primary" size="lg">
-                  View selected work
+                <Button href="/work" variant="accent" size="lg">
+                  See my work
                   <Icon name="arrow-right" />
                 </Button>
               </Magnetic>
@@ -91,38 +75,11 @@ export function Hero({ name, location, statusRows, stats }: HeroProps) {
               </Button>
             </div>
           </div>
-          <div className="intro-side min-w-0" style={cssVars({ "--i": 3 })}>
-            <StatusPanel rows={statusRows} />
+
+          <div className="intro-side min-w-0 px-6 sm:px-10 md:px-0" style={cssVars({ "--i": 2 })}>
+            <HeroGlobe className="max-w-[min(600px,72svh)]" />
           </div>
         </div>
-
-        {stats.length > 0 ? (
-          <dl
-            className="intro grid grid-cols-2 border-t border-line md:grid-cols-4"
-            style={cssVars({ "--i": 7 })}
-          >
-            {stats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={cn(
-                  "group flex flex-col gap-1.5 border-line pt-5 pr-4",
-                  index % 2 === 1 && "pl-6 max-md:border-l",
-                  index > 0 && "md:border-l md:pl-6",
-                  index > 1 && "max-md:mt-5 max-md:border-t",
-                )}
-              >
-                <dd className="order-1 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] leading-none font-medium tracking-[-0.04em] text-fg transition-colors duration-500 group-hover:text-c1-text">
-                  {typeof stat.value === "number" ? (
-                    <CountUp value={stat.value} immediateDelayMs={900} />
-                  ) : (
-                    stat.value
-                  )}
-                </dd>
-                <dt className="order-2 text-sm text-muted">{stat.label}</dt>
-              </div>
-            ))}
-          </dl>
-        ) : null}
       </Container>
     </section>
   );

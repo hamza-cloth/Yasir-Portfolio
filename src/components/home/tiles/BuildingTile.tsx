@@ -1,10 +1,9 @@
 import Link from "next/link";
 
-import { Tag } from "@/components/ui/Tag";
+import { Icon } from "@/components/ui/Icon";
 import { Tile } from "@/components/ui/Tile";
 import { cn } from "@/lib/cn";
 import type { ProjectSummary } from "@/lib/content/types";
-import { statusTone } from "@/lib/project-status";
 
 import { TileHead } from "./TileHead";
 
@@ -15,18 +14,30 @@ type BuildingTileProps = {
 
 export function BuildingTile({ projects, className }: BuildingTileProps) {
   return (
-    <Tile className={cn("flex flex-col gap-4", className)}>
+    <Tile
+      className={cn(
+        "flex flex-col gap-4 border-transparent bg-tint-mint text-tint-mint-ink",
+        className,
+      )}
+    >
       <TileHead eyebrow="Now building" />
-      <ul className="flex flex-col divide-y divide-line">
+      <ul className="flex flex-col gap-2">
         {projects.map((project) => (
           <li key={project.slug}>
             <Link
               href={`/work/${project.slug}`}
               data-cursor="View"
-              className="flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3 hover:text-c1-text"
+              className="group flex items-center justify-between gap-3 rounded-2xl bg-surface-solid/75 px-4 py-3 transition-colors hover:bg-surface-solid terminal:bg-transparent"
             >
-              <span className="min-w-0 font-semibold">{project.title}</span>
-              <Tag tone={statusTone(project.statusLabel)}>{project.statusLabel}</Tag>
+              <span className="flex min-w-0 flex-col">
+                <span className="font-bold tracking-[-0.02em] text-fg">{project.title}</span>
+                <span className="text-xs">{project.statusLabel}</span>
+              </span>
+              <Icon
+                name="arrow-up-right"
+                size={16}
+                className="flex-none text-fg transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </Link>
           </li>
         ))}

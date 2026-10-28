@@ -33,7 +33,7 @@ function SeatGrid({ shift }: { shift: number }) {
 export function SeatMap() {
   return (
     <MockupFrame
-      title="the people’s library · seats"
+      title="peoples-library / seats"
       label="Mockup of The People’s Library seat map cycling through three shifts of a 24×7 self-study centre."
     >
       <div className="flex h-full flex-col gap-3 p-4">

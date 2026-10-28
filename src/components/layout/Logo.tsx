@@ -5,21 +5,21 @@ export function Logo() {
     <Link
       href="/"
       aria-label="Yasir Abdullah, home"
-      className="group flex min-h-11 flex-none items-center gap-3"
+      className="group flex min-h-11 flex-none items-center gap-2.5"
     >
       <span
         aria-hidden="true"
-        className="surface grid size-10 place-items-center rounded-xl border border-line-2 transition-transform duration-500 ease-entrance group-hover:-rotate-6 terminal:rounded-none"
+        className="grid size-10 place-items-center rounded-full bg-fg text-bg transition-transform duration-500 ease-entrance group-hover:-rotate-12 terminal:rounded-none terminal:bg-c1 terminal:text-c1-ink"
       >
-        <span className="text-gradient font-display text-[0.95rem] leading-none font-semibold tracking-[-0.04em] terminal:text-2xl">
+        <span className="font-display text-[0.9rem] leading-none font-extrabold tracking-[-0.04em] terminal:text-2xl">
           YA
         </span>
       </span>
-      <span aria-hidden="true" className="hidden flex-col leading-tight xl:flex">
-        <span className="text-[0.95rem] font-semibold tracking-[-0.02em] text-fg">
-          Yasir Abdullah
-        </span>
-        <span className="text-xs text-muted">Software &amp; Network Engineer</span>
+      <span
+        aria-hidden="true"
+        className="hidden text-[0.95rem] font-bold tracking-[-0.02em] xl:inline"
+      >
+        Yasir Abdullah
       </span>
     </Link>
   );

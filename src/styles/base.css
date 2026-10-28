@@ -8,8 +8,12 @@
   body {
     min-height: 100svh;
     background-color: var(--bg);
-    background-image: var(--page-wash);
-    background-repeat: no-repeat;
+    /* A faint dot grid over a soft wash of colour at the top of the page. */
+    background-image: radial-gradient(var(--dot-grid) 1px, transparent 1.4px), var(--page-wash);
+    background-size:
+      22px 22px,
+      100% 100%;
+    background-repeat: repeat, no-repeat;
     color: var(--fg);
     font-family: var(--ff-body);
     font-size: var(--fs-body);

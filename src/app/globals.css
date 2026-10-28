@@ -22,6 +22,8 @@
 }
 
 @theme inline {
+  --color-white: #ffffff;
+  --color-black: #000000;
   --color-bg: var(--bg);
   --color-bg-2: var(--bg-2);
   --color-surface: var(--surface);
@@ -35,6 +37,17 @@
   --color-c1: var(--c1);
   --color-c1-ink: var(--c1-ink);
   --color-c1-text: var(--c1-text);
+  --color-c1-soft: var(--c1-soft);
+  --color-tint-blue: var(--tint-blue);
+  --color-tint-blue-ink: var(--tint-blue-ink);
+  --color-tint-mint: var(--tint-mint);
+  --color-tint-mint-ink: var(--tint-mint-ink);
+  --color-tint-peach: var(--tint-peach);
+  --color-tint-peach-ink: var(--tint-peach-ink);
+  --color-tint-lilac: var(--tint-lilac);
+  --color-tint-lilac-ink: var(--tint-lilac-ink);
+  --color-tint-butter: var(--tint-butter);
+  --color-tint-butter-ink: var(--tint-butter-ink);
   --color-amber: var(--amber);
   --color-amber-ink: var(--amber-ink);
   --color-highlight: var(--highlight);

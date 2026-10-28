@@ -1,11 +1,11 @@
 import { REDUCED_MOTION_QUERY } from "./motion";
 
-export const SKINS = ["ops", "paper", "terminal"] as const;
+export const SKINS = ["paper", "ops", "terminal"] as const;
 
 export type Skin = (typeof SKINS)[number];
 export type ColorTheme = "dark" | "light";
 
-export const DEFAULT_SKIN: Skin = "ops";
+export const DEFAULT_SKIN: Skin = "paper";
 export const SKIN_STORAGE_KEY = "ya-skin";
 
 export const SKIN_LABELS: Record<Skin, string> = {

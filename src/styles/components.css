@@ -52,37 +52,27 @@
     box-shadow: 0 0 10px var(--c1);
   }
 
-  /* Accent words inside headings and leads: a serif italic in the accent gradient. */
+  /* Accent words: the brand blue with a hand-drawn underline beneath. */
   .highlight {
-    font-family: var(--ff-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    padding-right: 0.06em;
+    color: var(--c1-text);
     background-color: transparent;
-    background-image: var(--accent-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232b59ff' stroke-width='3.2' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.22em;
+    padding-bottom: 0.08em;
     text-shadow: none;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
 
-  /* In running text the serif reads small next to Geist, so it is nudged up. */
-  :is(p, li) > .highlight {
-    font-size: 1.12em;
-    line-height: 1;
+  [data-skin="ops"] .highlight {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%235b7cff' stroke-width='3.2' stroke-linecap='round' opacity='.7'/%3E%3C/svg%3E");
   }
 
   [data-skin="terminal"] .highlight {
-    font-style: normal;
     color: var(--amber);
     background: none;
-  }
-
-  [data-skin="terminal"] :is(p, li) > .highlight {
-    font-size: inherit;
   }
 
   .text-gradient {
@@ -93,15 +83,11 @@
     text-shadow: none;
   }
 
+  /* Big step numbers and similar display figures. */
   .text-serif-accent {
-    font-family: var(--ff-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-  }
-
-  [data-skin="terminal"] .text-serif-accent {
-    font-style: normal;
+    font-family: var(--ff-display);
+    font-weight: var(--display-weight);
+    letter-spacing: -0.04em;
   }
 
   /* A gradient hairline that fades out at both ends. */
@@ -119,17 +105,11 @@
   .hero-name {
     font-size: var(--fs-hero-stack);
     line-height: var(--display-leading);
-    letter-spacing: -0.055em;
+    letter-spacing: -0.035em;
   }
 
   [data-skin="terminal"] .hero-name {
     letter-spacing: 0;
-  }
-
-  /* The serif half of the name sits a touch larger so both lines share a cap height. */
-  .hero-name .text-serif-accent {
-    font-size: 1.08em;
-    letter-spacing: -0.02em;
   }
 
   .glow-hover {
@@ -268,6 +248,11 @@
     backdrop-filter: blur(16px) saturate(140%);
     opacity: 0;
     transition: opacity 300ms var(--easing-entrance);
+  }
+
+  /* The floating pill carries the header background; no full-width bar behind it. */
+  .site-header::before {
+    display: none;
   }
 
   .site-header[data-scrolled="true"]::before,

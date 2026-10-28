@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHead } from "@/components/ui/SectionHead";
@@ -10,25 +12,33 @@ export type Step = {
 type StepsProps = {
   id: string;
   eyebrow: string;
-  title: string;
+  title: ReactNode;
   steps: Step[];
 };
 
 // A numbered 4-step process: 4 columns from 960px, 2 from 720px, then 1.
+// A dashed line links the number badges on wide screens.
 export function Steps({ id, eyebrow, title, steps }: StepsProps) {
   return (
-    <section aria-labelledby={id} className="py-24">
+    <section aria-labelledby={id} className="py-20 md:py-24">
       <Container className="flex flex-col gap-12">
         <SectionHead eyebrow={eyebrow} titleId={id} title={title} />
-        <ol className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <ol className="relative grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <span
+            aria-hidden="true"
+            className="absolute top-[46px] right-[12%] left-[12%] hidden border-t-2 border-dashed border-c1/25 md:block"
+          />
           {steps.map((step, index) => (
-            <li key={step.title} className="min-w-0">
-              <Reveal delay={index * 80} className="h-full">
-                <div className="flex h-full flex-col gap-4 rounded-card border border-line bg-surface-solid p-6">
-                  <p className="label-mono text-c1-text" aria-hidden="true">
-                    Step {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="text-xl leading-tight">{step.title}</h3>
+            <li key={step.title} className="relative min-w-0">
+              <Reveal delay={index * 90} className="h-full">
+                <div className="surface flex h-full flex-col gap-4 rounded-tile border border-line p-6 transition-transform duration-500 ease-entrance hover:-translate-y-1">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-11 place-items-center rounded-full bg-c1 font-display text-lg text-c1-ink shadow-[0_8px_20px_-8px_var(--c1)]"
+                  >
+                    {index + 1}
+                  </span>
+                  <h3 className="text-xl leading-tight tracking-[-0.03em]">{step.title}</h3>
                   <p className="text-muted">{step.body}</p>
                 </div>
               </Reveal>

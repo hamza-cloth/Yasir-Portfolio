@@ -9,7 +9,7 @@ const NAV = ["Queue", "Notes", "Reports", "Consent"];
 export function ClinicConsole() {
   return (
     <MockupFrame
-      title="earthix · clinic console"
+      title="earthix / opd-dashboard"
       label="Mockup of the Earthix clinic console: a heart-rate trace, an AI-drafted note waiting for doctor review, and an ABHA link badge."
     >
       <div className="grid h-full grid-cols-[30%_minmax(0,1fr)]">

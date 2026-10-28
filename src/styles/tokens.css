@@ -1,85 +1,98 @@
-:root {
-  color-scheme: dark;
+/* Paper is the default: a light porcelain page with one royal-blue accent and pastel tints.
+   Ops is the dark alternative, Terminal the green-screen easter egg. */
+:root,
+:root[data-skin="paper"] {
+  color-scheme: light;
 
-  --bg: #07080b;
-  --bg-2: #0b0c10;
-  --surface: rgba(18, 19, 25, 0.66);
-  --surface-solid: #0f1015;
-  --surface-2: #16171e;
-  --fg: #f3f2ee;
-  --muted: #9c9da6;
-  --faint: #62636c;
-  --line: rgba(255, 255, 255, 0.07);
-  --line-2: rgba(255, 255, 255, 0.14);
-  --c1: #a5a6ff;
-  --c1-ink: #0b0b1d;
-  /* Accent for small text; only Paper needs a darker value to reach 4.5:1. */
-  --c1-text: var(--c1);
-  --amber: #e7c38d;
-  --amber-ink: #1c1206;
-  --highlight: rgba(165, 166, 255, 0.22);
-  --ok: #5ee0a0;
-  --red: #ff7a85;
-  --glow: rgba(140, 142, 255, 0.16);
-  --curtain: #07080b;
-  --curtain-fg: #f3f2ee;
-  --curtain-muted: #9c9da6;
+  --bg: #f5f6f8;
+  --bg-2: #eceef2;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-solid: #ffffff;
+  --surface-2: #f3f4f7;
+  --fg: #0e1220;
+  --muted: #5d6475;
+  --faint: #8c92a1;
+  --line: rgba(14, 18, 32, 0.07);
+  --line-2: rgba(14, 18, 32, 0.13);
+  --c1: #2b59ff;
+  --c1-ink: #ffffff;
+  --c1-text: #2450f0;
+  --c1-soft: #e8eeff;
+  --amber: #ff8a3d;
+  --amber-ink: #ffffff;
+  --highlight: rgba(43, 89, 255, 0.14);
+  --ok: #12a35b;
+  --red: #e5484d;
+  --glow: rgba(43, 89, 255, 0.16);
+  --curtain: #0e1220;
+  --curtain-fg: #f5f6f8;
+  --curtain-muted: #a3a8b5;
   --text-glow: none;
 
-  /* Depth: a hairline top highlight plus a long soft drop. */
-  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 60px -24px rgba(0, 0, 0, 0.6);
-  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 40px 80px -30px rgba(0, 0, 0, 0.75);
-  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%);
-  --accent-gradient: linear-gradient(100deg, #c9c4ff 0%, #a5a6ff 45%, #e7c38d 100%);
-  --page-wash:
-    radial-gradient(60rem 36rem at 78% -8%, rgba(120, 118, 255, 0.11), transparent 70%),
-    radial-gradient(44rem 28rem at 8% 2%, rgba(231, 195, 141, 0.05), transparent 70%);
+  /* Pastel card tints, each with an ink that reads on it. */
+  --tint-blue: #e7edff;
+  --tint-blue-ink: #1d3fbf;
+  --tint-mint: #dff6ec;
+  --tint-mint-ink: #0e7a4a;
+  --tint-peach: #ffe9de;
+  --tint-peach-ink: #b4501d;
+  --tint-lilac: #efe8ff;
+  --tint-lilac-ink: #6a3fd1;
+  --tint-butter: #fff4c7;
+  --tint-butter-ink: #8a6a00;
+
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-soft: 0 1px 2px rgba(14, 18, 32, 0.04), 0 12px 32px -14px rgba(14, 18, 32, 0.12);
+  --shadow-lift: 0 2px 6px rgba(14, 18, 32, 0.05), 0 30px 60px -28px rgba(14, 18, 32, 0.22);
+  --card-sheen: none;
+  --accent-gradient: linear-gradient(100deg, #2b59ff, #5b7cff);
+  --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(43, 89, 255, 0.08), transparent 70%);
+  --dot-grid: rgba(14, 18, 32, 0.07);
 
   --shiki-foreground: var(--fg);
   --shiki-background: var(--bg-2);
-  --shiki-token-keyword: var(--c1);
-  --shiki-token-parameter: #f0cf9c;
-  --shiki-token-function: #b9d4ff;
-  --shiki-token-constant: var(--ok);
-  --shiki-token-string: #f0cf9c;
-  --shiki-token-string-expression: #f0cf9c;
+  --shiki-token-keyword: #2450f0;
+  --shiki-token-parameter: #a04b12;
+  --shiki-token-function: #6a3fd1;
+  --shiki-token-constant: #0e7a4a;
+  --shiki-token-string: #a04b12;
+  --shiki-token-string-expression: #a04b12;
   --shiki-token-comment: var(--muted);
   --shiki-token-punctuation: var(--muted);
   --shiki-token-link: var(--c1);
 
   /* The résumé sheet is always white paper, whatever the skin. */
   --sheet-bg: #ffffff;
-  --sheet-fg: #0d0e13;
-  --sheet-muted: #50525c;
-  --sheet-line: #e2e2e8;
-  --sheet-accent: #4b45c6;
+  --sheet-fg: #0e1220;
+  --sheet-muted: #50566a;
+  --sheet-line: #e2e5ec;
+  --sheet-accent: #2b59ff;
 
-  --ff-display: var(--font-geist), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-body: var(--font-geist), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-display: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-body: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --ff-mono: var(--font-geist-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --ff-serif: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
-  --display-weight: 500;
-  --display-tracking: -0.04em;
-  --display-leading: 0.92;
+  --ff-serif: var(--ff-display);
+  --display-weight: 800;
+  --display-tracking: -0.035em;
+  --display-leading: 1;
 
   /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
-  --fs-hero-split: clamp(3rem, min(8.4vw, 14.5svh), 8.5rem);
-  --fs-hero-stack: clamp(3rem, 15vw, 6.5rem);
-  --fs-h1: clamp(2.6rem, 6.4vw, 5.75rem);
-  --fs-h2: clamp(2rem, 4.2vw, 3.5rem);
+  --fs-hero-split: clamp(2.6rem, min(5.4vw, 10svh), 5.4rem);
+  --fs-hero-stack: clamp(2.4rem, 10.5vw, 4rem);
+  --fs-h1: clamp(2.5rem, 5.6vw, 5rem);
+  --fs-h2: clamp(2rem, 3.8vw, 3.25rem);
   --fs-body: 1.0625rem;
   --fs-label: 0.72rem;
 
   --r-pill: 999px;
   --r-panel: 28px;
-  --r-tile: 22px;
-  --r-card: 18px;
-  --r-field: 12px;
+  --r-tile: 28px;
+  --r-card: 24px;
+  --r-field: 14px;
   --r-chip: 10px;
 
   --gutter: clamp(20px, 4vw, 48px);
-  --header-h: 76px;
+  --header-h: 88px;
 
   --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
@@ -94,47 +107,57 @@
   --z-curtain: 150;
 }
 
-:root[data-skin="paper"] {
-  color-scheme: light;
+:root[data-skin="ops"] {
+  color-scheme: dark;
 
-  --bg: #f6f5f1;
-  --bg-2: #efede7;
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-solid: #ffffff;
-  --surface-2: #f3f2ed;
-  --fg: #111216;
-  --muted: #5b5d66;
-  --faint: #8a8c95;
-  --line: rgba(17, 18, 22, 0.08);
-  --line-2: rgba(17, 18, 22, 0.16);
-  --c1: #4f49d6;
+  --bg: #0a0c11;
+  --bg-2: #0f1218;
+  --surface: rgba(22, 25, 33, 0.72);
+  --surface-solid: #14171e;
+  --surface-2: #1a1e27;
+  --fg: #eef0f5;
+  --muted: #9aa1b2;
+  --faint: #656c7c;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --c1: #5b7cff;
   --c1-ink: #ffffff;
-  --c1-text: #463fc4;
-  --amber: #b07a2a;
-  --amber-ink: #ffffff;
-  --highlight: rgba(79, 73, 214, 0.16);
-  --ok: #138a52;
-  --red: #c93545;
-  --glow: rgba(79, 73, 214, 0.1);
-  --curtain: #111216;
-  --curtain-fg: #f6f5f1;
-  --curtain-muted: #a3a4ab;
+  --c1-text: #8aa2ff;
+  --c1-soft: #1a2240;
+  --amber: #ff9a57;
+  --amber-ink: #1c0d03;
+  --highlight: rgba(91, 124, 255, 0.22);
+  --ok: #4ade94;
+  --red: #ff6b70;
+  --glow: rgba(91, 124, 255, 0.22);
+  --curtain: #0a0c11;
+  --curtain-fg: #eef0f5;
+  --curtain-muted: #9aa1b2;
 
-  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --shadow-soft: 0 1px 2px rgba(17, 18, 22, 0.05), 0 24px 50px -28px rgba(17, 18, 22, 0.18);
-  --shadow-lift: 0 2px 4px rgba(17, 18, 22, 0.06), 0 40px 70px -34px rgba(17, 18, 22, 0.28);
-  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 42%);
-  --accent-gradient: linear-gradient(100deg, #2b2795 0%, #4f49d6 50%, #b07a2a 100%);
-  --page-wash:
-    radial-gradient(60rem 36rem at 78% -8%, rgba(79, 73, 214, 0.08), transparent 70%),
-    radial-gradient(44rem 28rem at 8% 2%, rgba(176, 122, 42, 0.07), transparent 70%);
+  --tint-blue: #172142;
+  --tint-blue-ink: #a9bbff;
+  --tint-mint: #10291f;
+  --tint-mint-ink: #7fe0b3;
+  --tint-peach: #2e1a10;
+  --tint-peach-ink: #ffb68c;
+  --tint-lilac: #211a38;
+  --tint-lilac-ink: #c6b0ff;
+  --tint-butter: #2a2410;
+  --tint-butter-ink: #f2d670;
 
-  --shiki-token-keyword: #463fc4;
-  --shiki-token-parameter: #8a5200;
-  --shiki-token-function: #1d4ed8;
-  --shiki-token-constant: #138a52;
-  --shiki-token-string: #8a5200;
-  --shiki-token-string-expression: #8a5200;
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(0, 0, 0, 0.75);
+  --accent-gradient: linear-gradient(100deg, #5b7cff, #8aa2ff);
+  --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(91, 124, 255, 0.12), transparent 70%);
+  --dot-grid: rgba(255, 255, 255, 0.06);
+
+  --shiki-token-keyword: #8aa2ff;
+  --shiki-token-parameter: #ffb68c;
+  --shiki-token-function: #c6b0ff;
+  --shiki-token-constant: #7fe0b3;
+  --shiki-token-string: #ffb68c;
+  --shiki-token-string-expression: #ffb68c;
 }
 
 :root[data-skin="terminal"] {
@@ -153,6 +176,7 @@
   --c1: #39ff7a;
   --c1-ink: #010401;
   --c1-text: #39ff7a;
+  --c1-soft: #041508;
   --amber: #ffb000;
   --amber-ink: #170d00;
   --highlight: rgba(255, 176, 0, 0.3);
@@ -164,12 +188,24 @@
   --curtain-muted: #22b456;
   --text-glow: 0 0 6px rgba(57, 255, 122, 0.45);
 
+  --tint-blue: #041508;
+  --tint-blue-ink: #39ff7a;
+  --tint-mint: #041508;
+  --tint-mint-ink: #39ff7a;
+  --tint-peach: #041508;
+  --tint-peach-ink: #ffb000;
+  --tint-lilac: #041508;
+  --tint-lilac-ink: #39ff7a;
+  --tint-butter: #041508;
+  --tint-butter-ink: #ffb000;
+
   --edge-light: none;
   --shadow-soft: none;
   --shadow-lift: none;
   --card-sheen: none;
   --accent-gradient: linear-gradient(90deg, #39ff7a, #39ff7a);
   --page-wash: none;
+  --dot-grid: transparent;
 
   --shiki-token-keyword: #39ff7a;
   --shiki-token-parameter: #ffb000;
@@ -185,8 +221,8 @@
   --display-tracking: 0;
   --display-leading: 0.85;
 
-  --fs-hero-split: clamp(3.6rem, 13vw, 13rem);
-  --fs-hero-stack: clamp(3.4rem, 22vw, 10rem);
+  --fs-hero-split: clamp(3.6rem, 9vw, 8rem);
+  --fs-hero-stack: clamp(3.4rem, 16vw, 7rem);
 
   --r-pill: 0;
   --r-panel: 0;

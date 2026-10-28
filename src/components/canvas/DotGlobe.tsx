@@ -80,8 +80,13 @@ export function DotGlobe({ className }: { className?: string }) {
       onSetup: () => {
         colorsRef.current = {
           dot: readCssVar("--c1"),
-          arc: readCssVar("--amber"),
-          pulse: readCssVar("--fg"),
+          arcs: [
+            readCssVar("--c1"),
+            readCssVar("--amber"),
+            readCssVar("--ok"),
+            readCssVar("--tint-lilac-ink"),
+            readCssVar("--tint-butter-ink"),
+          ],
           hub: readCssVar("--amber"),
           label: readCssVar("--fg"),
           labelFont: `500 12px ${readCssVar("--ff-mono")}`,

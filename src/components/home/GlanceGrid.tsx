@@ -9,8 +9,7 @@ import type { OsiLayerGroup } from "@/lib/osi";
 import { AboutTile } from "./tiles/AboutTile";
 import { BuildingTile } from "./tiles/BuildingTile";
 import { CcnaTile } from "./tiles/CcnaTile";
-import { ContactTile } from "./tiles/ContactTile";
-import { GlobeTile } from "./tiles/GlobeTile";
+import { ClockTile } from "./tiles/ClockTile";
 import { LayersTile } from "./tiles/LayersTile";
 import { ShortcutsTile } from "./tiles/ShortcutsTile";
 import { SupportTile } from "./tiles/SupportTile";
@@ -23,12 +22,15 @@ type GlanceGridProps = {
   layers: OsiLayerGroup[];
 };
 
-// 12 columns from 1120px, 6 from 720px (globe and contact full width), 12 below.
+// 12 columns from 1120px, 6 from 720px, one below.
 const SPAN = {
-  globe: "col-span-12 lg:col-span-7 lg:row-span-2",
-  half: "col-span-12 sm:col-span-6 lg:col-span-5",
-  third: "col-span-12 sm:col-span-6 lg:col-span-4",
-  contact: "col-span-12 lg:col-span-8",
+  about: "col-span-12 sm:col-span-6 lg:col-span-5 lg:row-span-2",
+  ccna: "col-span-12 sm:col-span-6 lg:col-span-4",
+  clock: "col-span-12 sm:col-span-6 lg:col-span-3",
+  building: "col-span-12 sm:col-span-6 lg:col-span-4",
+  support: "col-span-12 sm:col-span-6 lg:col-span-3",
+  layers: "col-span-12 lg:col-span-8",
+  shortcuts: "col-span-12 sm:col-span-6 lg:col-span-4",
 };
 
 const CCNA_TOPICS = new Set(["VLANs", "802.1Q trunking", "STP", "OSPF", "ACLs", "NAT/PAT"]);
@@ -48,9 +50,13 @@ export function GlanceGrid({
     ...(degree ? [`${degree.title}, ${degree.startYear}–${degree.endYear}`] : []),
   ];
   const topics = layers.flatMap((group) => group.skills).filter((skill) => CCNA_TOPICS.has(skill));
+  const stats = [
+    { value: projects.length, label: "Products in build" },
+    { value: layers.reduce((sum, group) => sum + group.skills.length, 0), label: "Skills listed" },
+  ];
 
   return (
-    <section aria-labelledby="glance-title" className="py-24">
+    <section aria-labelledby="glance-title" className="py-20 md:py-24">
       <Container className="flex flex-col gap-12">
         <SectionHead
           eyebrow="At a glance"
@@ -63,26 +69,22 @@ export function GlanceGrid({
         />
         <Reveal className="reveal-group">
           <div className="stagger grid grid-cols-12 gap-4">
-            <GlobeTile className={SPAN.globe} />
             <AboutTile
               headline={headline}
               location={settings.location}
               facts={facts}
-              className={SPAN.half}
+              stats={stats}
+              className={SPAN.about}
             />
-            <BuildingTile projects={projects} className={SPAN.half} />
-            {ccna ? <CcnaTile issuer={ccna.issuer} topics={topics} className={SPAN.third} /> : null}
-            <LayersTile layers={layers} className={SPAN.third} />
-            <ShortcutsTile className={SPAN.third} />
+            {ccna ? <CcnaTile issuer={ccna.issuer} topics={topics} className={SPAN.ccna} /> : null}
+            <ClockTile location={settings.location} className={SPAN.clock} />
+            <BuildingTile projects={projects} className={SPAN.building} />
             <SupportTile
               companies={experience.map((item) => item.company)}
-              className={SPAN.third}
+              className={SPAN.support}
             />
-            <ContactTile
-              email={settings.email}
-              availability={settings.availability}
-              className={SPAN.contact}
-            />
+            <LayersTile layers={layers} className={SPAN.layers} />
+            <ShortcutsTile className={SPAN.shortcuts} />
           </div>
         </Reveal>
       </Container>

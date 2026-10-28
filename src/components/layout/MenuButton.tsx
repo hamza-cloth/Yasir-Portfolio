@@ -18,10 +18,7 @@ export function MenuButton({ open, onToggle, controls, ref, className }: MenuBut
       onClick={onToggle}
       aria-expanded={open}
       aria-controls={controls}
-      className={cn(
-        "relative size-11 flex-none rounded-pill border border-line-2 bg-surface/50 text-fg backdrop-blur-md",
-        className,
-      )}
+      className={cn("relative size-11 flex-none rounded-pill bg-fg/5 text-fg", className)}
     >
       <span className="menu-bar" aria-hidden="true" />
       <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>

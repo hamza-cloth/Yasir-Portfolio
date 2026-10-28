@@ -33,23 +33,25 @@ export function Header() {
         data-menu-open={menuOpen}
         className="site-header fixed inset-x-0 top-0 z-(--z-header) pt-[env(safe-area-inset-top)]"
       >
-        <Container className="flex h-(--header-h) items-center gap-3">
-          <Logo />
-          <NavPills pathname={pathname} className="mx-auto hidden lg:block" />
-          <div className="ml-auto flex min-w-0 items-center gap-2 lg:ml-0">
-            <CommandButton />
-            <SkinButton />
-            <Button href="/contact" variant="primary" size="sm" className="max-lg:hidden">
-              Let’s talk
-              <Icon name="arrow-up-right" size={15} />
-            </Button>
-            <MenuButton
-              ref={menuButtonRef}
-              open={menuOpen}
-              onToggle={() => setMenuOpen((open) => !open)}
-              controls={MOBILE_MENU_ID}
-              className="lg:hidden"
-            />
+        <Container className="flex h-(--header-h) items-center">
+          <div className="header-pill flex h-16 w-full items-center gap-3 rounded-pill border border-line bg-surface/80 pr-2 pl-3 shadow-(--shadow-soft) backdrop-blur-xl backdrop-saturate-150">
+            <Logo />
+            <NavPills pathname={pathname} className="mx-auto hidden lg:block" />
+            <div className="ml-auto flex min-w-0 items-center gap-1.5 lg:ml-0">
+              <CommandButton className="max-sm:hidden" />
+              <SkinButton />
+              <Button href="/contact" variant="accent" size="sm" className="max-lg:hidden">
+                Hire me
+                <Icon name="arrow-up-right" size={15} />
+              </Button>
+              <MenuButton
+                ref={menuButtonRef}
+                open={menuOpen}
+                onToggle={() => setMenuOpen((open) => !open)}
+                controls={MOBILE_MENU_ID}
+                className="lg:hidden"
+              />
+            </div>
           </div>
         </Container>
       </header>
