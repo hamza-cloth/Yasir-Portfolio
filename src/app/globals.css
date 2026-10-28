@@ -6,6 +6,7 @@
 @import "../styles/home.css";
 @import "../styles/prose.css";
 @import "../styles/pages.css";
+@import "../styles/motion.css";
 
 @custom-variant terminal (&:where([data-skin="terminal"], [data-skin="terminal"] *));
 @custom-variant paper (&:where([data-skin="paper"], [data-skin="paper"] *));

@@ -1,0 +1,318 @@
+/* Motion layer: entrance choreography, ambient light, hover polish and scroll-linked reveals.
+   Everything here is decoration over content that is already readable; reduced motion turns it off. */
+
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@layer components {
+  /* ---- Hero entrance: each piece rises out of a soft blur, in order of --i. ---- */
+  .intro {
+    animation: intro-rise 1.1s var(--easing-entrance) both;
+    animation-delay: calc(120ms + var(--i, 0) * 90ms);
+  }
+
+  .intro-side {
+    animation: intro-side 1.3s var(--easing-entrance) both;
+    animation-delay: calc(120ms + var(--i, 0) * 90ms);
+  }
+
+  @keyframes intro-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0);
+      filter: blur(10px);
+    }
+  }
+
+  @keyframes intro-side {
+    from {
+      opacity: 0;
+      transform: translate3d(36px, 12px, 0) scale(0.97);
+      filter: blur(12px);
+    }
+  }
+
+  .animate-rise {
+    animation: intro-rise 0.9s var(--easing-entrance) both;
+  }
+
+  /* The serif half of the name: a slow light sweep across the gradient. */
+  .shimmer-text {
+    background-size: 220% 100%;
+    animation: shimmer 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 0% 50%;
+    }
+    to {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* ---- Ambient light ---- */
+  .hero-halo {
+    position: absolute;
+    width: min(64vw, 820px);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      var(--glow) 70deg,
+      transparent 140deg,
+      rgba(231, 195, 141, 0.12) 220deg,
+      transparent 290deg
+    );
+    filter: blur(70px);
+    animation: halo-spin 26s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes halo-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(60px);
+    pointer-events: none;
+    animation: orb-float 14s ease-in-out infinite alternate;
+  }
+
+  @keyframes orb-float {
+    to {
+      transform: translate3d(var(--orb-x, 40px), var(--orb-y, -30px), 0) scale(1.08);
+    }
+  }
+
+  /* ---- A light that travels around a card's border. ---- */
+  .border-beam {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .border-beam::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--beam-angle),
+      transparent 0deg,
+      transparent 250deg,
+      var(--c1) 300deg,
+      var(--amber) 330deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    animation: beam-spin 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes beam-spin {
+    to {
+      --beam-angle: 360deg;
+    }
+  }
+
+  [data-skin="terminal"] .border-beam::after,
+  [data-skin="terminal"] .hero-halo,
+  [data-skin="terminal"] .orb {
+    display: none;
+  }
+
+  /* ---- Cursor-following border on tiles (pairs with .spotlight's inner glow). ---- */
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 1px;
+    border-radius: inherit;
+    background: radial-gradient(
+      260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      color-mix(in oklab, var(--c1) 70%, transparent),
+      transparent 70%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    opacity: 0;
+    transition: opacity 400ms var(--easing-entrance);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .spotlight:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* ---- Buttons: a sheen that sweeps across on hover. ---- */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .btn-shine::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      color-mix(in oklab, var(--c1) 40%, transparent) 50%,
+      transparent 70%
+    );
+    transform: translate3d(-120%, 0, 0);
+    transition: transform 900ms var(--easing-entrance);
+  }
+
+  .btn-shine:hover::before {
+    transform: translate3d(120%, 0, 0);
+  }
+
+  /* ---- Staggered children inside a <Reveal>. ---- */
+  .reveal[data-reveal="hidden"] .stagger > * {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    filter: blur(6px);
+  }
+
+  .reveal[data-reveal="shown"] .stagger > * {
+    transition:
+      opacity 900ms var(--easing-entrance),
+      transform 900ms var(--easing-entrance),
+      filter 900ms var(--easing-entrance);
+  }
+
+  .reveal[data-reveal="shown"] .stagger > :nth-child(2) {
+    transition-delay: 70ms;
+  }
+  .reveal[data-reveal="shown"] .stagger > :nth-child(3) {
+    transition-delay: 140ms;
+  }
+  .reveal[data-reveal="shown"] .stagger > :nth-child(4) {
+    transition-delay: 210ms;
+  }
+  .reveal[data-reveal="shown"] .stagger > :nth-child(5) {
+    transition-delay: 280ms;
+  }
+  .reveal[data-reveal="shown"] .stagger > :nth-child(6) {
+    transition-delay: 350ms;
+  }
+  .reveal[data-reveal="shown"] .stagger > :nth-child(7) {
+    transition-delay: 420ms;
+  }
+  .reveal[data-reveal="shown"] .stagger > :nth-child(n + 8) {
+    transition-delay: 490ms;
+  }
+
+  /* ---- Success tick on the contact form. ---- */
+  .check-draw {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: check-draw 600ms 200ms var(--easing-entrance) forwards;
+  }
+
+  @keyframes check-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .marquee-track--reverse {
+    animation-direction: reverse;
+  }
+
+  @media (hover: hover) {
+    .marquee-pause:hover .marquee-track {
+      animation-play-state: paused;
+    }
+  }
+}
+
+/* ---- Scroll-linked effects, where the browser supports them. ---- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Project cards settle into place as they scroll up. */
+    .scroll-settle {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+
+    @keyframes settle {
+      from {
+        opacity: 0.2;
+        transform: translate3d(0, 60px, 0) scale(0.94);
+      }
+    }
+
+    /* The footer wordmark fills with light as it comes into view. */
+    .footer-name {
+      animation: wordmark linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 60%;
+    }
+
+    @keyframes wordmark {
+      from {
+        opacity: 0.2;
+        transform: translate3d(0, 40px, 0);
+      }
+    }
+
+    /* Mockups drift slightly slower than the page. */
+    .parallax {
+      animation: parallax linear both;
+      animation-timeline: view();
+    }
+
+    @keyframes parallax {
+      from {
+        transform: translate3d(0, 36px, 0);
+      }
+      to {
+        transform: translate3d(0, -36px, 0);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .intro-side,
+  .animate-rise {
+    animation: none;
+  }
+
+  .border-beam::after,
+  .hero-halo,
+  .orb,
+  .shimmer-text {
+    animation: none;
+  }
+}

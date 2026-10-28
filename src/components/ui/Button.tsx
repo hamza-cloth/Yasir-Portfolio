@@ -23,7 +23,7 @@ export type ButtonProps = LinkButtonProps | NativeButtonProps;
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    "bg-fg text-bg shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_8px_24px_-8px_var(--glow)] hover:bg-fg/90 terminal:bg-c1 terminal:text-c1-ink",
+    "btn-shine bg-fg text-bg shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_8px_24px_-8px_var(--glow)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_14px_36px_-10px_var(--glow)] terminal:bg-c1 terminal:text-c1-ink",
   accent: "bg-c1 text-c1-ink hover:bg-c1/90",
   line: "border border-line-2 bg-surface/50 text-fg backdrop-blur-md hover:border-fg/25 hover:bg-surface-2",
 };

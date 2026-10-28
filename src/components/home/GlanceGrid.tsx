@@ -61,8 +61,8 @@ export function GlanceGrid({
             </>
           }
         />
-        <Reveal>
-          <div className="grid grid-cols-12 gap-4">
+        <Reveal className="reveal-group">
+          <div className="stagger grid grid-cols-12 gap-4">
             <GlobeTile className={SPAN.globe} />
             <AboutTile
               headline={headline}

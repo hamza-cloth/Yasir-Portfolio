@@ -176,13 +176,14 @@
     }
   }
 
-  .reveal[data-reveal="hidden"] {
+  /* A .reveal-group wrapper stays put; only its .stagger children animate (see motion.css). */
+  .reveal[data-reveal="hidden"]:not(.reveal-group) {
     opacity: 0;
     transform: translate3d(0, 24px, 0);
     filter: blur(6px);
   }
 
-  .reveal[data-reveal="shown"] {
+  .reveal[data-reveal="shown"]:not(.reveal-group) {
     opacity: 1;
     transform: none;
     filter: none;

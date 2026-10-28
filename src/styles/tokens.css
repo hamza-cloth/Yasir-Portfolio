@@ -63,7 +63,8 @@
   --display-tracking: -0.04em;
   --display-leading: 0.92;
 
-  --fs-hero-split: clamp(3rem, 8.4vw, 8.5rem);
+  /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
+  --fs-hero-split: clamp(3rem, min(8.4vw, 14.5svh), 8.5rem);
   --fs-hero-stack: clamp(3rem, 15vw, 6.5rem);
   --fs-h1: clamp(2.6rem, 6.4vw, 5.75rem);
   --fs-h2: clamp(2rem, 4.2vw, 3.5rem);

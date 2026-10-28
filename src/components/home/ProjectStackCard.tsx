@@ -20,7 +20,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
 
   return (
     <li className="stack-card md:sticky" style={cssVars({ "--stack-index": index })}>
-      <article className="surface grid gap-8 rounded-panel border border-line p-[clamp(20px,3.5vw,44px)] shadow-(--shadow-lift) md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center">
+      <article className="surface group/card grid gap-8 rounded-panel border border-line p-[clamp(20px,3.5vw,44px)] shadow-(--shadow-lift) md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center">
         <div className="flex min-w-0 flex-col items-start gap-5">
           <Tag tone={statusTone(project.statusLabel)}>{project.statusLabel}</Tag>
           <h3 className="text-[clamp(1.9rem,3.8vw,3rem)] leading-none tracking-[-0.045em]">
@@ -57,7 +57,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
             />
           </Link>
         </div>
-        <PlayWhenVisible>
+        <PlayWhenVisible className="parallax">
           <ProjectMockup visual={project.visual} />
         </PlayWhenVisible>
       </article>

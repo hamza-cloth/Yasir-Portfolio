@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { useFinePointer, useReducedMotion } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/cn";
+import { cssVars } from "@/lib/css-vars";
 import { decodeFrame, type DecodeCell } from "@/lib/decode";
 
 const DURATION_MS = 1000;
@@ -20,9 +21,10 @@ function splitName(name: string): [string, string] {
 }
 
 // The real letters always hold their place; scrambled glyphs sit on top, so the line never reflows.
+// Only the first (sans) line scrambles, on hover; serif glyphs read as noise when scrambled.
 export function DecodingName({ name, id, className }: DecodingNameProps) {
   const lines = useMemo(() => splitName(name), [name]);
-  const total = lines[0].length + lines[1].length;
+  const total = lines[0].length;
   const [frames, setFrames] = useState<DecodeCell[][] | null>(null);
   const runningRef = useRef(false);
   const reducedMotion = useReducedMotion();
@@ -36,12 +38,7 @@ export function DecodingName({ name, id, className }: DecodingNameProps) {
     function tick(now: number) {
       const progress = Math.min(1, (now - start) / DURATION_MS);
       setFrames(
-        progress >= 1
-          ? null
-          : [
-              decodeFrame(lines[0], progress, Math.random, { offset: 0, total }),
-              decodeFrame(lines[1], progress, Math.random, { offset: lines[0].length, total }),
-            ],
+        progress >= 1 ? null : [decodeFrame(lines[0], progress, Math.random, { offset: 0, total })],
       );
       if (progress < 1) window.requestAnimationFrame(tick);
       else runningRef.current = false;
@@ -49,10 +46,6 @@ export function DecodingName({ name, id, className }: DecodingNameProps) {
 
     window.requestAnimationFrame(tick);
   }, [lines, total]);
-
-  useEffect(() => {
-    if (!reducedMotion) decode();
-  }, [reducedMotion, decode]);
 
   return (
     <h1
@@ -65,10 +58,11 @@ export function DecodingName({ name, id, className }: DecodingNameProps) {
         <span
           key={line}
           aria-hidden="true"
+          style={cssVars({ "--i": lineIndex + 1 })}
           className={cn(
-            "block whitespace-nowrap",
+            "intro block whitespace-nowrap",
             lineIndex === 1 &&
-              "text-gradient text-serif-accent -mt-[0.04em] pr-[0.08em] pb-[0.06em]",
+              "text-gradient shimmer-text text-serif-accent -mt-[0.04em] pr-[0.08em] pb-[0.06em]",
           )}
         >
           {[...line].map((char, charIndex) => {
