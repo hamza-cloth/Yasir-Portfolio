@@ -27,6 +27,7 @@ import {
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isLook, isLookMode, LOOKS, type Look } from "@/lib/look";
 import { deleteUnusedMedia } from "@/lib/media";
+import { reportError } from "@/lib/monitoring";
 import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 import {
   credentialSchema,
@@ -53,19 +54,28 @@ export async function login(_previous: FormResult, form: FormData): Promise<Form
   if (!isAdminConfigured()) return { error: "The admin area is not configured yet." };
 
   const email = normaliseEmail(text(form, "email"));
-  // 5 attempts per 15 minutes, counted per connection and per account.
-  const window = 15 * 60_000;
-  const ipOk = await takeRateLimit(`login:${await requestIpHash()}`, 5, window);
-  const accountOk = await takeRateLimit(`login-account:${email}`, 5, window);
-  if (!ipOk || !accountOk) return { error: "Too many attempts. Wait 15 minutes and try again." };
-
   const password = String(form.get("password") ?? "");
-  const adminId = await verifyAdminLogin(email, password);
-  // One message for a wrong email and a wrong password, so neither is confirmed.
-  if (!adminId) return { error: "Wrong email or password." };
+  if (!email || !password) return { error: "Enter your email and password." };
 
-  await createSession(adminId);
-  await audit(email, "login", "session", "Signed in");
+  // A database failure stays on the form as a message instead of the admin error page.
+  try {
+    // 5 attempts per 15 minutes, counted per connection and per account.
+    const window = 15 * 60_000;
+    const ipOk = await takeRateLimit(`login:${await requestIpHash()}`, 5, window);
+    const accountOk = await takeRateLimit(`login-account:${email}`, 5, window);
+    if (!ipOk || !accountOk) return { error: "Too many attempts. Wait 15 minutes and try again." };
+
+    const adminId = await verifyAdminLogin(email, password);
+    // One message for a wrong email and a wrong password, so neither is confirmed.
+    if (!adminId) return { error: "Wrong email or password." };
+
+    await createSession(adminId);
+    await audit(email, "login", "session", "Signed in");
+  } catch (error) {
+    reportError(error, { action: "login" });
+    return { error: "The sign-in service is not reachable right now. Try again in a minute." };
+  }
+  // Outside the try: redirect() works by throwing, and must not be caught above.
   redirect("/admin");
 }
 
