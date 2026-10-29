@@ -46,19 +46,21 @@ The audit made before any change is in [AUDIT.md](AUDIT.md).
 | Keyboard                                                                                                                                 | First Tab reaches _Skip to content_ (Chromium, Firefox); Safari tabs links only with Option+Tab, by design |
 | Unit tests / lint / type-check / build                                                                                                   | 69 pass / clean / clean / 41 pages                                                                         |
 
-**Lighthouse, mobile, local production build** (simulated throttling on a busy Windows laptop,
-so runs vary): Home Performance **68–92**, Accessibility 96–100, Best Practices 96–100, SEO 100,
-CLS 0, TBT 130–780 ms, LCP ~3.0–3.4 s. Work 82, Contact 85, a note page 65 in single runs.
+**Lighthouse, mobile, on the live site** (https://yasir-portfolio-zeta.vercel.app, default 4× CPU
+throttling, machine benchmark index 1,240–1,640): Home Performance **83–84**, Work 87, Contact 92;
+Accessibility, Best Practices and SEO **100** on every page tested; CLS 0; LCP 2.4–2.7 s;
+TBT 260–420 ms. Runs taken while the machine was busy (benchmark index ~400) scored far lower and
+are not representative; PageSpeed Insights could not be used (its anonymous daily quota was spent).
 
 ## Not finished, or needs you
 
-- **Database:** Neon's marketplace terms are still not accepted on Vercel, so production has no
-  database and this branch is not deployed. Accept them, then: provision, migrate, seed, set the
-  admin password, deploy.
+- **Deployed:** Neon database provisioned, migrated and seeded; production admin password set;
+  the branch is live at https://yasir-portfolio-zeta.vercel.app (merge the PR to bring `main` level).
 - **Profile photo:** not provided yet; the site shows the initials avatar until you add
   `public/yasir.jpg` or upload one in the admin.
-- **Lighthouse targets:** LCP is above 2.5 s and Performance swings below 90 in local runs.
-  Re-measure on the deployed URL (CDN, Brotli) before further tuning.
+- **Lighthouse targets:** on the live site the home page scores 83–84 (target 90) with LCP about
+  2.7 s (target 2.5 s); Work and Contact are at or near target. The remaining cost is mostly React
+  hydration of the home page's interactive pieces.
 - **Real devices:** iOS Safari and Android Chrome were emulated (WebKit, Chromium mobile), not
   tested on hardware.
 - **Optional items not built:** TOTP 2FA; Sentry itself (the hook is ready); drag-to-reorder for
