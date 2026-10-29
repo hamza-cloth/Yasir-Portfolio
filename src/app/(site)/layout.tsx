@@ -5,6 +5,7 @@ import { CustomCursor } from "@/components/layout/CustomCursor";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { PageCurtain } from "@/components/layout/PageCurtain";
+import { PageViewTracker } from "@/components/layout/PageViewTracker";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
@@ -34,6 +35,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       <PageCurtain />
       <CustomCursor />
       <SmoothScroll />
+      <PageViewTracker />
       <OverlayHost
         email={settings.email}
         terminalContext={buildTerminalContext(settings, projects, skills)}

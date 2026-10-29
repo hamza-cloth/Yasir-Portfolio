@@ -3,8 +3,8 @@
 import { useMemo, useRef, type PointerEvent } from "react";
 
 import { useCanvasLoop } from "@/hooks/useCanvasLoop";
+import { useLook } from "@/hooks/useLook";
 import { useReducedMotion } from "@/hooks/useMediaQuery";
-import { useSkin } from "@/hooks/useSkin";
 import { fibonacciSphere, latLonToVector } from "@/lib/canvas/globe";
 import { drawGlobeFrame, type GlobeColors, type GlobeScene } from "@/lib/canvas/globe-draw";
 import { cn } from "@/lib/cn";
@@ -41,7 +41,7 @@ export function DotGlobe({ className }: { className?: string }) {
     lastTime: 0,
   });
   const reducedMotion = useReducedMotion();
-  const skin = useSkin();
+  const look = useLook();
 
   const scene = useMemo<GlobeScene>(
     () => ({
@@ -76,7 +76,7 @@ export function DotGlobe({ className }: { className?: string }) {
     },
     {
       animate: !reducedMotion,
-      redrawKey: skin,
+      redrawKey: look,
       onSetup: () => {
         colorsRef.current = {
           dot: readCssVar("--c1"),

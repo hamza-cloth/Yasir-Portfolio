@@ -47,7 +47,7 @@
     box-shadow: 0 0 0 3px var(--highlight);
   }
 
-  [data-skin="terminal"] .signal-dot {
+  [data-look="terminal"] .signal-dot {
     border-radius: 0;
     box-shadow: 0 0 10px var(--c1);
   }
@@ -56,7 +56,7 @@
   .highlight {
     color: var(--c1-text);
     background-color: transparent;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232b59ff' stroke-width='3.2' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E");
+    background-image: var(--underline-svg);
     background-repeat: no-repeat;
     background-position: 0 100%;
     background-size: 100% 0.22em;
@@ -66,11 +66,7 @@
     box-decoration-break: clone;
   }
 
-  [data-skin="ops"] .highlight {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%235b7cff' stroke-width='3.2' stroke-linecap='round' opacity='.7'/%3E%3C/svg%3E");
-  }
-
-  [data-skin="terminal"] .highlight {
+  [data-look="terminal"] .highlight {
     color: var(--amber);
     background: none;
   }
@@ -81,6 +77,12 @@
     background-clip: text;
     color: transparent;
     text-shadow: none;
+  }
+
+  /* The accent button takes each look's fill (solid or gradient). */
+  .btn-accent {
+    background: var(--accent-fill);
+    color: var(--c1-ink);
   }
 
   /* Big step numbers and similar display figures. */
@@ -108,7 +110,7 @@
     letter-spacing: -0.035em;
   }
 
-  [data-skin="terminal"] .hero-name {
+  [data-look="terminal"] .hero-name {
     letter-spacing: 0;
   }
 
@@ -203,7 +205,7 @@
     display: none;
   }
 
-  [data-skin="terminal"] .scanlines {
+  [data-look="terminal"] .scanlines {
     display: block;
     position: fixed;
     inset: 0;
@@ -219,13 +221,16 @@
       radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
   }
 
-  .skin-label {
+  /* Only the active look's name shows; CSS picks it, so it is right before hydration too. */
+  .look-label {
     display: none;
   }
 
-  [data-skin="ops"] .skin-label[data-skin-label="ops"],
-  [data-skin="paper"] .skin-label[data-skin-label="paper"],
-  [data-skin="terminal"] .skin-label[data-skin-label="terminal"] {
+  [data-look="porcelain"] .look-label[data-look-label="porcelain"],
+  [data-look="midnight-ops"] .look-label[data-look-label="midnight-ops"],
+  [data-look="sunset-fibre"] .look-label[data-look-label="sunset-fibre"],
+  [data-look="terminal"] .look-label[data-look-label="terminal"],
+  [data-look="aurora"] .look-label[data-look-label="aurora"] {
     display: inline;
   }
 
@@ -408,7 +413,7 @@
     fill: url(#footer-name-fade);
   }
 
-  [data-skin="terminal"] .footer-name text {
+  [data-look="terminal"] .footer-name text {
     font-weight: var(--display-weight);
     letter-spacing: 0;
   }
@@ -431,11 +436,11 @@
   }
 }
 
-:root[data-transition="skin"]::view-transition-old(root) {
+:root[data-transition="look"]::view-transition-old(root) {
   animation: skin-fade-out 300ms var(--easing-entrance) both;
 }
 
-:root[data-transition="skin"]::view-transition-new(root) {
+:root[data-transition="look"]::view-transition-new(root) {
   animation: skin-fade-in 300ms var(--easing-entrance) both;
 }
 
@@ -448,5 +453,16 @@
 @keyframes skin-fade-in {
   from {
     opacity: 0;
+  }
+}
+
+/* Without View Transitions, a look change fades in over 300ms instead. */
+:root[data-transition="look-fade"] body {
+  animation: look-fade 300ms var(--easing-entrance);
+}
+
+@keyframes look-fade {
+  from {
+    opacity: 0.4;
   }
 }

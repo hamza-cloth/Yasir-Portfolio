@@ -7,6 +7,7 @@ import { PageHero } from "@/components/page/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Highlight } from "@/components/ui/Highlight";
 import { getSiteSettings } from "@/lib/data/settings";
+import { getProfilePhoto } from "@/lib/profile-photo";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata() {
@@ -36,7 +37,7 @@ export default async function AboutPage() {
       <section aria-label="Story" className="py-12">
         <Container className="grid gap-12 md:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] md:items-start">
           <div className="max-w-md">
-            <Portrait name={settings.name} photoUrl={settings.photoUrl} />
+            <Portrait name={settings.name} photo={await getProfilePhoto(settings.photoUrl)} />
           </div>
           <Markdown source={story.join("\n\n")} className="text-lg" />
         </Container>

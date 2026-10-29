@@ -29,10 +29,25 @@ export const settingsSchema = z.object({
   availability: z.string().min(2).max(200),
   linkedinUrl: url,
   githubUrl: url,
-  photoUrl: url,
   aboutStory: z.string().min(10).max(6000),
   principles: principlesSchema,
   nowItems: z.array(z.string().max(160)).max(10),
+  openToWork: z.boolean(),
+});
+
+const seoEntry = z.object({
+  title: z.string().max(70, "Keep titles under 70 characters.").optional().default(""),
+  description: z
+    .string()
+    .max(170, "Keep descriptions under 170 characters.")
+    .optional()
+    .default(""),
+});
+
+export const seoSchema = z.object({
+  seo: z.record(z.string().max(80), seoEntry),
+  indexable: z.boolean(),
+  sitemap: z.boolean(),
 });
 
 export const projectSchema = z.object({

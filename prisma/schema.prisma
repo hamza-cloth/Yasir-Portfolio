@@ -70,6 +70,16 @@ model SiteSettings {
   principles   Json      @default("[]")
   nowItems     String[]
   nowUpdatedAt DateTime?
+  // Home-page looks: which are on, and how the next one is chosen (random, sequential, fixed).
+  looksEnabled String[]  @default(["porcelain", "midnight-ops", "sunset-fibre", "terminal", "aurora"])
+  looksMode    String    @default("random")
+  looksFixed   String    @default("porcelain")
+  openToWork   Boolean   @default(true)
+  // Per-page SEO overrides: { "/about": { "title": "…", "description": "…" } }.
+  seo          Json      @default("{}")
+  ogImageUrl   String?
+  indexable    Boolean   @default(true)
+  sitemap      Boolean   @default(true)
   updatedAt    DateTime  @updatedAt
 }
 
@@ -192,10 +202,14 @@ model Message {
   body      String       @db.Text
   ipHash    String
   read      Boolean      @default(false)
+  starred   Boolean      @default(false)
+  archived  Boolean      @default(false)
+  spam      Boolean      @default(false)
   emailSent Boolean      @default(false)
   createdAt DateTime     @default(now())
 
   @@index([read, createdAt])
+  @@index([archived, spam, createdAt])
 }
 
 model RateLimitHit {
@@ -252,4 +266,56 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+// Every admin create, update and delete: who, what, when.
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String
+  action    String
+  entity    String
+  entityId  String?
+  summary   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Privacy-friendly page views: a count per path per day. No cookies, IPs or user agents.
+model PageView {
+  id    String   @id @default(cuid())
+  day   DateTime @db.Date
+  path  String
+  count Int      @default(0)
+
+  @@unique([day, path])
+  @@index([day])
+}
+
+// Uploaded résumé PDFs; exactly one may be active and linked from /resume.
+model ResumeVersion {
+  id        String   @id @default(cuid())
+  label     String
+  url       String
+  pathname  String
+  size      Int
+  active    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([active])
+}
+
+// Every file in the Blob store, so the media library can show usage and delete safely.
+model MediaAsset {
+  id          String   @id @default(cuid())
+  url         String   @unique
+  pathname    String
+  kind        String
+  contentType String
+  size        Int
+  width       Int?
+  height      Int?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
 }

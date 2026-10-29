@@ -15,7 +15,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
     <section aria-labelledby="cta-title" className="py-20 md:py-24">
       <Container>
         <Reveal>
-          <div className="relative isolate overflow-hidden rounded-[36px] bg-c1 px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--c1)] terminal:rounded-none terminal:border terminal:border-c1 terminal:bg-bg terminal:text-fg">
+          <div className="relative isolate overflow-hidden rounded-[36px] px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--c1)] [background:var(--feature-bg)] terminal:rounded-none terminal:border terminal:border-c1 terminal:bg-bg terminal:text-fg">
             <div
               aria-hidden="true"
               className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1.4px)] [mask-image:radial-gradient(ellipse_at_top_right,#000,transparent_70%)] bg-size-[22px_22px]"

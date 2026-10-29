@@ -15,7 +15,20 @@ import { getProjectSummaries } from "@/lib/data/projects";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getSkills } from "@/lib/data/skills";
 import { groupSkillsByLayer } from "@/lib/osi";
+import { getProfilePhoto } from "@/lib/profile-photo";
+import { pageMetadata } from "@/lib/seo";
+import { SITE_DESCRIPTION } from "@/lib/site";
 import { buildTimeline } from "@/lib/timeline";
+
+export async function generateMetadata() {
+  const metadata = await pageMetadata({
+    title: "Yasir Abdullah · Software & Network Engineer",
+    description: SITE_DESCRIPTION,
+    path: "/",
+  });
+  // The home title is the full name line, not "… · Yasir Abdullah" from the template.
+  return { ...metadata, title: { absolute: String(metadata.title) } };
+}
 
 export default async function HomePage() {
   const [settings, projects, experience, credentials, skills] = await Promise.all([
@@ -28,7 +41,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero name={settings.name} />
+      <Hero
+        name={settings.name}
+        roleLine={settings.roleLine}
+        photo={await getProfilePhoto(settings.photoUrl)}
+        openToWork={settings.openToWork}
+      />
       <LogoStrip />
       <GlanceGrid
         settings={settings}

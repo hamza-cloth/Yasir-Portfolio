@@ -1,7 +1,69 @@
-/* Paper is the default: a light porcelain page with one royal-blue accent and pastel tints.
-   Ops is the dark alternative, Terminal the green-screen easter egg. */
+/* Design tokens. Structure (type scale, spacing, z-index) lives on :root; each of the five
+   looks is a colour-and-shape set on [data-look]. Selectors are not tied to :root, so the
+   admin can preview any look inside a container that carries data-look. */
+
+/* Type and shape shared by every look except Terminal, which overrides them below. */
 :root,
-:root[data-skin="paper"] {
+[data-look="porcelain"],
+[data-look="midnight-ops"],
+[data-look="sunset-fibre"],
+[data-look="aurora"] {
+  --ff-display: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-body: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-serif: var(--ff-display);
+  --display-weight: 800;
+  --display-tracking: -0.035em;
+  --display-leading: 1;
+  /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
+  --fs-hero-split: clamp(2.6rem, min(5.4vw, 10svh), 5.4rem);
+  --fs-hero-stack: clamp(2.4rem, 10.5vw, 4rem);
+  --r-pill: 999px;
+  --r-field: 14px;
+  --r-chip: 10px;
+  --text-glow: none;
+}
+
+:root {
+  --ff-mono: var(--font-geist-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --fs-h1: clamp(2.25rem, 5vw + 1rem, 5rem);
+  --fs-h2: clamp(1.9rem, 3vw + 0.9rem, 3.25rem);
+  --fs-body: 1.0625rem;
+  --fs-label: 0.72rem;
+
+  /* 16px on phones, growing to 32px; the content column tops out at 1280px. */
+  --gutter: clamp(16px, 3vw, 32px);
+  --container: 1280px;
+  --header-h: 88px;
+
+  --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* One stacking scale for the whole site. */
+  --z-base: 0;
+  --z-header: 50;
+  --z-dropdown: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-cursor: 500;
+
+  /* The résumé sheet is always white paper, whatever the look. */
+  --sheet-bg: #ffffff;
+  --sheet-fg: #0e1220;
+  --sheet-muted: #50566a;
+  --sheet-line: #e2e5ec;
+  --sheet-accent: #2b59ff;
+
+  --shiki-foreground: var(--fg);
+  --shiki-background: var(--bg-2);
+  --shiki-token-comment: var(--muted);
+  --shiki-token-punctuation: var(--muted);
+  --shiki-token-link: var(--c1);
+}
+
+/* ---- Porcelain: light, white cards, royal blue. The default. ---- */
+:root,
+[data-look="porcelain"] {
   color-scheme: light;
 
   --bg: #f5f6f8;
@@ -27,9 +89,7 @@
   --curtain: #0e1220;
   --curtain-fg: #f5f6f8;
   --curtain-muted: #a3a8b5;
-  --text-glow: none;
 
-  /* Pastel card tints, each with an ink that reads on it. */
   --tint-blue: #e7edff;
   --tint-blue-ink: #1d3fbf;
   --tint-mint: #dff6ec;
@@ -41,195 +101,295 @@
   --tint-butter: #fff4c7;
   --tint-butter-ink: #8a6a00;
 
+  --r-panel: 28px;
+  --r-tile: 28px;
+  --r-card: 24px;
+  --r-button: 999px;
+  /* The bold feature cards (CCNA, contact) always carry white text on this. */
+  --feature-bg: #2b59ff;
+  --accent-fill: var(--c1);
+  --accent-gradient: linear-gradient(100deg, #2b59ff, #5b7cff);
   --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --shadow-soft: 0 1px 2px rgba(14, 18, 32, 0.04), 0 12px 32px -14px rgba(14, 18, 32, 0.12);
   --shadow-lift: 0 2px 6px rgba(14, 18, 32, 0.05), 0 30px 60px -28px rgba(14, 18, 32, 0.22);
   --card-sheen: none;
-  --accent-gradient: linear-gradient(100deg, #2b59ff, #5b7cff);
   --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(43, 89, 255, 0.08), transparent 70%);
   --dot-grid: rgba(14, 18, 32, 0.07);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232b59ff' stroke-width='3.2' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E");
 
-  --shiki-foreground: var(--fg);
-  --shiki-background: var(--bg-2);
   --shiki-token-keyword: #2450f0;
   --shiki-token-parameter: #a04b12;
   --shiki-token-function: #6a3fd1;
   --shiki-token-constant: #0e7a4a;
   --shiki-token-string: #a04b12;
   --shiki-token-string-expression: #a04b12;
-  --shiki-token-comment: var(--muted);
-  --shiki-token-punctuation: var(--muted);
-  --shiki-token-link: var(--c1);
-
-  /* The résumé sheet is always white paper, whatever the skin. */
-  --sheet-bg: #ffffff;
-  --sheet-fg: #0e1220;
-  --sheet-muted: #50566a;
-  --sheet-line: #e2e5ec;
-  --sheet-accent: #2b59ff;
-
-  --ff-display: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-body: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-mono: var(--font-geist-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --ff-serif: var(--ff-display);
-  --display-weight: 800;
-  --display-tracking: -0.035em;
-  --display-leading: 1;
-
-  /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
-  --fs-hero-split: clamp(2.6rem, min(5.4vw, 10svh), 5.4rem);
-  --fs-hero-stack: clamp(2.4rem, 10.5vw, 4rem);
-  --fs-h1: clamp(2.25rem, 5vw + 1rem, 5rem);
-  --fs-h2: clamp(1.9rem, 3vw + 0.9rem, 3.25rem);
-  --fs-body: 1.0625rem;
-  --fs-label: 0.72rem;
-
-  --r-pill: 999px;
-  --r-panel: 28px;
-  --r-tile: 28px;
-  --r-card: 24px;
-  --r-field: 14px;
-  --r-chip: 10px;
-
-  /* 16px on phones, growing to 32px; the content column tops out at 1280px. */
-  --gutter: clamp(16px, 3vw, 32px);
-  --container: 1280px;
-  --header-h: 88px;
-
-  --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
-  --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
-
-  /* One stacking scale for the whole site. */
-  --z-base: 0;
-  --z-header: 50;
-  --z-dropdown: 100;
-  --z-overlay: 200;
-  --z-modal: 300;
-  --z-toast: 400;
-  --z-cursor: 500;
 }
 
-:root[data-skin="ops"] {
+/* ---- Midnight Ops: dark navy, cyan, glowing fibre lines. ---- */
+[data-look="midnight-ops"] {
   color-scheme: dark;
 
-  --bg: #0a0c11;
-  --bg-2: #0f1218;
-  --surface: rgba(22, 25, 33, 0.72);
-  --surface-solid: #14171e;
-  --surface-2: #1a1e27;
-  --fg: #eef0f5;
-  --muted: #9aa1b2;
-  --faint: #656c7c;
-  --line: rgba(255, 255, 255, 0.07);
-  --line-2: rgba(255, 255, 255, 0.14);
-  --c1: #5b7cff;
+  --bg: #0a0f1e;
+  --bg-2: #0d1426;
+  --surface: rgba(17, 26, 48, 0.72);
+  --surface-solid: #111a30;
+  --surface-2: #16213b;
+  --fg: #e6edf7;
+  --muted: #93a3bf;
+  --faint: #5e6e8c;
+  --line: rgba(148, 180, 255, 0.1);
+  --line-2: rgba(148, 180, 255, 0.2);
+  --c1: #22d3ee;
+  --c1-ink: #031418;
+  --c1-text: #67e8f9;
+  --c1-soft: #0b2a36;
+  --amber: #fbbf24;
+  --amber-ink: #1a1203;
+  --highlight: rgba(34, 211, 238, 0.2);
+  --ok: #34d399;
+  --red: #fb7185;
+  --glow: rgba(34, 211, 238, 0.22);
+  --curtain: #0a0f1e;
+  --curtain-fg: #e6edf7;
+  --curtain-muted: #93a3bf;
+
+  --tint-blue: #12243f;
+  --tint-blue-ink: #8fd8ff;
+  --tint-mint: #0e2a2a;
+  --tint-mint-ink: #6ee7c8;
+  --tint-peach: #2c1d16;
+  --tint-peach-ink: #fdba8c;
+  --tint-lilac: #1f1d3d;
+  --tint-lilac-ink: #c4b5fd;
+  --tint-butter: #2a2614;
+  --tint-butter-ink: #fde68a;
+
+  --r-panel: 22px;
+  --r-tile: 20px;
+  --r-card: 16px;
+  --r-button: 12px;
+  /* The bold feature cards (CCNA, contact) always carry white text on this. */
+  --feature-bg: linear-gradient(125deg, #0e7490, #1e40af);
+  --accent-fill: linear-gradient(100deg, #22d3ee, #3b82f6);
+  --accent-gradient: linear-gradient(100deg, #67e8f9, #3b82f6);
+  --edge-light: inset 0 1px 0 rgba(148, 180, 255, 0.08);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(0, 0, 0, 0.8);
+  --card-sheen: linear-gradient(180deg, rgba(148, 180, 255, 0.04), transparent 40%);
+  --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(34, 211, 238, 0.12), transparent 70%);
+  --dot-grid: rgba(148, 180, 255, 0.07);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%2322d3ee' stroke-width='3.2' stroke-linecap='round' opacity='.7'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #67e8f9;
+  --shiki-token-parameter: #fdba8c;
+  --shiki-token-function: #c4b5fd;
+  --shiki-token-constant: #6ee7c8;
+  --shiki-token-string: #fdba8c;
+  --shiki-token-string-expression: #fdba8c;
+}
+
+/* ---- Sunset Fibre: warm cream, orange with a plum accent. ---- */
+[data-look="sunset-fibre"] {
+  color-scheme: light;
+
+  --bg: #fbf5ec;
+  --bg-2: #f4eadc;
+  --surface: rgba(255, 253, 249, 0.75);
+  --surface-solid: #fffdf9;
+  --surface-2: #f7efe4;
+  --fg: #2a1a1f;
+  --muted: #6e5a55;
+  --faint: #a08b83;
+  --line: rgba(42, 26, 31, 0.08);
+  --line-2: rgba(42, 26, 31, 0.15);
+  --c1: #f97316;
   --c1-ink: #ffffff;
-  --c1-text: #8aa2ff;
-  --c1-soft: #1a2240;
-  --amber: #ff9a57;
-  --amber-ink: #1c0d03;
-  --highlight: rgba(91, 124, 255, 0.22);
-  --ok: #4ade94;
-  --red: #ff6b70;
-  --glow: rgba(91, 124, 255, 0.22);
-  --curtain: #0a0c11;
-  --curtain-fg: #eef0f5;
-  --curtain-muted: #9aa1b2;
+  --c1-text: #c2410c;
+  --c1-soft: #ffedd5;
+  --amber: #7c2d5b;
+  --amber-ink: #ffffff;
+  --highlight: rgba(249, 115, 22, 0.16);
+  --ok: #15803d;
+  --red: #be123c;
+  --glow: rgba(249, 115, 22, 0.18);
+  --curtain: #2a1a1f;
+  --curtain-fg: #fbf5ec;
+  --curtain-muted: #c9b6ad;
 
-  --tint-blue: #172142;
-  --tint-blue-ink: #a9bbff;
-  --tint-mint: #10291f;
-  --tint-mint-ink: #7fe0b3;
-  --tint-peach: #2e1a10;
-  --tint-peach-ink: #ffb68c;
-  --tint-lilac: #211a38;
-  --tint-lilac-ink: #c6b0ff;
-  --tint-butter: #2a2410;
-  --tint-butter-ink: #f2d670;
+  --tint-blue: #f3e3ee;
+  --tint-blue-ink: #7c2d5b;
+  --tint-mint: #e6f2e4;
+  --tint-mint-ink: #3f6b3a;
+  --tint-peach: #ffe4cf;
+  --tint-peach-ink: #b4501d;
+  --tint-lilac: #efe2f3;
+  --tint-lilac-ink: #7a3e8e;
+  --tint-butter: #fbefc9;
+  --tint-butter-ink: #8a6100;
 
-  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(0, 0, 0, 0.6);
-  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(0, 0, 0, 0.75);
-  --accent-gradient: linear-gradient(100deg, #5b7cff, #8aa2ff);
-  --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(91, 124, 255, 0.12), transparent 70%);
-  --dot-grid: rgba(255, 255, 255, 0.06);
+  --r-panel: 32px;
+  --r-tile: 32px;
+  --r-card: 26px;
+  --r-button: 999px;
+  /* The bold feature cards (CCNA, contact) always carry white text on this. */
+  --feature-bg: linear-gradient(125deg, #ea580c, #9d174d);
+  --accent-fill: linear-gradient(100deg, #f97316, #db2777);
+  --accent-gradient: linear-gradient(100deg, #f97316, #7c2d5b);
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-soft: 0 1px 2px rgba(42, 26, 31, 0.05), 0 14px 34px -16px rgba(124, 45, 91, 0.16);
+  --shadow-lift: 0 2px 6px rgba(42, 26, 31, 0.06), 0 30px 60px -28px rgba(124, 45, 91, 0.28);
+  --card-sheen: none;
+  --page-wash:
+    radial-gradient(50rem 30rem at 85% -12%, rgba(249, 115, 22, 0.14), transparent 70%),
+    radial-gradient(36rem 24rem at 0% 6%, rgba(124, 45, 91, 0.08), transparent 70%);
+  --dot-grid: rgba(42, 26, 31, 0.07);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%23f97316' stroke-width='3.2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
 
-  --shiki-token-keyword: #8aa2ff;
-  --shiki-token-parameter: #ffb68c;
-  --shiki-token-function: #c6b0ff;
-  --shiki-token-constant: #7fe0b3;
-  --shiki-token-string: #ffb68c;
-  --shiki-token-string-expression: #ffb68c;
+  --shiki-token-keyword: #c2410c;
+  --shiki-token-parameter: #7c2d5b;
+  --shiki-token-function: #7a3e8e;
+  --shiki-token-constant: #3f6b3a;
+  --shiki-token-string: #7c2d5b;
+  --shiki-token-string-expression: #7c2d5b;
 }
 
-:root[data-skin="terminal"] {
+/* ---- Terminal: near-black, phosphor green, monospace headings. ---- */
+[data-look="terminal"] {
   color-scheme: dark;
 
-  --bg: #010401;
-  --bg-2: #021006;
-  --surface: rgba(3, 16, 6, 0.82);
-  --surface-solid: #020b04;
-  --surface-2: #041508;
-  --fg: #39ff7a;
-  --muted: #22b456;
-  --faint: #187a3c;
-  --line: rgba(57, 255, 122, 0.18);
-  --line-2: rgba(57, 255, 122, 0.34);
-  --c1: #39ff7a;
-  --c1-ink: #010401;
-  --c1-text: #39ff7a;
-  --c1-soft: #041508;
-  --amber: #ffb000;
+  --bg: #050805;
+  --bg-2: #081008;
+  --surface: rgba(10, 18, 10, 0.85);
+  --surface-solid: #0a120a;
+  --surface-2: #0e180e;
+  --fg: #4ade80;
+  --muted: #2fae5f;
+  --faint: #1f7a42;
+  --line: rgba(74, 222, 128, 0.18);
+  --line-2: rgba(74, 222, 128, 0.34);
+  --c1: #4ade80;
+  --c1-ink: #050805;
+  --c1-text: #4ade80;
+  --c1-soft: #0e1d0e;
+  --amber: #facc15;
   --amber-ink: #170d00;
-  --highlight: rgba(255, 176, 0, 0.3);
-  --ok: #39ff7a;
-  --red: #ff5c6c;
-  --glow: rgba(57, 255, 122, 0.26);
-  --curtain: #010401;
-  --curtain-fg: #39ff7a;
-  --curtain-muted: #22b456;
-  --text-glow: 0 0 6px rgba(57, 255, 122, 0.45);
+  --highlight: rgba(250, 204, 21, 0.25);
+  --ok: #4ade80;
+  --red: #f87171;
+  --glow: rgba(74, 222, 128, 0.24);
+  --curtain: #050805;
+  --curtain-fg: #4ade80;
+  --curtain-muted: #2fae5f;
+  --text-glow: 0 0 6px rgba(74, 222, 128, 0.4);
 
-  --tint-blue: #041508;
-  --tint-blue-ink: #39ff7a;
-  --tint-mint: #041508;
-  --tint-mint-ink: #39ff7a;
-  --tint-peach: #041508;
-  --tint-peach-ink: #ffb000;
-  --tint-lilac: #041508;
-  --tint-lilac-ink: #39ff7a;
-  --tint-butter: #041508;
-  --tint-butter-ink: #ffb000;
+  --tint-blue: #0e180e;
+  --tint-blue-ink: #4ade80;
+  --tint-mint: #0e180e;
+  --tint-mint-ink: #4ade80;
+  --tint-peach: #0e180e;
+  --tint-peach-ink: #facc15;
+  --tint-lilac: #0e180e;
+  --tint-lilac-ink: #4ade80;
+  --tint-butter: #0e180e;
+  --tint-butter-ink: #facc15;
 
+  --r-pill: 0;
+  --r-field: 0;
+  --r-chip: 0;
+  --r-panel: 0;
+  --r-tile: 0;
+  --r-card: 0;
+  --r-button: 0;
+  /* The bold feature cards (CCNA, contact) always carry white text on this. */
+  --feature-bg: #0a120a;
+  --accent-fill: var(--c1);
+  --accent-gradient: linear-gradient(90deg, #4ade80, #4ade80);
   --edge-light: none;
   --shadow-soft: none;
   --shadow-lift: none;
   --card-sheen: none;
-  --accent-gradient: linear-gradient(90deg, #39ff7a, #39ff7a);
   --page-wash: none;
   --dot-grid: transparent;
-
-  --shiki-token-keyword: #39ff7a;
-  --shiki-token-parameter: #ffb000;
-  --shiki-token-function: #b6ffcc;
-  --shiki-token-constant: #ffb000;
-  --shiki-token-string: #ffb000;
-  --shiki-token-string-expression: #ffb000;
+  --underline-svg: none;
 
   --ff-display: var(--font-vt323), ui-monospace, monospace;
   --ff-body: var(--font-geist-mono), ui-monospace, monospace;
   --ff-serif: var(--font-vt323), ui-monospace, monospace;
   --display-weight: 400;
   --display-tracking: 0;
-  --display-leading: 0.85;
+  --display-leading: 0.9;
+  --fs-hero-split: clamp(3.4rem, min(7.4vw, 13svh), 7rem);
+  --fs-hero-stack: clamp(3rem, 14vw, 5.5rem);
 
-  --fs-hero-split: clamp(3.6rem, 9vw, 8rem);
-  --fs-hero-stack: clamp(3.4rem, 16vw, 7rem);
+  --shiki-token-keyword: #4ade80;
+  --shiki-token-parameter: #facc15;
+  --shiki-token-function: #b6ffcc;
+  --shiki-token-constant: #facc15;
+  --shiki-token-string: #facc15;
+  --shiki-token-string-expression: #facc15;
+}
 
-  --r-pill: 0;
-  --r-panel: 0;
-  --r-tile: 0;
-  --r-card: 0;
-  --r-field: 0;
-  --r-chip: 0;
+/* ---- Aurora: deep indigo with a soft violet and teal gradient mesh. ---- */
+[data-look="aurora"] {
+  color-scheme: dark;
+
+  --bg: #0d0b26;
+  --bg-2: #120f33;
+  --surface: rgba(23, 20, 66, 0.66);
+  --surface-solid: #171442;
+  --surface-2: #1d1a52;
+  --fg: #eeeafe;
+  --muted: #a9a3d6;
+  --faint: #6e68a3;
+  --line: rgba(196, 181, 253, 0.12);
+  --line-2: rgba(196, 181, 253, 0.22);
+  --c1: #a78bfa;
+  --c1-ink: #ffffff;
+  --c1-text: #c4b5fd;
+  --c1-soft: #2a2366;
+  --amber: #2dd4bf;
+  --amber-ink: #04201c;
+  --highlight: rgba(167, 139, 250, 0.22);
+  --ok: #34d399;
+  --red: #fb7185;
+  --glow: rgba(167, 139, 250, 0.26);
+  --curtain: #0d0b26;
+  --curtain-fg: #eeeafe;
+  --curtain-muted: #a9a3d6;
+
+  --tint-blue: #1e2457;
+  --tint-blue-ink: #a5b4fc;
+  --tint-mint: #10313a;
+  --tint-mint-ink: #5eead4;
+  --tint-peach: #33203f;
+  --tint-peach-ink: #f9a8d4;
+  --tint-lilac: #2a1f5c;
+  --tint-lilac-ink: #c4b5fd;
+  --tint-butter: #2b2a44;
+  --tint-butter-ink: #fde68a;
+
+  --r-panel: 26px;
+  --r-tile: 24px;
+  --r-card: 20px;
+  --r-button: 999px;
+  /* The bold feature cards (CCNA, contact) always carry white text on this. */
+  --feature-bg: linear-gradient(125deg, #6d28d9, #0f766e);
+  --accent-fill: linear-gradient(100deg, #8b5cf6, #2dd4bf);
+  --accent-gradient: linear-gradient(100deg, #c4b5fd, #5eead4);
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(5, 3, 30, 0.8);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(5, 3, 30, 0.9);
+  --card-sheen: linear-gradient(180deg, rgba(196, 181, 253, 0.05), transparent 45%);
+  --page-wash:
+    radial-gradient(48rem 30rem at 85% -10%, rgba(139, 92, 246, 0.28), transparent 70%),
+    radial-gradient(40rem 28rem at 0% 10%, rgba(45, 212, 191, 0.14), transparent 70%);
+  --dot-grid: rgba(196, 181, 253, 0.06);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232dd4bf' stroke-width='3.2' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #c4b5fd;
+  --shiki-token-parameter: #5eead4;
+  --shiki-token-function: #f9a8d4;
+  --shiki-token-constant: #5eead4;
+  --shiki-token-string: #fde68a;
+  --shiki-token-string-expression: #fde68a;
 }

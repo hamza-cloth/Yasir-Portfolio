@@ -4,7 +4,7 @@ import { createCssVariablesTheme, createHighlighter, type Highlighter } from "sh
 
 import { CISCO_GRAMMAR } from "./cisco-grammar";
 
-// Token colours come from --shiki-* variables in tokens.css, so code follows the active skin.
+// Token colours come from --shiki-* variables in tokens.css, so code follows the active look.
 // The theme name is used to look the theme up again when highlighting.
 export const CODE_THEME_NAME = "fibre";
 

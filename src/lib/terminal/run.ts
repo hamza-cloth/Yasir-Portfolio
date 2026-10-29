@@ -1,4 +1,4 @@
-import { SKINS } from "@/lib/skin";
+import { LOOKS } from "@/lib/look";
 
 import { COMMANDS, PAGE_NAMES } from "./commands";
 import type { TerminalCommand, TerminalContext, TerminalResult } from "./types";
@@ -47,7 +47,7 @@ export function runCommand(input: string, context: TerminalContext): TerminalRes
 
 const ARGUMENTS: Record<string, readonly string[]> = {
   cd: PAGE_NAMES,
-  theme: SKINS,
+  theme: LOOKS,
 };
 
 // Returns the completed input, or null when there is nothing unambiguous to complete.

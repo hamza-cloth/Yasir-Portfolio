@@ -67,11 +67,11 @@
       0 50px 90px -40px color-mix(in oklab, var(--c1) 45%, transparent);
   }
 
-  [data-skin="ops"] .globe-sphere {
+  [data-theme="dark"] .globe-sphere {
     background: radial-gradient(circle at 34% 28%, #2a3a78 0%, var(--tint-blue) 55%, #0d1430 100%);
   }
 
-  [data-skin="terminal"] .globe-sphere {
+  [data-look="terminal"] .globe-sphere {
     background: none;
     box-shadow: none;
     border: 1px solid var(--line-2);
@@ -123,6 +123,39 @@
   @keyframes scribble {
     to {
       stroke-dashoffset: 0;
+    }
+  }
+
+  /* ---- Looks: one headline and one hero backdrop per look; CSS shows the active one. ---- */
+  .headline,
+  .hero-art {
+    display: none;
+  }
+
+  [data-look="porcelain"] .headline-porcelain,
+  [data-look="midnight-ops"] .headline-midnight-ops,
+  [data-look="sunset-fibre"] .headline-sunset-fibre,
+  [data-look="terminal"] .headline-terminal,
+  [data-look="aurora"] .headline-aurora {
+    display: inline;
+  }
+
+  [data-look="porcelain"] .hero-art-porcelain,
+  [data-look="midnight-ops"] .hero-art-midnight-ops,
+  [data-look="sunset-fibre"] .hero-art-sunset-fibre,
+  [data-look="terminal"] .hero-art-terminal,
+  [data-look="aurora"] .hero-art-aurora {
+    display: block;
+  }
+
+  .fibre-path {
+    stroke-dasharray: 220 900;
+    animation: fibre-run 7s linear infinite;
+  }
+
+  @keyframes fibre-run {
+    to {
+      stroke-dashoffset: -1120;
     }
   }
 
@@ -203,9 +236,9 @@
     }
   }
 
-  [data-skin="terminal"] .border-beam::after,
-  [data-skin="terminal"] .hero-halo,
-  [data-skin="terminal"] .orb {
+  [data-look="terminal"] .border-beam::after,
+  [data-look="terminal"] .hero-halo,
+  [data-look="terminal"] .orb {
     display: none;
   }
 
@@ -387,7 +420,8 @@
   .orb,
   .shimmer-text,
   .orbit,
-  .float-card {
+  .float-card,
+  .fibre-path {
     animation: none;
   }
 

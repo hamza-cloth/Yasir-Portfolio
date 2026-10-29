@@ -47,8 +47,11 @@ describe("runCommand", () => {
     expect(runCommand("cd nowhere", context).effect).toBeUndefined();
   });
 
-  it("switches skins only to known skins", () => {
-    expect(runCommand("theme paper", context).effect).toEqual({ type: "theme", skin: "paper" });
+  it("switches looks only to known looks", () => {
+    expect(runCommand("theme porcelain", context).effect).toEqual({
+      type: "theme",
+      look: "porcelain",
+    });
     expect(runCommand("theme neon", context).lines[0]?.kind).toBe("error");
   });
 

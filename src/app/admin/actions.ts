@@ -14,6 +14,8 @@ import {
   pairs,
   text,
 } from "@/lib/admin/form-data";
+import { adminContext } from "@/lib/admin/guard";
+import { audit } from "@/lib/audit";
 import { verifyPassword } from "@/lib/auth/password";
 import {
   createSession,
@@ -23,7 +25,8 @@ import {
   requireAdmin,
 } from "@/lib/auth/session";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { getDb } from "@/lib/db";
+import { isLook, isLookMode, LOOKS, type Look } from "@/lib/look";
+import { deleteUnusedMedia } from "@/lib/media";
 import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 import {
   credentialSchema,
@@ -34,14 +37,6 @@ import {
   settingsSchema,
   skillSchema,
 } from "@/lib/validation/admin";
-
-// Every action re-checks the session itself; the admin UI hiding a button protects nothing.
-async function adminDb() {
-  await requireAdmin();
-  const db = getDb();
-  if (!db) throw new Error("No database configured.");
-  return db;
-}
 
 function isUniqueViolation(error: unknown): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
@@ -57,11 +52,13 @@ function saveFailed(error: unknown): FormResult {
 export async function login(_previous: FormResult, form: FormData): Promise<FormResult> {
   if (!isAdminConfigured()) return { error: "The admin area is not configured yet." };
 
-  if (!(await takeRateLimit(`login:${await requestIpHash()}`, 8, 15 * 60_000))) {
-    return { error: "Too many attempts. Wait 15 minutes and try again." };
-  }
-
   const email = text(form, "email");
+  // 5 attempts per 15 minutes, counted per connection and per account.
+  const window = 15 * 60_000;
+  const ipOk = await takeRateLimit(`login:${await requestIpHash()}`, 5, window);
+  const accountOk = await takeRateLimit(`login-account:${email.toLowerCase()}`, 5, window);
+  if (!ipOk || !accountOk) return { error: "Too many attempts. Wait 15 minutes and try again." };
+
   const password = String(form.get("password") ?? "");
   const hash = process.env.ADMIN_PASSWORD_HASH ?? "";
   // The password is checked even for a wrong email, so both failures take the same time.
@@ -69,10 +66,13 @@ export async function login(_previous: FormResult, form: FormData): Promise<Form
   if (!isAdminEmail(email) || !passwordOk) return { error: "Wrong email or password." };
 
   await createSession(email);
+  await audit(email, "login", "session", "Signed in");
   redirect("/admin");
 }
 
 export async function logout(): Promise<void> {
+  const admin = await requireAdmin();
+  await audit(admin.email, "logout", "session", "Signed out");
   await destroySession();
   redirect("/admin/login");
 }
@@ -80,7 +80,7 @@ export async function logout(): Promise<void> {
 // ---- Settings ------------------------------------------------------------------------------
 
 export async function saveSettings(_previous: FormResult, form: FormData): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = settingsSchema.safeParse({
     name: text(form, "name"),
     roleLine: text(form, "roleLine"),
@@ -89,15 +89,16 @@ export async function saveSettings(_previous: FormResult, form: FormData): Promi
     availability: text(form, "availability"),
     linkedinUrl: optionalText(form, "linkedinUrl"),
     githubUrl: optionalText(form, "githubUrl"),
-    photoUrl: optionalText(form, "photoUrl"),
     aboutStory: text(form, "aboutStory").replace(/\r\n/g, "\n"),
     principles: pairs(form, "principles"),
     nowItems: lines(form, "nowItems"),
+    openToWork: bool(form, "openToWork"),
   });
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   const data = { ...parsed.data, nowUpdatedAt: new Date() };
   await db.siteSettings.upsert({ where: { id: 1 }, update: data, create: { id: 1, ...data } });
+  await audit(admin.email, "update", "settings", "Updated profile & settings");
   updateTag(CACHE_TAGS.settings);
   refresh();
   return { ok: "Settings saved. The site is updated." };
@@ -110,7 +111,7 @@ export async function saveProject(
   _previous: FormResult,
   form: FormData,
 ): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = projectSchema.safeParse({
     slug: text(form, "slug"),
     title: text(form, "title"),
@@ -148,6 +149,7 @@ export async function saveProject(
     return saveFailed(error);
   }
 
+  await audit(admin.email, id ? "update" : "create", "project", parsed.data.title, id ?? undefined);
   updateTag(CACHE_TAGS.projects);
   if (!id) redirect("/admin/projects");
   refresh();
@@ -155,8 +157,10 @@ export async function saveProject(
 }
 
 export async function deleteProject(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.project.delete({ where: { id: text(form, "id") } });
+  const { db, admin } = await adminContext();
+  const removed = await db.project.delete({ where: { id: text(form, "id") } });
+  await audit(admin.email, "delete", "project", removed.title, removed.id);
+  await deleteUnusedMedia([removed.coverImageUrl]);
   updateTag(CACHE_TAGS.projects);
   redirect("/admin/projects");
 }
@@ -168,7 +172,7 @@ export async function saveNote(
   _previous: FormResult,
   form: FormData,
 ): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = noteSchema.safeParse({
     slug: text(form, "slug"),
     title: text(form, "title"),
@@ -200,6 +204,7 @@ export async function saveNote(
     return saveFailed(error);
   }
 
+  await audit(admin.email, id ? "update" : "create", "note", parsed.data.title, id ?? undefined);
   updateTag(CACHE_TAGS.notes);
   if (!id) redirect("/admin/notes");
   refresh();
@@ -207,8 +212,9 @@ export async function saveNote(
 }
 
 export async function deleteNote(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.note.delete({ where: { id: text(form, "id") } });
+  const { db, admin } = await adminContext();
+  const removed = await db.note.delete({ where: { id: text(form, "id") } });
+  await audit(admin.email, "delete", "note", removed.title, removed.id);
   updateTag(CACHE_TAGS.notes);
   redirect("/admin/notes");
 }
@@ -220,7 +226,7 @@ export async function saveExperience(
   _previous: FormResult,
   form: FormData,
 ): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = experienceSchema.safeParse({
     role: text(form, "role"),
     company: text(form, "company"),
@@ -243,6 +249,13 @@ export async function saveExperience(
     return saveFailed(error);
   }
 
+  await audit(
+    admin.email,
+    id ? "update" : "create",
+    "experience",
+    `${parsed.data.role} at ${parsed.data.company}`,
+    id ?? undefined,
+  );
   updateTag(CACHE_TAGS.experience);
   if (!id) redirect("/admin/experience");
   refresh();
@@ -250,8 +263,9 @@ export async function saveExperience(
 }
 
 export async function deleteExperience(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.experience.delete({ where: { id: text(form, "id") } });
+  const { db, admin } = await adminContext();
+  const removed = await db.experience.delete({ where: { id: text(form, "id") } });
+  await audit(admin.email, "delete", "experience", `${removed.role} at ${removed.company}`);
   updateTag(CACHE_TAGS.experience);
   redirect("/admin/experience");
 }
@@ -263,7 +277,7 @@ export async function saveCredential(
   _previous: FormResult,
   form: FormData,
 ): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = credentialSchema.safeParse({
     title: text(form, "title"),
     issuer: text(form, "issuer"),
@@ -286,6 +300,13 @@ export async function saveCredential(
     return saveFailed(error);
   }
 
+  await audit(
+    admin.email,
+    id ? "update" : "create",
+    "credential",
+    parsed.data.title,
+    id ?? undefined,
+  );
   updateTag(CACHE_TAGS.credentials);
   if (!id) redirect("/admin/credentials");
   refresh();
@@ -293,8 +314,9 @@ export async function saveCredential(
 }
 
 export async function deleteCredential(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.certification.delete({ where: { id: text(form, "id") } });
+  const { db, admin } = await adminContext();
+  const removed = await db.certification.delete({ where: { id: text(form, "id") } });
+  await audit(admin.email, "delete", "credential", removed.title);
   updateTag(CACHE_TAGS.credentials);
   redirect("/admin/credentials");
 }
@@ -311,12 +333,13 @@ function readSkill(form: FormData) {
 }
 
 export async function addSkill(_previous: FormResult, form: FormData): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = readSkill(form);
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   const order = await db.skill.count({ where: { layer: parsed.data.layer } });
   await db.skill.create({ data: { ...parsed.data, order } });
+  await audit(admin.email, "create", "skill", parsed.data.name);
   updateTag(CACHE_TAGS.skills);
   refresh();
   return { ok: `Added ${parsed.data.name}.` };
@@ -327,36 +350,78 @@ export async function updateSkill(
   _previous: FormResult,
   form: FormData,
 ): Promise<FormResult> {
-  const db = await adminDb();
+  const { db, admin } = await adminContext();
   const parsed = readSkill(form);
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   await db.skill.update({ where: { id }, data: parsed.data });
+  await audit(admin.email, "update", "skill", parsed.data.name, id);
   updateTag(CACHE_TAGS.skills);
   refresh();
   return { ok: "Saved." };
 }
 
 export async function deleteSkill(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.skill.delete({ where: { id: text(form, "id") } });
+  const { db, admin } = await adminContext();
+  const removed = await db.skill.delete({ where: { id: text(form, "id") } });
+  await audit(admin.email, "delete", "skill", removed.name);
   updateTag(CACHE_TAGS.skills);
   refresh();
 }
 
 // ---- Messages ------------------------------------------------------------------------------
 
-export async function setMessageRead(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.message.update({
+const MESSAGE_FLAGS = ["read", "starred", "archived", "spam"] as const;
+type MessageFlag = (typeof MESSAGE_FLAGS)[number];
+
+function isMessageFlag(value: string): value is MessageFlag {
+  return (MESSAGE_FLAGS as readonly string[]).includes(value);
+}
+
+// One action for the read / star / archive / spam toggles.
+export async function setMessageFlag(form: FormData): Promise<void> {
+  const { db, admin } = await adminContext();
+  const flag = text(form, "flag");
+  if (!isMessageFlag(flag)) return;
+  const value = text(form, "value") === "true";
+  const message = await db.message.update({
     where: { id: text(form, "id") },
-    data: { read: text(form, "read") === "true" },
+    data: { [flag]: value },
+    select: { id: true, name: true },
   });
+  await audit(admin.email, "update", "message", `${flag}=${value} · ${message.name}`, message.id);
   refresh();
 }
 
 export async function deleteMessage(form: FormData): Promise<void> {
-  const db = await adminDb();
-  await db.message.delete({ where: { id: text(form, "id") } });
+  const { db, admin } = await adminContext();
+  const removed = await db.message.delete({ where: { id: text(form, "id") } });
+  await audit(admin.email, "delete", "message", `From ${removed.name}`);
   refresh();
+}
+
+// ---- Looks ---------------------------------------------------------------------------------
+
+export async function saveLooks(_previous: FormResult, form: FormData): Promise<FormResult> {
+  const { db, admin } = await adminContext();
+  const enabled = form.getAll("enabled").map(String).filter(isLook);
+  const mode = text(form, "mode");
+  const fixed = text(form, "fixed");
+  if (enabled.length === 0) return { error: "Keep at least one look switched on." };
+  if (!isLookMode(mode)) return { error: "Pick how the next look is chosen." };
+  if (!isLook(fixed)) return { error: "Pick a valid fixed look." };
+  if (mode === "fixed" && !enabled.includes(fixed)) {
+    return { error: "The fixed look must also be switched on." };
+  }
+
+  // Stored in the canonical order, so sequential mode walks the looks predictably.
+  const ordered = LOOKS.filter((look: Look) => enabled.includes(look));
+  await db.siteSettings.update({
+    where: { id: 1 },
+    data: { looksEnabled: ordered, looksMode: mode, looksFixed: fixed },
+  });
+  await audit(admin.email, "update", "looks", `${mode}: ${ordered.join(", ")}`);
+  updateTag(CACHE_TAGS.settings);
+  refresh();
+  return { ok: "Looks saved. New visitors get them on their next page load." };
 }

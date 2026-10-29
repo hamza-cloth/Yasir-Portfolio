@@ -11,7 +11,7 @@ export type CanvasFrame = {
 
 type CanvasLoopOptions = {
   animate: boolean;
-  // Changing this redraws (and restarts) the loop, e.g. when the skin changes.
+  // Changing this redraws (and restarts) the loop, e.g. when the look changes.
   redrawKey?: string;
   onSetup?: () => void;
 };

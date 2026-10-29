@@ -11,7 +11,7 @@ const SHORTCUTS = [
   { keys: "`", label: "Terminal" },
 ];
 
-// The one dark card on the page, in every skin.
+// The one dark card on the page, in every look.
 export function ShortcutsTile({ className }: { className?: string }) {
   return (
     <Tile

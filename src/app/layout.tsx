@@ -3,9 +3,10 @@ import type { Metadata, Viewport } from "next";
 
 import { InlineScript } from "@/components/layout/InlineScript";
 import { ScanlineOverlay } from "@/components/layout/ScanlineOverlay";
+import { getLookConfig } from "@/lib/data/settings";
 import { fontVariables } from "@/lib/fonts";
+import { buildLookScript } from "@/lib/look-script";
 import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
-import { skinScript } from "@/lib/skin-script";
 
 import "./globals.css";
 
@@ -28,17 +29,17 @@ export const viewport: Viewport = {
   themeColor: "#f5f6f8",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en-IN"
-      data-skin="paper"
+      data-look="porcelain"
       data-theme="light"
       className={fontVariables}
       suppressHydrationWarning
     >
       <head>
-        <InlineScript html={skinScript} />
+        <InlineScript html={buildLookScript(await getLookConfig())} />
       </head>
       <body>
         {children}

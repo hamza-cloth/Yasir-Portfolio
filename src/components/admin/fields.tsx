@@ -92,3 +92,21 @@ export function FormSection({ title, children }: { title: string; children: Reac
     </fieldset>
   );
 }
+
+type FileProps = Omit<ComponentProps<"input">, "className" | "type"> & {
+  label: string;
+  hint?: string;
+  className?: string;
+};
+
+export function FileField({ label, hint, className, ...props }: FileProps) {
+  return (
+    <Field label={label} hint={hint} className={className}>
+      <input
+        type="file"
+        className="block w-full text-sm text-muted file:mr-4 file:min-h-11 file:cursor-pointer file:rounded-pill file:border-0 file:bg-c1-soft file:px-4 file:font-semibold file:text-c1-text"
+        {...props}
+      />
+    </Field>
+  );
+}

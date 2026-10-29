@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
+import { LOOK_LABELS, LOOKS, setLook } from "@/lib/look";
 import { requestTerminal } from "@/lib/overlay-events";
 import { ALL_PAGES } from "@/lib/site-nav";
-import { setSkin, SKIN_LABELS, SKINS } from "@/lib/skin";
 
 import { Dialog } from "./Dialog";
 
@@ -76,12 +76,12 @@ export function CommandMenu({ open, onClose, email }: CommandMenuProps) {
           window.location.href = `mailto:${email}`;
         },
       },
-      ...SKINS.map((skin) => ({
-        id: `skin:${skin}`,
+      ...LOOKS.map((look) => ({
+        id: `look:${look}`,
         group: "Looks" as const,
-        label: `Switch to the ${SKIN_LABELS[skin]} look`,
+        label: `Switch to the ${LOOK_LABELS[look]} look`,
         run: () => {
-          setSkin(skin);
+          setLook(look);
           onClose();
         },
       })),

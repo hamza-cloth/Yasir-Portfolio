@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { setSkin } from "@/lib/skin";
+import { setLook } from "@/lib/look";
 import { completeInput, runCommand } from "@/lib/terminal/run";
 import { echoLine, TERMINAL_PROMPT } from "@/lib/terminal/transcript";
 import type { TerminalContext, TerminalEffect, TerminalLine } from "@/lib/terminal/types";
@@ -39,7 +39,7 @@ export function useTerminalSession(
       if (!effect) return;
       if (effect.type === "clear") setLines([]);
       if (effect.type === "navigate") router.push(effect.href);
-      if (effect.type === "theme") setSkin(effect.skin);
+      if (effect.type === "theme") setLook(effect.look);
       if (effect.type === "exit") onExit?.();
     },
     [router, onExit],

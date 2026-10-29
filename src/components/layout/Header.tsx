@@ -10,10 +10,10 @@ import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 
 import { CommandButton } from "./CommandButton";
 import { Logo } from "./Logo";
+import { LookButton } from "./LookButton";
 import { MenuButton } from "./MenuButton";
 import { MobileMenu } from "./MobileMenu";
 import { NavPills } from "./NavPills";
-import { SkinButton } from "./SkinButton";
 
 const MOBILE_MENU_ID = "mobile-menu";
 
@@ -39,7 +39,7 @@ export function Header() {
             <NavPills pathname={pathname} className="mx-auto hidden lg:block" />
             <div className="ml-auto flex min-w-0 items-center gap-1.5 lg:ml-0">
               <CommandButton className="max-sm:hidden" />
-              <SkinButton />
+              <LookButton />
               <Button href="/contact" variant="accent" size="sm" className="max-lg:hidden">
                 Hire me
                 <Icon name="arrow-up-right" size={15} />

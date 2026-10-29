@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { getCredentials } from "@/lib/data/credentials";
 import { getExperience } from "@/lib/data/experience";
 import { getProjectSummaries } from "@/lib/data/projects";
-import { getSiteSettings } from "@/lib/data/settings";
+import { getActiveResume, getSiteSettings } from "@/lib/data/settings";
 import { getSkills } from "@/lib/data/skills";
 import { pageMetadata } from "@/lib/seo";
 import { groupSkillsByDomain } from "@/lib/skill-domains";
@@ -31,12 +31,13 @@ function SheetHeading({ children }: { children: string }) {
 }
 
 export default async function ResumePage() {
-  const [settings, experience, credentials, skills, projects] = await Promise.all([
+  const [settings, experience, credentials, skills, projects, pdf] = await Promise.all([
     getSiteSettings(),
     getExperience(),
     getCredentials(),
     getSkills(),
     getProjectSummaries(),
+    getActiveResume(),
   ]);
 
   const timeline = buildTimeline(experience, credentials);
@@ -58,6 +59,12 @@ export default async function ResumePage() {
           lead="Everything a hiring manager needs on a single sheet. Print it, or save it as a PDF from the print dialog."
         >
           <div className="flex flex-wrap gap-3">
+            {pdf ? (
+              <Button href={pdf.url} variant="accent" size="lg" download>
+                <Icon name="download" size={17} />
+                Download PDF
+              </Button>
+            ) : null}
             <PrintButton />
             <Button href="/contact" variant="line" size="lg">
               Get in touch

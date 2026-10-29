@@ -5,6 +5,7 @@ import { AdminHeader, NoDatabase } from "@/components/admin/AdminUi";
 import {
   CheckField,
   Field,
+  FileField,
   FormSection,
   SelectField,
   TextArea,
@@ -17,6 +18,7 @@ import { getDb } from "@/lib/db";
 import { decisionsSchema } from "@/lib/validation/project";
 
 import { deleteProject, saveProject } from "../../../actions";
+import { uploadCover } from "../../../media-actions";
 
 export const metadata = { title: "Edit project" };
 
@@ -81,10 +83,17 @@ export default async function ProjectEditPage({ params }: { params: Promise<{ id
           <TextField
             label="Status"
             name="statusLabel"
+            list="project-statuses"
             defaultValue={project?.statusLabel}
-            hint="e.g. In development (MVP), Live, Working build"
+            hint="Pick one or type your own wording."
             required
           />
+          <datalist id="project-statuses">
+            <option value="In development" />
+            <option value="In development (MVP)" />
+            <option value="Working build" />
+            <option value="Live" />
+          </datalist>
           <SelectField
             label="Mockup"
             name="visual"
@@ -154,6 +163,33 @@ export default async function ProjectEditPage({ params }: { params: Promise<{ id
           </div>
         </FormSection>
       </AdminForm>
+
+      {project ? (
+        <section aria-labelledby="cover-title" className="mt-10 flex flex-col gap-4">
+          <h2 id="cover-title" className="text-lg tracking-[-0.02em]">
+            Cover image
+          </h2>
+          {project.coverImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- admin preview of an uploaded file
+            <img
+              src={project.coverImageUrl}
+              alt={`Current cover for ${project.title}`}
+              className="max-h-56 w-auto rounded-card border border-line object-cover"
+            />
+          ) : (
+            <p className="text-sm text-muted">No cover yet; the site shows the drawn mockup.</p>
+          )}
+          <AdminForm action={uploadCover.bind(null, project.id)} submitLabel="Upload cover">
+            <FileField
+              label="Image"
+              name="cover"
+              accept="image/jpeg,image/png,image/webp"
+              hint="JPG, PNG or WebP, up to 2 MB. Saved as WebP, at most 1600px wide."
+              required
+            />
+          </AdminForm>
+        </section>
+      ) : null}
 
       {project ? (
         <div className="mt-10 flex items-center justify-between gap-4 rounded-card border border-red/25 p-5">

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// Only the Terminal skin uses VT323, so it is not preloaded for everyone.
+// Only the Terminal look uses VT323, so it is not preloaded for everyone.
 const vt323 = VT323({
   subsets: ["latin"],
   weight: "400",

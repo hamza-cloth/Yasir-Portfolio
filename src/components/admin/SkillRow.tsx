@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { useKeepValuesSubmit } from "@/hooks/useKeepValuesSubmit";
 import { cn } from "@/lib/cn";
 
-import type { FormResult } from "./AdminForm";
+import { InlineAction, type FormResult } from "./AdminForm";
 import { inputClass } from "./fields";
 
 type SkillRowProps = {
@@ -72,21 +72,15 @@ export function SkillRow({ skill, domains, save, remove }: SkillRowProps) {
           {pending ? "…" : state.error ? "Retry" : state.ok ? "Saved" : "Save"}
         </button>
       </form>
-      <form
-        action={remove}
-        onSubmit={(event) => {
-          if (!window.confirm(`Delete “${skill.name}”?`)) event.preventDefault();
-        }}
-        className="max-md:col-span-2 max-md:justify-self-end"
-      >
-        <input type="hidden" name="id" value={skill.id} />
-        <button
-          type="submit"
-          className="inline-flex min-h-11 items-center px-2 text-sm text-red/80 hover:text-red"
-        >
-          Delete
-        </button>
-      </form>
+      <div className="max-md:col-span-2 max-md:justify-self-end">
+        <InlineAction
+          action={remove}
+          label="Delete"
+          tone="danger"
+          confirm={`Delete “${skill.name}”?`}
+          hidden={{ id: skill.id }}
+        />
+      </div>
       {state.error ? <p className="col-span-full text-sm text-red">{state.error}</p> : null}
     </li>
   );
