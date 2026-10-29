@@ -6,6 +6,8 @@ import { getDb } from "@/lib/db";
 import { reorderProjects } from "../../media-actions";
 
 export const metadata = { title: "Projects" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 export default async function ProjectsPage() {
   await requireAdmin();

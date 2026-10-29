@@ -9,6 +9,8 @@ import { getDb } from "@/lib/db";
 import { deleteNote, saveNote } from "../../../actions";
 
 export const metadata = { title: "Edit note" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 export default async function NoteEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();

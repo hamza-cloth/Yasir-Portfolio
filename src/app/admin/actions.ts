@@ -28,7 +28,7 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isLook, isLookMode, LOOKS, type Look } from "@/lib/look";
 import { deleteUnusedMedia } from "@/lib/media";
 import { reportError } from "@/lib/monitoring";
-import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
+import { clearRateLimit, requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 import {
   credentialSchema,
   experienceSchema,
@@ -59,16 +59,20 @@ export async function login(_previous: FormResult, form: FormData): Promise<Form
 
   // A database failure stays on the form as a message instead of the admin error page.
   try {
-    // 5 attempts per 15 minutes, counted per connection and per account.
+    // 5 failed attempts per 15 minutes, counted per connection and per account.
     const window = 15 * 60_000;
-    const ipOk = await takeRateLimit(`login:${await requestIpHash()}`, 5, window);
-    const accountOk = await takeRateLimit(`login-account:${email}`, 5, window);
+    const ipKey = `login:${await requestIpHash()}`;
+    const accountKey = `login-account:${email}`;
+    const ipOk = await takeRateLimit(ipKey, 5, window);
+    const accountOk = await takeRateLimit(accountKey, 5, window);
     if (!ipOk || !accountOk) return { error: "Too many attempts. Wait 15 minutes and try again." };
 
     const adminId = await verifyAdminLogin(email, password);
     // One message for a wrong email and a wrong password, so neither is confirmed.
     if (!adminId) return { error: "Wrong email or password." };
 
+    // A successful sign-in clears both counters, so signing in often never locks the admin out.
+    await clearRateLimit(ipKey, accountKey);
     await createSession(adminId);
     await audit(email, "login", "session", "Signed in");
   } catch (error) {

@@ -3,6 +3,8 @@ import { requireAdmin } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 
 export const metadata = { title: "Education & training" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 export default async function CredentialsAdminPage() {
   await requireAdmin();

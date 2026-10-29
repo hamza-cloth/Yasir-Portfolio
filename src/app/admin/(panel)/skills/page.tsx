@@ -10,6 +10,8 @@ import { SKILL_DOMAINS } from "@/lib/skill-domains";
 import { addSkill, deleteSkill, updateSkill } from "../../actions";
 
 export const metadata = { title: "Skills" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 const DOMAINS = Object.values(SkillDomain).map(
   (domain) => [domain, SKILL_DOMAINS[domain].title] as const,

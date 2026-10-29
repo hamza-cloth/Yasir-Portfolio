@@ -11,6 +11,8 @@ import { saveSettings } from "../../actions";
 import { removePhoto, uploadPhoto } from "../../media-actions";
 
 export const metadata = { title: "Profile & settings" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 export default async function SettingsPage() {
   await requireAdmin();

@@ -10,6 +10,8 @@ import { getDb } from "@/lib/db";
 import { deleteExperience, saveExperience } from "../../../actions";
 
 export const metadata = { title: "Edit role" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 export default async function ExperienceEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();

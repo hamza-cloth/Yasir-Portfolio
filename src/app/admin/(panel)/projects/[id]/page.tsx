@@ -21,6 +21,8 @@ import { deleteProject, saveProject } from "../../../actions";
 import { uploadCover } from "../../../media-actions";
 
 export const metadata = { title: "Edit project" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 const VISUALS = [
   [ProjectVisual.CLINIC_CONSOLE, "Clinic console"],

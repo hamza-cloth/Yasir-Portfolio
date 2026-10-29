@@ -10,6 +10,8 @@ import { getDb } from "@/lib/db";
 import { deleteCredential, saveCredential } from "../../../actions";
 
 export const metadata = { title: "Edit entry" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 const KINDS = [
   [CredentialKind.DEGREE, "Degree"],

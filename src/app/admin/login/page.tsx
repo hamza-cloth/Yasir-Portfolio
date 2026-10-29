@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { AlreadySignedIn } from "@/components/admin/AlreadySignedIn";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { Aurora } from "@/components/canvas/Aurora";
 import { Avatar } from "@/components/ui/Avatar";
@@ -71,16 +71,75 @@ function SetupSteps() {
   );
 }
 
-export default async function LoginPage() {
-  // Render per request, never from a prerendered shell: the signed-in check below must see the
-  // visitor's cookie, and its catch must not swallow Next's prerender signal.
+// Same footprint as the card, so nothing shifts when it streams in.
+function CardSkeleton() {
+  return (
+    <div
+      role="status"
+      className="rounded-panel border border-line bg-surface-solid p-6 shadow-(--shadow-lift) sm:p-9"
+    >
+      <span className="sr-only">Loading sign-in…</span>
+      <div className="flex items-center gap-4">
+        <div className="size-14 animate-pulse rounded-full bg-surface-2" />
+        <div className="flex flex-1 flex-col gap-2">
+          <div className="h-3 w-28 animate-pulse rounded bg-surface-2" />
+          <div className="h-7 w-44 animate-pulse rounded bg-surface-2" />
+        </div>
+      </div>
+      <div className="mt-4 mb-7 h-12 animate-pulse rounded bg-surface-2" />
+      <div className="flex flex-col gap-5">
+        <div className="h-[4.75rem] animate-pulse rounded-field bg-surface-2" />
+        <div className="h-[4.75rem] animate-pulse rounded-field bg-surface-2" />
+        <div className="mt-1 h-14 animate-pulse rounded-pill bg-surface-2" />
+      </div>
+    </div>
+  );
+}
+
+// Reads the session, so it streams in behind the page's Suspense boundary (Cache Components
+// keeps request data out of the static shell).
+async function SignInCard({ photoUrl }: { photoUrl: string | null }) {
+  // Wait for the request before the checks below, so their catch never swallows the prerender
+  // signal and bakes a signed-out card into the shell.
   await connection();
   const configured = isAdminConfigured();
-  // Already signed in: go straight to the dashboard. A database hiccup just shows the form.
-  if (configured && (await getAdmin().catch(() => null))) redirect("/admin");
+  // A visitor who is already signed in is sent on to the dashboard (from the client: a redirect
+  // thrown mid-stream would cut the response). A database hiccup just shows the form.
+  const admin = configured ? await getAdmin().catch(() => null) : null;
+  const photo = await getProfilePhoto(photoUrl).catch(() => null);
 
+  return (
+    <div className="animate-rise rounded-panel border border-line bg-surface-solid p-6 shadow-(--shadow-lift) sm:p-9">
+      <div className="flex items-center gap-4">
+        <Avatar photo={photo} size={56} sizes="56px" ring />
+        <div className="min-w-0">
+          <p className="label-mono text-muted">Admin console</p>
+          <h1 className="mt-1 text-[1.75rem] leading-tight tracking-[-0.03em]">
+            {admin ? "You're signed in" : configured ? "Welcome back" : "Finish the setup"}
+          </h1>
+        </div>
+      </div>
+
+      {admin ? (
+        <div className="mt-6">
+          <AlreadySignedIn email={admin.email} />
+        </div>
+      ) : (
+        <>
+          <p className="mt-4 mb-7 text-muted">
+            {configured
+              ? "Sign in to manage projects, notes, messages and the home-page looks."
+              : "The admin area needs a database before anyone can sign in. Four steps:"}
+          </p>
+          {configured ? <LoginForm action={login} /> : <SetupSteps />}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default async function LoginPage() {
   const settings = await getSiteSettings().catch(() => DEFAULT_SITE_SETTINGS);
-  const photo = await getProfilePhoto(settings.photoUrl).catch(() => null);
 
   return (
     <main className="grid min-h-svh bg-bg lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
@@ -97,25 +156,9 @@ export default async function LoginPage() {
             Back to the site
           </Link>
 
-          <div className="animate-rise rounded-panel border border-line bg-surface-solid p-6 shadow-(--shadow-lift) sm:p-9">
-            <div className="flex items-center gap-4">
-              <Avatar photo={photo} size={56} sizes="56px" ring />
-              <div className="min-w-0">
-                <p className="label-mono text-muted">Admin console</p>
-                <h1 className="mt-1 text-[1.75rem] leading-tight tracking-[-0.03em]">
-                  {configured ? "Welcome back" : "Finish the setup"}
-                </h1>
-              </div>
-            </div>
-
-            <p className="mt-4 mb-7 text-muted">
-              {configured
-                ? "Sign in to manage projects, notes, messages and the home-page looks."
-                : "The admin area needs a database before anyone can sign in. Four steps:"}
-            </p>
-
-            {configured ? <LoginForm action={login} /> : <SetupSteps />}
-          </div>
+          <Suspense fallback={<CardSkeleton />}>
+            <SignInCard photoUrl={settings.photoUrl} />
+          </Suspense>
 
           <p className="mt-6 flex items-center justify-center gap-2 text-center text-sm text-muted">
             <Icon name="shield" size={16} className="flex-none" />

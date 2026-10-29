@@ -7,6 +7,8 @@ import { mediaUsage } from "@/lib/media";
 import { deleteMedia } from "../../media-actions";
 
 export const metadata = { title: "Media" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 export default async function MediaPage() {
   await requireAdmin();

@@ -31,3 +31,10 @@ export async function takeRateLimit(key: string, limit: number, windowMs: number
   });
   return true;
 }
+
+// Forgets the hits on these keys, e.g. after a successful sign-in, so only failed attempts count.
+export async function clearRateLimit(...keys: string[]): Promise<void> {
+  const db = getDb();
+  if (!db) return;
+  await db.rateLimitHit.deleteMany({ where: { key: { in: keys } } });
+}

@@ -8,6 +8,8 @@ import { LOOK_LABELS, LOOK_THEMES, LOOKS } from "@/lib/look";
 import { saveLooks } from "../../actions";
 
 export const metadata = { title: "Home looks" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 const MODES = [
   ["random", "Random, never the same twice in a row"],

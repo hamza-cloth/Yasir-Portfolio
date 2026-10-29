@@ -11,6 +11,8 @@ import { MESSAGE_TOPICS } from "@/lib/validation/message";
 import { deleteMessage, setMessageFlag } from "../../actions";
 
 export const metadata = { title: "Messages" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 const dateFormat = new Intl.DateTimeFormat("en-IN", {
   dateStyle: "medium",

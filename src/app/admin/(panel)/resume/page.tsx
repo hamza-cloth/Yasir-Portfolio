@@ -7,6 +7,8 @@ import { getDb } from "@/lib/db";
 import { activateResume, deleteResume, uploadResume } from "../../media-actions";
 
 export const metadata = { title: "Résumé" };
+// Checks the session on every request, so navigating here may block (see admin/layout.tsx).
+export const instant = false;
 
 const dateFormat = new Intl.DateTimeFormat("en-IN", {
   dateStyle: "medium",
