@@ -23,7 +23,6 @@
     from {
       opacity: 0;
       transform: translate3d(0, 28px, 0);
-      filter: blur(10px);
     }
   }
 
@@ -31,7 +30,17 @@
     from {
       opacity: 0;
       transform: translate3d(36px, 12px, 0) scale(0.97);
-      filter: blur(12px);
+    }
+  }
+
+  .intro-lcp {
+    animation: intro-slide 0.9s var(--easing-entrance) both;
+    animation-delay: 80ms;
+  }
+
+  @keyframes intro-slide {
+    from {
+      transform: translate3d(0, 20px, 0);
     }
   }
 
@@ -303,14 +312,12 @@
   .reveal[data-reveal="hidden"] .stagger > * {
     opacity: 0;
     transform: translate3d(0, 26px, 0);
-    filter: blur(6px);
   }
 
   .reveal[data-reveal="shown"] .stagger > * {
     transition:
       opacity 900ms var(--easing-entrance),
-      transform 900ms var(--easing-entrance),
-      filter 900ms var(--easing-entrance);
+      transform 900ms var(--easing-entrance);
   }
 
   .reveal[data-reveal="shown"] .stagger > :nth-child(2) {
@@ -411,6 +418,7 @@
 @media (prefers-reduced-motion: reduce) {
   .intro,
   .intro-side,
+  .intro-lcp,
   .animate-rise {
     animation: none;
   }

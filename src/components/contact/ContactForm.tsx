@@ -7,7 +7,7 @@ import { buttonClassName } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useKeepValuesSubmit } from "@/hooks/useKeepValuesSubmit";
 import { cn } from "@/lib/cn";
-import { MESSAGE_TOPICS, type MessageTopicValue } from "@/lib/validation/message";
+import { MESSAGE_TOPICS, type MessageTopicValue } from "@/lib/message-topics";
 
 const INITIAL: ContactState = { status: "idle" };
 

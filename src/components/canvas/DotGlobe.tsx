@@ -13,6 +13,14 @@ import { DESTINATIONS, HUB } from "@/lib/globe-cities";
 
 const DEG = Math.PI / 180;
 const POINT_COUNT = 1300;
+// Fewer dots on small screens and low-core devices, where every frame costs more.
+const LIGHT_POINT_COUNT = 700;
+
+function pointCount(): number {
+  const small = window.matchMedia("(max-width: 767px)").matches;
+  const lowEnd = (navigator.hardwareConcurrency ?? 8) <= 4;
+  return small || lowEnd ? LIGHT_POINT_COUNT : POINT_COUNT;
+}
 const AUTO_SPIN = 0.12;
 const DRAG_YAW = 0.006;
 const DRAG_PITCH = 0.004;
@@ -45,7 +53,7 @@ export function DotGlobe({ className }: { className?: string }) {
 
   const scene = useMemo<GlobeScene>(
     () => ({
-      points: fibonacciSphere(POINT_COUNT),
+      points: fibonacciSphere(pointCount()),
       hub: latLonToVector(HUB.lat, HUB.lon),
       hubLabel: HUB.name,
       destinations: DESTINATIONS.map((city) => latLonToVector(city.lat, city.lon)),

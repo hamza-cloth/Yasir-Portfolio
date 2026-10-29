@@ -62,7 +62,7 @@ export function HeroHeadline() {
   return (
     <h1
       id="hero-title"
-      className="intro hero-name hero-name--split max-w-[16ch] text-fg"
+      className="intro-lcp hero-name hero-name--split max-w-[16ch] text-fg"
       style={cssVars({ "--i": 1 })}
     >
       {(Object.keys(HEADLINES) as Look[]).map((look) => (

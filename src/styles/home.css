@@ -91,14 +91,15 @@
     }
   }
 
+  /* The active shift is highlighted; inactive tabs stay fully readable. */
   @keyframes shift-tab {
     0%,
     33.33% {
-      opacity: 1;
+      background-color: var(--c1-soft);
     }
     33.34%,
     100% {
-      opacity: 0.4;
+      background-color: transparent;
     }
   }
 }

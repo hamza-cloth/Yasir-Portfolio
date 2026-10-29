@@ -10,6 +10,8 @@ import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { OverlayHost } from "@/components/overlay/OverlayHost";
+import { RevealController } from "@/components/ui/RevealController";
+import { SpotlightController } from "@/components/ui/SpotlightController";
 import { getProjectSummaries } from "@/lib/data/projects";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getSkills } from "@/lib/data/skills";
@@ -35,6 +37,8 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       <PageCurtain />
       <CustomCursor />
       <SmoothScroll />
+      <RevealController />
+      <SpotlightController />
       <PageViewTracker />
       <OverlayHost
         email={settings.email}

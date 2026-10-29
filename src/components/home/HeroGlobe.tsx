@@ -1,4 +1,4 @@
-import { DotGlobe } from "@/components/canvas/DotGlobe";
+import { LazyGlobe } from "@/components/canvas/LazyGlobe";
 import { cn } from "@/lib/cn";
 import { cssVars } from "@/lib/css-vars";
 
@@ -65,7 +65,7 @@ export function HeroGlobe({ className }: { className?: string }) {
       <div aria-hidden="true" className="orbit-tilt absolute -inset-[4%]">
         <div className="orbit orbit--slow size-full rounded-full" />
       </div>
-      <DotGlobe />
+      <LazyGlobe />
 
       <ul aria-hidden="true">
         {CARDS.map((card, index) => (

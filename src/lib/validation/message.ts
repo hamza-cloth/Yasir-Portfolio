@@ -1,13 +1,8 @@
 import { z } from "zod";
 
-export const MESSAGE_TOPICS = {
-  HIRING: "Hiring / a role",
-  PROJECT: "A project",
-  NETWORK_HELP: "Network or IT help",
-  OTHER: "Something else",
-} as const;
+import { MESSAGE_TOPICS, type MessageTopicValue } from "@/lib/message-topics";
 
-export type MessageTopicValue = keyof typeof MESSAGE_TOPICS;
+export { MESSAGE_TOPICS, type MessageTopicValue };
 
 export const messageSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name.").max(80, "That name is too long."),
