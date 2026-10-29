@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 import { LoginForm } from "@/components/admin/LoginForm";
 import { Aurora } from "@/components/canvas/Aurora";
@@ -71,6 +72,9 @@ function SetupSteps() {
 }
 
 export default async function LoginPage() {
+  // Render per request, never from a prerendered shell: the signed-in check below must see the
+  // visitor's cookie, and its catch must not swallow Next's prerender signal.
+  await connection();
   const configured = isAdminConfigured();
   // Already signed in: go straight to the dashboard. A database hiccup just shows the form.
   if (configured && (await getAdmin().catch(() => null))) redirect("/admin");
