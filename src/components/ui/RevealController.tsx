@@ -24,18 +24,29 @@ export function RevealController() {
       { rootMargin: "0px 0px -8% 0px" },
     );
 
-    const fold = window.innerHeight;
-    // Read every position first, then write, so the browser lays out once.
-    const pending = Array.from(
-      document.querySelectorAll<HTMLElement>(".reveal:not([data-reveal])"),
-    );
-    const below = pending.filter((element) => element.getBoundingClientRect().top >= fold);
-    for (const element of below) {
-      element.dataset.reveal = "hidden";
-      observer.observe(element);
+    // Wait until the browser is idle, so React has finished hydrating every section first;
+    // marking a section before it hydrates would make the server and client HTML disagree.
+    // Only sections below the fold are touched, so the short wait is never visible.
+    function scan() {
+      const fold = window.innerHeight;
+      // Read every position first, then write, so the browser lays out once.
+      const pending = Array.from(
+        document.querySelectorAll<HTMLElement>(".reveal:not([data-reveal])"),
+      );
+      const below = pending.filter((element) => element.getBoundingClientRect().top >= fold);
+      for (const element of below) {
+        element.dataset.reveal = "hidden";
+        observer.observe(element);
+      }
     }
+    const idle = window.requestIdleCallback?.(scan, { timeout: 1200 });
+    const timer = idle === undefined ? window.setTimeout(scan, 600) : undefined;
 
-    return () => observer.disconnect();
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      window.clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [pathname]);
 
   return null;
