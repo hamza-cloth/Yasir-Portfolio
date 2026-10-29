@@ -16,13 +16,13 @@ import {
 } from "@/lib/admin/form-data";
 import { adminContext } from "@/lib/admin/guard";
 import { audit } from "@/lib/audit";
-import { verifyPassword } from "@/lib/auth/password";
 import {
   createSession,
   destroySession,
   isAdminConfigured,
-  isAdminEmail,
+  normaliseEmail,
   requireAdmin,
+  verifyAdminLogin,
 } from "@/lib/auth/session";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isLook, isLookMode, LOOKS, type Look } from "@/lib/look";
@@ -52,20 +52,19 @@ function saveFailed(error: unknown): FormResult {
 export async function login(_previous: FormResult, form: FormData): Promise<FormResult> {
   if (!isAdminConfigured()) return { error: "The admin area is not configured yet." };
 
-  const email = text(form, "email");
+  const email = normaliseEmail(text(form, "email"));
   // 5 attempts per 15 minutes, counted per connection and per account.
   const window = 15 * 60_000;
   const ipOk = await takeRateLimit(`login:${await requestIpHash()}`, 5, window);
-  const accountOk = await takeRateLimit(`login-account:${email.toLowerCase()}`, 5, window);
+  const accountOk = await takeRateLimit(`login-account:${email}`, 5, window);
   if (!ipOk || !accountOk) return { error: "Too many attempts. Wait 15 minutes and try again." };
 
   const password = String(form.get("password") ?? "");
-  const hash = process.env.ADMIN_PASSWORD_HASH ?? "";
-  // The password is checked even for a wrong email, so both failures take the same time.
-  const passwordOk = await verifyPassword(password, hash);
-  if (!isAdminEmail(email) || !passwordOk) return { error: "Wrong email or password." };
+  const adminId = await verifyAdminLogin(email, password);
+  // One message for a wrong email and a wrong password, so neither is confirmed.
+  if (!adminId) return { error: "Wrong email or password." };
 
-  await createSession(email);
+  await createSession(adminId);
   await audit(email, "login", "session", "Signed in");
   redirect("/admin");
 }

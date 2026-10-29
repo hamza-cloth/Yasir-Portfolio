@@ -1,4 +1,4 @@
-import { Geist_Mono, Plus_Jakarta_Sans, VT323 } from "next/font/google";
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -14,13 +14,4 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// Only the Terminal look uses VT323, so it is not preloaded for everyone.
-const vt323 = VT323({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-vt323",
-  display: "swap",
-  preload: false,
-});
-
-export const fontVariables = [jakarta, geistMono, vt323].map((font) => font.variable).join(" ");
+export const fontVariables = [jakarta, geistMono].map((font) => font.variable).join(" ");

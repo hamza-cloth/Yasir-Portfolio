@@ -47,11 +47,6 @@
     box-shadow: 0 0 0 3px var(--highlight);
   }
 
-  [data-look="terminal"] .signal-dot {
-    border-radius: 0;
-    box-shadow: 0 0 10px var(--c1);
-  }
-
   /* Accent words: the brand blue with a hand-drawn underline beneath. */
   .highlight {
     color: var(--c1-text);
@@ -64,11 +59,6 @@
     text-shadow: none;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
-  }
-
-  [data-look="terminal"] .highlight {
-    color: var(--amber);
-    background: none;
   }
 
   .text-gradient {
@@ -108,10 +98,6 @@
     font-size: var(--fs-hero-stack);
     line-height: var(--display-leading);
     letter-spacing: -0.035em;
-  }
-
-  [data-look="terminal"] .hero-name {
-    letter-spacing: 0;
   }
 
   .glow-hover {
@@ -198,26 +184,6 @@
     }
   }
 
-  .scanlines {
-    display: none;
-  }
-
-  [data-look="terminal"] .scanlines {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: calc(var(--z-cursor) - 1);
-    pointer-events: none;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 0,
-        rgba(0, 0, 0, 0) 2px,
-        rgba(0, 0, 0, 0.28) 3px
-      ),
-      radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
-  }
-
   /* Only the active look's name shows; CSS picks it, so it is right before hydration too. */
   .look-label {
     display: none;
@@ -226,7 +192,6 @@
   [data-look="porcelain"] .look-label[data-look-label="porcelain"],
   [data-look="midnight-ops"] .look-label[data-look-label="midnight-ops"],
   [data-look="sunset-fibre"] .look-label[data-look-label="sunset-fibre"],
-  [data-look="terminal"] .look-label[data-look-label="terminal"],
   [data-look="aurora"] .look-label[data-look-label="aurora"] {
     display: inline;
   }
@@ -409,11 +374,6 @@
     letter-spacing: -0.04em;
     fill: url(#footer-name-fade);
   }
-
-  [data-look="terminal"] .footer-name text {
-    font-weight: var(--display-weight);
-    letter-spacing: 0;
-  }
 }
 
 :root[data-transition="page"]::view-transition-old(root) {
@@ -434,20 +394,20 @@
 }
 
 :root[data-transition="look"]::view-transition-old(root) {
-  animation: skin-fade-out 300ms var(--easing-entrance) both;
+  animation: look-out 300ms var(--easing-entrance) both;
 }
 
 :root[data-transition="look"]::view-transition-new(root) {
-  animation: skin-fade-in 300ms var(--easing-entrance) both;
+  animation: look-in 300ms var(--easing-entrance) both;
 }
 
-@keyframes skin-fade-out {
+@keyframes look-out {
   to {
     opacity: 0;
   }
 }
 
-@keyframes skin-fade-in {
+@keyframes look-in {
   from {
     opacity: 0;
   }

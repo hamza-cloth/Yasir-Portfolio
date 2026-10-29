@@ -80,12 +80,6 @@
     background: radial-gradient(circle at 34% 28%, #2a3a78 0%, var(--tint-blue) 55%, #0d1430 100%);
   }
 
-  [data-look="terminal"] .globe-sphere {
-    background: none;
-    box-shadow: none;
-    border: 1px solid var(--line-2);
-  }
-
   .orbit {
     border: 1.5px dashed color-mix(in oklab, var(--c1) 28%, transparent);
     animation: orbit-spin 80s linear infinite;
@@ -144,7 +138,6 @@
   [data-look="porcelain"] .headline-porcelain,
   [data-look="midnight-ops"] .headline-midnight-ops,
   [data-look="sunset-fibre"] .headline-sunset-fibre,
-  [data-look="terminal"] .headline-terminal,
   [data-look="aurora"] .headline-aurora {
     display: inline;
   }
@@ -152,7 +145,6 @@
   [data-look="porcelain"] .hero-art-porcelain,
   [data-look="midnight-ops"] .hero-art-midnight-ops,
   [data-look="sunset-fibre"] .hero-art-sunset-fibre,
-  [data-look="terminal"] .hero-art-terminal,
   [data-look="aurora"] .hero-art-aurora {
     display: block;
   }
@@ -243,12 +235,6 @@
     to {
       --beam-angle: 360deg;
     }
-  }
-
-  [data-look="terminal"] .border-beam::after,
-  [data-look="terminal"] .hero-halo,
-  [data-look="terminal"] .orb {
-    display: none;
   }
 
   /* ---- Cursor-following border on tiles (pairs with .spotlight's inner glow). ---- */

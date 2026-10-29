@@ -20,10 +20,7 @@ function SeatGrid({ shift }: { shift: number }) {
       {SEATS.map((seat) => (
         <span
           key={seat}
-          className={cn(
-            "rounded-[4px] terminal:rounded-none",
-            isBooked(seat, shift) ? "bg-c1" : "border border-line-2",
-          )}
+          className={cn("rounded-[4px]", isBooked(seat, shift) ? "bg-c1" : "border border-line-2")}
         />
       ))}
     </div>

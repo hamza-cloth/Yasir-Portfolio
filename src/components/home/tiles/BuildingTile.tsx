@@ -27,7 +27,7 @@ export function BuildingTile({ projects, className }: BuildingTileProps) {
             <Link
               href={`/work/${project.slug}`}
               data-cursor="View"
-              className="group flex items-center justify-between gap-3 rounded-2xl bg-surface-solid/75 px-4 py-3 transition-colors hover:bg-surface-solid terminal:bg-transparent"
+              className="group flex items-center justify-between gap-3 rounded-2xl bg-surface-solid/75 px-4 py-3 transition-colors hover:bg-surface-solid"
             >
               <span className="flex min-w-0 flex-col">
                 <span className="font-bold tracking-[-0.02em] text-fg">{project.title}</span>

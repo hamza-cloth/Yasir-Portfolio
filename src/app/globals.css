@@ -8,7 +8,6 @@
 @import "../styles/pages.css";
 @import "../styles/motion.css";
 
-@custom-variant terminal (&:where([data-look="terminal"], [data-look="terminal"] *));
 @custom-variant paper (&:where([data-look="porcelain"], [data-look="porcelain"] *));
 
 @theme {

@@ -52,7 +52,14 @@ describe("runCommand", () => {
       type: "theme",
       look: "porcelain",
     });
+    expect(runCommand("theme dark", context).effect).toEqual({
+      type: "theme",
+      look: "midnight-ops",
+    });
+    expect(runCommand("theme light", context).effect).toEqual({ type: "theme", look: "porcelain" });
     expect(runCommand("theme neon", context).lines[0]?.kind).toBe("error");
+    expect(runCommand("theme terminal", context).effect).toBeUndefined();
+    expect(runCommand("theme constructor", context).effect).toBeUndefined();
   });
 
   it("returns clear and exit effects", () => {
@@ -70,7 +77,8 @@ describe("completeInput", () => {
   it("completes unique command and argument prefixes", () => {
     expect(completeInput("who")).toBe("whoami");
     expect(completeInput("cd exp")).toBe("cd experience");
-    expect(completeInput("theme te")).toBe("theme terminal");
+    expect(completeInput("theme au")).toBe("theme aurora");
+    expect(completeInput("theme da")).toBe("theme dark");
   });
 
   it("returns null when the prefix is ambiguous or already complete", () => {

@@ -1,13 +1,9 @@
-/* Design tokens. Structure (type scale, spacing, z-index) lives on :root; each of the five
+/* Design tokens. Structure (type scale, spacing, z-index) lives on :root; each of the four
    looks is a colour-and-shape set on [data-look]. Selectors are not tied to :root, so the
    admin can preview any look inside a container that carries data-look. */
 
-/* Type and shape shared by every look except Terminal, which overrides them below. */
-:root,
-[data-look="porcelain"],
-[data-look="midnight-ops"],
-[data-look="sunset-fibre"],
-[data-look="aurora"] {
+/* Type and shape shared by every look. */
+:root {
   --ff-display: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --ff-body: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --ff-serif: var(--ff-display);
@@ -20,7 +16,6 @@
   --r-pill: 999px;
   --r-field: 14px;
   --r-chip: 10px;
-  --text-glow: none;
 }
 
 :root {
@@ -83,7 +78,7 @@
   --amber: #ff8a3d;
   --amber-ink: #1c1206;
   --highlight: rgba(43, 89, 255, 0.14);
-  --ok: #12a35b;
+  --ok: #0b7a43;
   --red: #e5484d;
   --glow: rgba(43, 89, 255, 0.16);
   --curtain: #0e1220;
@@ -209,7 +204,7 @@
   --amber: #7c2d5b;
   --amber-ink: #ffffff;
   --highlight: rgba(249, 115, 22, 0.16);
-  --ok: #15803d;
+  --ok: #13743a;
   --red: #be123c;
   --glow: rgba(249, 115, 22, 0.18);
   --curtain: #2a1a1f;
@@ -245,88 +240,12 @@
   --dot-grid: rgba(42, 26, 31, 0.07);
   --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%23f97316' stroke-width='3.2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
 
-  --shiki-token-keyword: #c2410c;
+  --shiki-token-keyword: #b23c0b;
   --shiki-token-parameter: #7c2d5b;
   --shiki-token-function: #7a3e8e;
   --shiki-token-constant: #3f6b3a;
   --shiki-token-string: #7c2d5b;
   --shiki-token-string-expression: #7c2d5b;
-}
-
-/* ---- Terminal: near-black, phosphor green, monospace headings. ---- */
-[data-look="terminal"] {
-  color-scheme: dark;
-
-  --bg: #050805;
-  --bg-2: #081008;
-  --surface: rgba(10, 18, 10, 0.85);
-  --surface-solid: #0a120a;
-  --surface-2: #0e180e;
-  --fg: #4ade80;
-  --muted: #2fae5f;
-  --faint: #34a85e;
-  --line: rgba(74, 222, 128, 0.18);
-  --line-2: rgba(74, 222, 128, 0.34);
-  --c1: #4ade80;
-  --c1-ink: #050805;
-  --c1-text: #4ade80;
-  --c1-soft: #0e1d0e;
-  --amber: #facc15;
-  --amber-ink: #170d00;
-  --highlight: rgba(250, 204, 21, 0.25);
-  --ok: #4ade80;
-  --red: #f87171;
-  --glow: rgba(74, 222, 128, 0.24);
-  --curtain: #050805;
-  --curtain-fg: #4ade80;
-  --curtain-muted: #2fae5f;
-  --text-glow: 0 0 6px rgba(74, 222, 128, 0.4);
-
-  --tint-blue: #0e180e;
-  --tint-blue-ink: #4ade80;
-  --tint-mint: #0e180e;
-  --tint-mint-ink: #4ade80;
-  --tint-peach: #0e180e;
-  --tint-peach-ink: #facc15;
-  --tint-lilac: #0e180e;
-  --tint-lilac-ink: #4ade80;
-  --tint-butter: #0e180e;
-  --tint-butter-ink: #facc15;
-
-  --r-pill: 0;
-  --r-field: 0;
-  --r-chip: 0;
-  --r-panel: 0;
-  --r-tile: 0;
-  --r-card: 0;
-  --r-button: 0;
-  /* The bold feature cards (CCNA, contact) always carry white text on this. */
-  --feature-bg: #0a120a;
-  --accent-fill: var(--c1);
-  --accent-gradient: linear-gradient(90deg, #4ade80, #4ade80);
-  --edge-light: none;
-  --shadow-soft: none;
-  --shadow-lift: none;
-  --card-sheen: none;
-  --page-wash: none;
-  --dot-grid: transparent;
-  --underline-svg: none;
-
-  --ff-display: var(--font-vt323), ui-monospace, monospace;
-  --ff-body: var(--font-geist-mono), ui-monospace, monospace;
-  --ff-serif: var(--font-vt323), ui-monospace, monospace;
-  --display-weight: 400;
-  --display-tracking: 0;
-  --display-leading: 0.9;
-  --fs-hero-split: clamp(3.4rem, min(7.4vw, 13svh), 7rem);
-  --fs-hero-stack: clamp(3rem, 14vw, 5.5rem);
-
-  --shiki-token-keyword: #4ade80;
-  --shiki-token-parameter: #facc15;
-  --shiki-token-function: #b6ffcc;
-  --shiki-token-constant: #facc15;
-  --shiki-token-string: #facc15;
-  --shiki-token-string-expression: #facc15;
 }
 
 /* ---- Aurora: deep indigo with a soft violet and teal gradient mesh. ---- */

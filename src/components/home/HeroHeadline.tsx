@@ -11,7 +11,7 @@ function Scribble({ children }: { children: ReactNode }) {
         aria-hidden="true"
         viewBox="0 0 300 18"
         preserveAspectRatio="none"
-        className="absolute -bottom-[0.14em] left-0 h-[0.26em] w-full overflow-visible terminal:hidden"
+        className="absolute -bottom-[0.14em] left-0 h-[0.26em] w-full overflow-visible"
       >
         <path
           d="M3 12 C 60 4, 140 3, 200 7 S 280 11, 297 6"
@@ -43,12 +43,6 @@ const HEADLINES: Record<Look, ReactNode> = {
   "sunset-fibre": (
     <>
       Calm on support, careful on networks, <Scribble>quick to ship.</Scribble>
-    </>
-  ),
-  terminal: (
-    <>
-      $ whoami <br />
-      network engineer <Scribble>who ships software_</Scribble>
     </>
   ),
   aurora: (

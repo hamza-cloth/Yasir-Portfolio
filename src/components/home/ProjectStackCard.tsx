@@ -66,7 +66,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
           <Link
             href={`/work/${project.slug}`}
             data-cursor="View"
-            className="group/link mt-2 inline-flex min-h-12 items-center gap-2 rounded-pill bg-fg px-6 text-[0.95rem] font-semibold text-bg transition-transform duration-300 hover:-translate-y-0.5 terminal:bg-c1 terminal:text-c1-ink"
+            className="group/link mt-2 inline-flex min-h-12 items-center gap-2 rounded-pill bg-fg px-6 text-[0.95rem] font-semibold text-bg transition-transform duration-300 hover:-translate-y-0.5"
           >
             Read the case study
             <span className="sr-only">: {project.title}</span>

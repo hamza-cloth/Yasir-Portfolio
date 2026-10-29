@@ -16,7 +16,7 @@ export function MockupFrame({ label, title, children, className }: MockupFramePr
       role="img"
       aria-label={label}
       className={cn(
-        "relative flex aspect-[4/3] w-full min-w-0 flex-col overflow-hidden rounded-[18px] border border-line bg-surface-solid shadow-(--shadow-lift) terminal:rounded-none",
+        "relative flex aspect-[4/3] w-full min-w-0 flex-col overflow-hidden rounded-[18px] border border-line bg-surface-solid shadow-(--shadow-lift)",
         className,
       )}
     >

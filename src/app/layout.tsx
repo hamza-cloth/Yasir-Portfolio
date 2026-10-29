@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 
 import { InlineScript } from "@/components/layout/InlineScript";
-import { ScanlineOverlay } from "@/components/layout/ScanlineOverlay";
 import { getLookConfig } from "@/lib/data/settings";
 import { fontVariables } from "@/lib/fonts";
 import { buildLookScript } from "@/lib/look-script";
@@ -41,10 +40,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <head>
         <InlineScript html={buildLookScript(await getLookConfig())} />
       </head>
-      <body>
-        {children}
-        <ScanlineOverlay />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

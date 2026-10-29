@@ -13,7 +13,7 @@ npm install
 cp .env.example .env          # then fill it in (see below)
 npm run db:up                 # local Postgres in Docker; or: npx prisma dev
 npm run db:deploy             # apply migrations
-npm run db:seed               # first-time content (only fills empty tables)
+npm run db:seed               # admin account + first-time content (only fills empty tables)
 npm run dev                   # http://localhost:3000
 ```
 
@@ -30,8 +30,7 @@ Checks: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
 | `DATABASE_URL`                                     | Postgres for content, messages and the admin. Neon's pooled URL in production. |
 | `DATABASE_URL_UNPOOLED`                            | Direct connection used only by `prisma migrate`.                               |
 | `IP_HASH_SALT`                                     | Salt for hashing visitor IPs in rate limits (any long random string).          |
-| `ADMIN_EMAIL`                                      | The only account allowed into `/admin`.                                        |
-| `ADMIN_PASSWORD_HASH`                              | `npm run admin:hash -- "a long password"`; paste the output.                   |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD`                    | Local `.env` only. Read by `npm run db:seed`, which stores an argon2id hash.   |
 | `BLOB_READ_WRITE_TOKEN`                            | Uploads (photo, covers, résumé PDFs). Set by the Vercel Blob integration.      |
 | `RESEND_API_KEY`, `EMAIL_FROM`, `CONTACT_TO_EMAIL` | Optional email alert for each contact message.                                 |
 | `NEXT_PUBLIC_SENTRY_DSN`                           | Optional; see `src/lib/monitoring.ts`.                                         |
@@ -40,8 +39,12 @@ Deploys run `vercel-build`, which applies pending migrations when a database is 
 
 ## The admin panel
 
-Sign in at `/admin` with `ADMIN_EMAIL` and the password behind `ADMIN_PASSWORD_HASH`
-(5 attempts per 15 minutes). From there you can edit the profile, projects (drag to reorder),
+Sign in at `/admin` with the email and password the seed was run with (5 attempts per 15 minutes
+per IP and per email). To set or change them, put `ADMIN_EMAIL` and `ADMIN_PASSWORD` (12+
+characters) in your local `.env` and run `npm run db:seed` against the target database: it creates
+or updates the one admin account, stores only an argon2id hash of the password, removes any other
+account and signs everyone out. Re-running it with the same values changes nothing. The deployed app
+never reads these two variables, so they are not set on Vercel. From there you can edit the profile, projects (drag to reorder),
 notes, experience, education, skills and SEO; read and sort messages; upload the photo, covers
 and résumé PDFs; and choose the home-page looks. Every save refreshes only the affected pages,
 and every change is written to the audit log on the dashboard.

@@ -15,7 +15,6 @@ export function DiagramBox({ node }: { node: DiagramNode }) {
         width={NODE_WIDTH}
         height={NODE_HEIGHT}
         rx="14"
-        className="terminal:[rx:0]"
         fill="var(--surface-solid)"
         stroke={accent}
         strokeWidth={node.tone ? 1.6 : 1}

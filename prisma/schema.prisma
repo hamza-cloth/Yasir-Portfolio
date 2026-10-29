@@ -71,7 +71,7 @@ model SiteSettings {
   nowItems     String[]
   nowUpdatedAt DateTime?
   // Home-page looks: which are on, and how the next one is chosen (random, sequential, fixed).
-  looksEnabled String[]  @default(["porcelain", "midnight-ops", "sunset-fibre", "terminal", "aurora"])
+  looksEnabled String[]  @default(["porcelain", "midnight-ops", "sunset-fibre", "aurora"])
   looksMode    String    @default("random")
   looksFixed   String    @default("porcelain")
   openToWork   Boolean   @default(true)
@@ -226,6 +226,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  // argon2id hash; only the admin account has one. Set by the seed from ADMIN_PASSWORD.
+  passwordHash  String?
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())

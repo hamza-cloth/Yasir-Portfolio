@@ -6,6 +6,7 @@ import path from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "../src/generated/prisma/client";
+import { hashPassword, verifyPassword } from "../src/lib/auth/password";
 import { CREDENTIALS } from "../src/lib/content/credentials";
 import { EXPERIENCE } from "../src/lib/content/experience";
 import { NOTES } from "../src/lib/content/notes";
@@ -18,8 +19,45 @@ if (!connectionString) throw new Error("DATABASE_URL is not set.");
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
+// The one admin account, from ADMIN_EMAIL and ADMIN_PASSWORD (kept only in the local .env); the
+// database stores just the argon2id hash. Every other account is removed, and every session ends,
+// whenever something changed. Running it again with the same values changes nothing.
+async function seedAdmin() {
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
+  if (!email || !password) {
+    console.log("ADMIN_EMAIL or ADMIN_PASSWORD is not set; the admin account was left as it is.");
+    return;
+  }
+  if (password.length < 12) throw new Error("ADMIN_PASSWORD must be at least 12 characters.");
+
+  const others = { OR: [{ email: { not: email } }, { email: null }] };
+  const current = await db.user.findUnique({ where: { email }, select: { passwordHash: true } });
+  const samePassword = current?.passwordHash
+    ? await verifyPassword(password, current.passwordHash)
+    : false;
+  if (samePassword && (await db.user.count({ where: others })) === 0) {
+    console.log("Admin account already up to date.");
+    return;
+  }
+
+  const passwordHash =
+    samePassword && current?.passwordHash ? current.passwordHash : await hashPassword(password);
+  await db.$transaction([
+    db.user.deleteMany({ where: others }),
+    db.user.upsert({
+      where: { email },
+      update: { passwordHash },
+      create: { email, name: "Admin", passwordHash },
+    }),
+    db.session.deleteMany(),
+  ]);
+  console.log(`Admin account set to ${email}; older accounts removed and all sessions ended.`);
+}
+
 // Each table is filled only while it is empty, so re-running never overwrites edits made in /admin.
 async function main() {
+  await seedAdmin();
   const now = new Date();
 
   await db.siteSettings.upsert({

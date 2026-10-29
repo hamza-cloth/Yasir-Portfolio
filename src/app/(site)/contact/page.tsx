@@ -59,7 +59,7 @@ export default async function ContactPage() {
             <div className="surface relative isolate h-full overflow-hidden rounded-panel border border-line-2 p-[clamp(22px,4vw,48px)] shadow-(--shadow-lift)">
               <div
                 aria-hidden="true"
-                className="absolute -top-1/3 -right-1/4 -z-10 size-[36rem] bg-[radial-gradient(closest-side,var(--glow),transparent)] terminal:hidden"
+                className="absolute -top-1/3 -right-1/4 -z-10 size-[36rem] bg-[radial-gradient(closest-side,var(--glow),transparent)]"
               />
               <div className="mb-8 flex flex-col gap-2">
                 <p className="label-mono flex items-center gap-2.5 text-ok">

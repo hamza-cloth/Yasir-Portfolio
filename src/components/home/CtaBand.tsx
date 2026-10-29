@@ -15,7 +15,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
     <section aria-labelledby="cta-title" className="py-20 md:py-24">
       <Container>
         <Reveal>
-          <div className="relative isolate overflow-hidden rounded-[36px] px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--c1)] [background:var(--feature-bg)] terminal:rounded-none terminal:border terminal:border-c1 terminal:bg-bg terminal:text-fg">
+          <div className="relative isolate overflow-hidden rounded-[36px] px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--c1)] [background:var(--feature-bg)]">
             <div
               aria-hidden="true"
               className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1.4px)] [mask-image:radial-gradient(ellipse_at_top_right,#000,transparent_70%)] bg-size-[22px_22px]"
@@ -31,7 +31,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
 
             <ul
               aria-hidden="true"
-              className="absolute top-1/2 right-[6%] hidden -translate-y-1/2 flex-col gap-4 xl:flex terminal:hidden"
+              className="absolute top-1/2 right-[6%] hidden -translate-y-1/2 flex-col gap-4 xl:flex"
             >
               <li className="float-card flex w-72 items-center gap-3 rounded-2xl bg-white p-4 text-[#0e1220] shadow-[0_24px_50px_-20px_rgba(0,0,0,0.35)]">
                 <span className="grid size-10 place-items-center rounded-xl bg-[#e7edff] text-[#1d3fbf]">
@@ -78,11 +78,11 @@ export function CtaBand({ email, availability }: CtaBandProps) {
               </p>
               <h2
                 id="cta-title"
-                className="text-[clamp(2.3rem,5vw,4.25rem)] leading-[1.02] tracking-[-0.035em] text-white terminal:text-fg"
+                className="text-[clamp(2.3rem,5vw,4.25rem)] leading-[1.02] tracking-[-0.035em] text-white"
               >
                 Need someone who can fix the network and ship the app?
               </h2>
-              <p className="max-w-xl text-lg text-white/80 terminal:text-muted">
+              <p className="max-w-xl text-lg text-white/80">
                 Tell me about the role or the problem. I reply within a day, India Standard Time.
               </p>
 
@@ -94,7 +94,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
                   id="cta-email"
                   readOnly
                   value={email}
-                  className="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-[0.95rem] text-white outline-none terminal:text-fg"
+                  className="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-[0.95rem] text-white outline-none"
                 />
                 <CopyButton value={email} variant="white">
                   Copy
@@ -108,7 +108,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
                 </Button>
                 <a
                   href={`mailto:${email}`}
-                  className="inline-flex min-h-12 items-center gap-2 font-semibold text-white/90 underline-offset-4 hover:underline terminal:text-fg"
+                  className="inline-flex min-h-12 items-center gap-2 font-semibold text-white/90 underline-offset-4 hover:underline"
                 >
                   <Icon name="mail" size={17} />
                   Open in your mail app

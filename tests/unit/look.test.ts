@@ -71,9 +71,7 @@ describe("pickLook", () => {
   });
 
   it("always returns the fixed look in fixed mode", () => {
-    expect(pickLook({ ...ALL, mode: "fixed", fixed: "terminal" }, "terminal", 0.3)).toBe(
-      "terminal",
-    );
+    expect(pickLook({ ...ALL, mode: "fixed", fixed: "aurora" }, "aurora", 0.3)).toBe("aurora");
   });
 
   it("cycles through the enabled looks for the change-look button", () => {
@@ -86,6 +84,12 @@ describe("pickLook", () => {
       mode: "random",
       fixed: DEFAULT_LOOK,
     });
+  });
+
+  it("drops the removed Terminal look and maps a fixed Terminal to Midnight Ops", () => {
+    expect(
+      normaliseLookConfig({ enabled: ["terminal" as never, "aurora"], fixed: "terminal" as never }),
+    ).toEqual({ enabled: ["aurora"], mode: "random", fixed: "midnight-ops" });
   });
 });
 
@@ -128,6 +132,21 @@ describe("pre-paint look script", () => {
       config: { enabled: ["porcelain"] },
     });
     expect(data.look).toBe("porcelain");
+  });
+
+  it("rewrites a stored Terminal look to Midnight Ops", () => {
+    const local = memoryStorage({ [LAST_LOOK_KEY]: "terminal" });
+    const session = memoryStorage({ [CURRENT_LOOK_KEY]: "terminal" });
+    expect(runScript({ path: "/work", local, session }).look).toBe("midnight-ops");
+    expect(local.values.get(LAST_LOOK_KEY)).toBe("midnight-ops");
+    expect(session.values.get(CURRENT_LOOK_KEY)).toBe("midnight-ops");
+  });
+
+  it("never shows Terminal on the home page, whatever is stored", () => {
+    for (const random of [0, 0.3, 0.6, 0.999]) {
+      const local = memoryStorage({ [LAST_LOOK_KEY]: "terminal" });
+      expect(LOOKS).toContain(runScript({ local, random }).look);
+    }
   });
 
   it("still picks a valid look when storage is blocked", () => {

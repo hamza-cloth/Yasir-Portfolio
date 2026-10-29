@@ -41,10 +41,11 @@ export default function LoginPage() {
           <div className="flex flex-col gap-3 text-sm leading-relaxed text-muted">
             <p className="text-fg">The admin area is not configured yet.</p>
             <p>
-              Set <code className="font-mono text-c1-text">DATABASE_URL</code>,{" "}
+              Set <code className="font-mono text-c1-text">DATABASE_URL</code>, then put{" "}
               <code className="font-mono text-c1-text">ADMIN_EMAIL</code> and{" "}
-              <code className="font-mono text-c1-text">ADMIN_PASSWORD_HASH</code>, then redeploy.
-              Generate the hash with <code className="font-mono">npm run admin:hash</code>.
+              <code className="font-mono text-c1-text">ADMIN_PASSWORD</code> in your local{" "}
+              <code className="font-mono">.env</code> and run{" "}
+              <code className="font-mono">npm run db:seed</code>.
             </p>
           </div>
         )}

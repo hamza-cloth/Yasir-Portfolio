@@ -1,8 +1,8 @@
 import { REDUCED_MOTION_QUERY } from "./motion";
 
-// The five complete design looks. Each is a set of CSS variables on <html data-look="…">;
+// The four complete design looks. Each is a set of CSS variables on <html data-look="…">;
 // layout and content never change between them.
-export const LOOKS = ["porcelain", "midnight-ops", "sunset-fibre", "terminal", "aurora"] as const;
+export const LOOKS = ["porcelain", "midnight-ops", "sunset-fibre", "aurora"] as const;
 
 export type Look = (typeof LOOKS)[number];
 export type ColorTheme = "dark" | "light";
@@ -14,7 +14,6 @@ export const LOOK_LABELS: Record<Look, string> = {
   porcelain: "Porcelain",
   "midnight-ops": "Midnight Ops",
   "sunset-fibre": "Sunset Fibre",
-  terminal: "Terminal",
   aurora: "Aurora",
 };
 
@@ -22,7 +21,6 @@ export const LOOK_THEMES: Record<Look, ColorTheme> = {
   porcelain: "light",
   "midnight-ops": "dark",
   "sunset-fibre": "light",
-  terminal: "dark",
   aurora: "dark",
 };
 
@@ -31,7 +29,6 @@ export const LOOK_SWATCHES: Record<Look, [string, string, string]> = {
   porcelain: ["#f5f6f8", "#ffffff", "#2b59ff"],
   "midnight-ops": ["#0a0f1e", "#111a30", "#22d3ee"],
   "sunset-fibre": ["#fbf5ec", "#fffdf9", "#f97316"],
-  terminal: ["#050805", "#0a120a", "#4ade80"],
   aurora: ["#0d0b26", "#171442", "#a78bfa"],
 };
 
@@ -51,6 +48,10 @@ export const DEFAULT_LOOK_CONFIG: LookConfig = {
 export const LAST_LOOK_KEY = "ya-look-last";
 export const CURRENT_LOOK_KEY = "ya-look";
 
+// Looks that were removed, mapped to the closest one still offered, so a value already stored in
+// a browser or the database keeps resolving.
+export const RETIRED_LOOKS: Readonly<Record<string, Look>> = { terminal: "midnight-ops" };
+
 export function isLook(value: unknown): value is Look {
   return typeof value === "string" && (LOOKS as readonly string[]).includes(value);
 }
@@ -62,7 +63,8 @@ export function isLookMode(value: unknown): value is LookMode {
 // Cleans an untrusted config (from the database) into one that always has a usable look.
 export function normaliseLookConfig(config: Partial<LookConfig> | null | undefined): LookConfig {
   const enabled = (config?.enabled ?? []).filter(isLook);
-  const fixed = isLook(config?.fixed) ? config.fixed : DEFAULT_LOOK;
+  const retired = typeof config?.fixed === "string" ? RETIRED_LOOKS[config.fixed] : undefined;
+  const fixed = isLook(config?.fixed) ? config.fixed : (retired ?? DEFAULT_LOOK);
   return {
     enabled: enabled.length > 0 ? [...new Set(enabled)] : [DEFAULT_LOOK],
     mode: isLookMode(config?.mode) ? config.mode : "random",

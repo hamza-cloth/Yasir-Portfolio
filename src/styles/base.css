@@ -20,7 +20,6 @@
     font-family: var(--ff-body);
     font-size: var(--fs-body);
     line-height: 1.65;
-    text-shadow: var(--text-glow);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -82,7 +81,6 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  [data-look="terminal"] body::after,
   [data-look="porcelain"] body::after {
     display: none;
   }
@@ -114,7 +112,7 @@
 
 /* Phones: nothing reads smaller than 14px. */
 @media (max-width: 44.99rem) {
-  /* Matches the skin selectors' specificity, so it wins on every skin. */
+  /* Matches the look selectors' specificity, so it wins on every look. */
   :root,
   :root[data-look] {
     --fs-label: 0.875rem;

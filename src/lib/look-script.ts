@@ -5,6 +5,7 @@ import {
   LOOK_THEMES,
   LOOKS,
   normaliseLookConfig,
+  RETIRED_LOOKS,
   type LookConfig,
 } from "./look";
 
@@ -12,6 +13,7 @@ import {
 // flashes another look. It mirrors pickLook() in look.ts (covered by the same unit tests):
 // the home page picks a new look on every load and never repeats the last one; other pages keep
 // the look of this visit. Storage is optional: blocked storage falls back to the default look.
+// A retired look found in storage is rewritten to its replacement first.
 export function buildLookScript(input: Partial<LookConfig> | null): string {
   const config = normaliseLookConfig(input);
   const data = JSON.stringify({
@@ -21,14 +23,16 @@ export function buildLookScript(input: Partial<LookConfig> | null): string {
     mode: config.mode,
     fixed: config.fixed,
     fallback: DEFAULT_LOOK,
+    retired: RETIRED_LOOKS,
     lastKey: LAST_LOOK_KEY,
     currentKey: CURRENT_LOOK_KEY,
   });
 
   return `(function(){var c=${data},d=document.documentElement,e=c.enabled,l=null,s=null,k=null;
 function ok(v){return c.looks.indexOf(v)>-1}
-try{l=localStorage.getItem(c.lastKey)}catch(x){}
-try{s=sessionStorage.getItem(c.currentKey)}catch(x){}
+function mv(v){return v&&Object.prototype.hasOwnProperty.call(c.retired,v)?c.retired[v]:v}
+try{l=localStorage.getItem(c.lastKey);if(mv(l)!==l){l=mv(l);localStorage.setItem(c.lastKey,l)}}catch(x){}
+try{s=sessionStorage.getItem(c.currentKey);if(mv(s)!==s){s=mv(s);sessionStorage.setItem(c.currentKey,s)}}catch(x){}
 var a=location.pathname.indexOf("/admin")===0;
 if(a)k=c.fallback;
 else if(location.pathname!=="/"&&ok(s))k=s;

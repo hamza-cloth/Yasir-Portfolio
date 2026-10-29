@@ -4,7 +4,7 @@ const PRODUCT_TONES = ["bg-c1/25", "bg-amber/25", "bg-ok/20", "bg-line-2"];
 
 export function PhoneStorefront() {
   return (
-    <div className="mx-auto flex aspect-[9/17] h-full max-h-full flex-col overflow-hidden rounded-[22px] border-4 border-line-2 bg-surface-solid terminal:rounded-none">
+    <div className="mx-auto flex aspect-[9/17] h-full max-h-full flex-col overflow-hidden rounded-[22px] border-4 border-line-2 bg-surface-solid">
       <div className="flex items-center justify-between px-3 pt-3 pb-2">
         <span className="font-display text-xs leading-none text-fg">Hamza Cloth</span>
         <span className="size-3 rounded-full border border-line-2" />

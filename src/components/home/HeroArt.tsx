@@ -43,8 +43,6 @@ export function HeroArt() {
         <div className="absolute top-[8%] right-[4%] size-[34rem] rounded-full bg-[linear-gradient(180deg,#fdba74,#f97316_45%,#db2777_80%,#7c2d5b)] [mask-image:repeating-linear-gradient(180deg,#000_0_14px,transparent_14px_20px)] opacity-35 blur-[2px]" />
       </div>
 
-      <div className="hero-art hero-art-terminal absolute inset-0 [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_70%_40%,#000,transparent_70%)] bg-size-[40px_40px]" />
-
       <div className="hero-art hero-art-aurora absolute inset-0">
         <div className="orb top-[-10%] right-[0%] size-[38rem] bg-[#8b5cf6]/35" />
         <div

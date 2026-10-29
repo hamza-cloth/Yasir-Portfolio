@@ -38,7 +38,7 @@ export function Avatar({
     >
       <span
         className={cn(
-          "block size-full overflow-hidden rounded-full bg-c1-soft terminal:rounded-none",
+          "block size-full overflow-hidden rounded-full bg-c1-soft",
           ring && "ring-4 ring-c1/25 ring-offset-2 ring-offset-bg",
         )}
       >

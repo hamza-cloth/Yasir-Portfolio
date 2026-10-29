@@ -22,8 +22,7 @@ type NativeButtonProps = SharedProps &
 export type ButtonProps = LinkButtonProps | NativeButtonProps;
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary:
-    "btn-shine bg-fg text-bg shadow-(--shadow-soft) hover:-translate-y-0.5 terminal:bg-c1 terminal:text-c1-ink",
+  primary: "btn-shine bg-fg text-bg shadow-(--shadow-soft) hover:-translate-y-0.5",
   accent:
     "btn-shine btn-accent shadow-[0_10px_24px_-10px_var(--c1)] hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-12px_var(--c1)]",
   line: "border border-line-2 bg-surface-solid text-fg shadow-(--shadow-soft) hover:-translate-y-0.5 hover:border-fg/20",
@@ -41,7 +40,6 @@ export function buttonClassName(variant: ButtonVariant, size: ButtonSize, classN
     "group/button inline-flex items-center justify-center gap-2 rounded-(--r-button) font-semibold tracking-[-0.01em] whitespace-nowrap",
     "transition-[transform,background-color,border-color,box-shadow] duration-300 ease-entrance active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50",
     "[&_svg]:transition-transform [&_svg]:duration-300 [&_svg]:ease-entrance hover:[&_svg]:translate-x-0.5",
-    "terminal:text-shadow-none",
     VARIANTS[variant],
     SIZES[size],
     className,

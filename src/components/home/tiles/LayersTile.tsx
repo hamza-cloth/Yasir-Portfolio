@@ -36,7 +36,7 @@ export function LayersTile({ layers, className }: LayersTileProps) {
             <span className="label-mono font-semibold">L{group.layer}</span>
             <span className="flex min-w-0 flex-col gap-1">
               <span className="truncate text-sm font-semibold text-fg">{group.name}</span>
-              <span className="h-1.5 overflow-hidden rounded-full bg-surface-solid/70 terminal:bg-transparent">
+              <span className="h-1.5 overflow-hidden rounded-full bg-surface-solid/70">
                 <span
                   className="layer-bar block h-full rounded-full bg-current"
                   style={cssVars({ "--fill": group.skills.length / most })}
