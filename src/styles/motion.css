@@ -135,10 +135,10 @@
   }
 
   /* ---- Hero backdrop: two light pools and fibre lines in the look's own colours. ---- */
+  /* The radial gradient is already soft; a blur filter here leaks into WebKit's scroll width. */
   .hero-pool {
     position: absolute;
     border-radius: 999px;
-    filter: blur(70px);
     animation: orb-float 16s ease-in-out infinite alternate;
   }
 

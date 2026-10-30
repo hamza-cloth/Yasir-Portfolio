@@ -29,7 +29,9 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       <SkipLink />
       <ScrollProgress />
       <Header />
-      <main id="main" tabIndex={-1}>
+      {/* Clip, not hidden: sections waiting to reveal lean in 3D and project wider than the
+          screen, which WebKit counts as page width; clip keeps the sticky project cards working. */}
+      <main id="main" tabIndex={-1} className="overflow-x-clip">
         {children}
       </main>
       <Footer settings={settings} />

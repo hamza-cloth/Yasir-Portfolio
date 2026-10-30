@@ -31,7 +31,7 @@ export function Hero({ name, roleLine, photo, openToWork, stats }: HeroProps) {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden pt-[calc(var(--header-h)+32px)] pb-14 md:flex md:min-h-svh md:flex-col md:justify-center md:pt-[calc(var(--header-h)+16px)] md:pb-10"
+      className="relative isolate overflow-clip pt-[calc(var(--header-h)+32px)] pb-14 md:flex md:min-h-svh md:flex-col md:justify-center md:pt-[calc(var(--header-h)+16px)] md:pb-10"
     >
       <HeroArt />
       <Container>
