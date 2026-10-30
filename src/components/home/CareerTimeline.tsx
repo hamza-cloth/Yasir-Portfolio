@@ -9,7 +9,7 @@ import type { TimelineEntry } from "@/lib/timeline";
 
 export function CareerTimeline({ entries }: { entries: TimelineEntry[] }) {
   return (
-    <section aria-labelledby="career-title" className="py-20 md:py-24">
+    <section aria-labelledby="career-title" className="py-14 md:py-16">
       <Container className="grid gap-12 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-16">
         <div className="flex flex-col items-start gap-8 md:sticky md:top-[calc(var(--header-h)+32px)] md:self-start">
           <SectionHead

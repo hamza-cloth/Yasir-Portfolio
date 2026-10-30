@@ -5,7 +5,6 @@ import { cssVars } from "@/lib/css-vars";
 type StatusCard = {
   title: string;
   detail: string;
-  tone: "ok" | "blue" | "mint" | "peach";
   position: string;
   icon: "pulse" | "link" | "check" | "rocket";
 };
@@ -14,39 +13,28 @@ const CARDS: StatusCard[] = [
   {
     title: "ping hire.yasir",
     detail: "0% packet loss",
-    tone: "ok",
     position: "top-[6%] -left-[4%]",
     icon: "pulse",
   },
   {
     title: "OSPF neighbour",
     detail: "State: FULL",
-    tone: "blue",
     position: "top-[16%] -right-[6%]",
     icon: "link",
   },
   {
     title: "Ticket resolved",
     detail: "DNS fixed",
-    tone: "mint",
     position: "bottom-[18%] -left-[8%]",
     icon: "check",
   },
   {
     title: "Deploy succeeded",
     detail: "3 products in build",
-    tone: "peach",
     position: "bottom-[4%] right-[2%]",
     icon: "rocket",
   },
 ];
-
-const TONES: Record<StatusCard["tone"], string> = {
-  ok: "bg-tint-mint text-tint-mint-ink",
-  blue: "bg-tint-blue text-tint-blue-ink",
-  mint: "bg-tint-mint text-tint-mint-ink",
-  peach: "bg-tint-peach text-tint-peach-ink",
-};
 
 const ICONS: Record<StatusCard["icon"], string> = {
   pulse: "M3 12h4l2-5 4 10 2-5h6",
@@ -76,7 +64,7 @@ export function HeroGlobe({ className }: { className?: string }) {
           >
             <div className="intro">
               <div className="float-card flex items-center gap-3 rounded-2xl border border-line bg-surface-solid/95 py-2.5 pr-4 pl-2.5 shadow-(--shadow-lift) backdrop-blur-md">
-                <span className={cn("grid size-9 place-items-center rounded-xl", TONES[card.tone])}>
+                <span className="grid size-9 place-items-center rounded-xl bg-c1-soft text-c1-text">
                   <svg viewBox="0 0 24 24" className="size-[18px]" fill="none">
                     <path
                       d={ICONS[card.icon]}

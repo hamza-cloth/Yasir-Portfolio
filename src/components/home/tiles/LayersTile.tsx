@@ -15,12 +15,7 @@ export function LayersTile({ layers, className }: LayersTileProps) {
   const most = Math.max(1, ...layers.map((group) => group.skills.length));
 
   return (
-    <Tile
-      className={cn(
-        "flex flex-col gap-5 border-transparent bg-tint-lilac text-tint-lilac-ink",
-        className,
-      )}
-    >
+    <Tile className={cn("flex flex-col gap-5 text-fg", className)}>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <TileHead eyebrow="Skills by layer" title="All seven OSI layers" />
         <TileLink href="/skills" className="mt-0 text-fg">
@@ -33,17 +28,17 @@ export function LayersTile({ layers, className }: LayersTileProps) {
             key={group.layer}
             className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3"
           >
-            <span className="label-mono font-semibold">L{group.layer}</span>
+            <span className="label-mono font-semibold text-c1-text">L{group.layer}</span>
             <span className="flex min-w-0 flex-col gap-1">
               <span className="truncate text-sm font-semibold text-fg">{group.name}</span>
-              <span className="h-1.5 overflow-hidden rounded-full bg-surface-solid/70">
+              <span className="h-1.5 overflow-hidden rounded-full bg-surface-2">
                 <span
-                  className="layer-bar block h-full rounded-full bg-current"
+                  className="layer-bar block h-full rounded-full [background:var(--accent-fill)]"
                   style={cssVars({ "--fill": group.skills.length / most })}
                 />
               </span>
             </span>
-            <span className="label-mono">{group.skills.length}</span>
+            <span className="label-mono text-muted">{group.skills.length}</span>
           </li>
         ))}
       </ol>

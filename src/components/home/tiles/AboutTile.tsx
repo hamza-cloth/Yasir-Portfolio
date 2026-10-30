@@ -1,24 +1,18 @@
-import { CountUp } from "@/components/ui/CountUp";
 import { Tile } from "@/components/ui/Tile";
 import { cn } from "@/lib/cn";
 
 import { TileHead } from "./TileHead";
 import { TileLink } from "./TileLink";
 
-export type AboutStat = {
-  value: number | string;
-  label: string;
-};
-
 type AboutTileProps = {
   headline: string;
   location: string;
   facts: string[];
-  stats: AboutStat[];
+  toolbox: string[];
   className?: string;
 };
 
-export function AboutTile({ headline, location, facts, stats, className }: AboutTileProps) {
+export function AboutTile({ headline, location, facts, toolbox, className }: AboutTileProps) {
   return (
     <Tile className={cn("flex flex-col gap-6 text-fg", className)}>
       <TileHead eyebrow={`About · ${location}`} />
@@ -36,21 +30,26 @@ export function AboutTile({ headline, location, facts, stats, className }: About
           </li>
         ))}
       </ul>
-      {stats.length > 0 ? (
-        <dl className="mt-auto grid grid-cols-2 gap-2">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-1 rounded-2xl bg-surface-2 p-4">
-              <dd className="order-1 font-display text-[1.9rem] leading-none text-fg">
-                {typeof stat.value === "number" ? <CountUp value={stat.value} /> : stat.value}
-              </dd>
-              <dt className="order-2 text-sm text-muted">{stat.label}</dt>
-            </div>
-          ))}
-        </dl>
-      ) : null}
-      <TileLink href="/about" className="mt-0 text-c1-text">
-        More about me
-      </TileLink>
+      <div className="mt-auto flex flex-col gap-4">
+        {toolbox.length > 0 ? (
+          <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface-2 p-4">
+            <p className="label-mono text-faint">Everyday toolbox</p>
+            <ul className="flex flex-wrap gap-1.5">
+              {toolbox.map((skill) => (
+                <li
+                  key={skill}
+                  className="rounded-pill border border-line bg-surface-solid px-3 py-1 text-sm font-medium text-fg"
+                >
+                  {skill}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        <TileLink href="/about" className="text-c1-text">
+          More about me
+        </TileLink>
+      </div>
     </Tile>
   );
 }

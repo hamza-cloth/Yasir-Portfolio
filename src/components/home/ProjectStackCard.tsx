@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ProjectMockup } from "@/components/mockups/ProjectMockup";
 import { Icon } from "@/components/ui/Icon";
 import { PlayWhenVisible } from "@/components/ui/PlayWhenVisible";
-import { cn } from "@/lib/cn";
 import type { ProjectSummary } from "@/lib/content/types";
 import { cssVars } from "@/lib/css-vars";
 
@@ -14,32 +13,15 @@ type ProjectStackCardProps = {
 
 const STACK_PREVIEW = 6;
 
-// Blue, peach, mint, then round again.
-const TINTS = [
-  { panel: "bg-tint-blue", ink: "text-tint-blue-ink" },
-  { panel: "bg-tint-peach", ink: "text-tint-peach-ink" },
-  { panel: "bg-tint-mint", ink: "text-tint-mint-ink" },
-];
-
 export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
   const extra = project.stack.length - STACK_PREVIEW;
-  const tint = TINTS[index % TINTS.length] ?? TINTS[0];
 
   return (
     <li className="stack-card md:sticky" style={cssVars({ "--stack-index": index })}>
-      <article
-        className={cn(
-          "tilt-3d grid gap-10 overflow-hidden rounded-panel p-[clamp(22px,4vw,56px)] shadow-(--shadow-soft) md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center",
-          tint?.panel,
-        )}
-      >
+      <article className="tilt-3d surface relative isolate grid gap-10 overflow-hidden rounded-panel border border-line p-[clamp(22px,4vw,56px)] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
+        <div aria-hidden="true" className="project-glow absolute inset-0 -z-10" />
         <div className="flex min-w-0 flex-col items-start gap-5">
-          <p
-            className={cn(
-              "label-mono inline-flex items-center gap-2 rounded-pill bg-surface-solid/80 px-3 py-1.5",
-              tint?.ink,
-            )}
-          >
+          <p className="label-mono inline-flex items-center gap-2 rounded-pill border border-line bg-c1-soft px-3 py-1.5 text-c1-text">
             <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
             {String(index + 1).padStart(2, "0")} · {project.statusLabel}
           </p>
@@ -53,7 +35,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
               {project.stack.slice(0, STACK_PREVIEW).map((item) => (
                 <li
                   key={item}
-                  className="label-mono rounded-pill bg-surface-solid/80 px-3 py-1.5 text-fg"
+                  className="label-mono rounded-pill border border-line bg-surface-2 px-3 py-1.5 text-fg"
                 >
                   {item}
                 </li>
@@ -66,7 +48,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
           <Link
             href={`/work/${project.slug}`}
             data-cursor="View"
-            className="group/link mt-2 inline-flex min-h-12 items-center gap-2 rounded-pill bg-fg px-6 text-[0.95rem] font-semibold text-bg transition-transform duration-300 hover:-translate-y-0.5"
+            className="btn-accent group/link mt-2 inline-flex min-h-12 items-center gap-2 rounded-(--r-button) px-6 text-[0.95rem] font-semibold shadow-[0_10px_24px_-12px_var(--fill-1)] transition-transform duration-300 hover:-translate-y-0.5"
           >
             Read the case study
             <span className="sr-only">: {project.title}</span>

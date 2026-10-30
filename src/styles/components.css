@@ -69,10 +69,10 @@
     text-shadow: none;
   }
 
-  /* The accent button takes each look's fill (solid or gradient). */
+  /* The accent button: the look's two-colour fill, always with white text. */
   .btn-accent {
     background: var(--accent-fill);
-    color: var(--c1-ink);
+    color: #ffffff;
   }
 
   /* Big step numbers and similar display figures. */

@@ -12,10 +12,10 @@ type CtaBandProps = {
 // The big blue contact card that closes the home and About pages.
 export function CtaBand({ email, availability }: CtaBandProps) {
   return (
-    <section aria-labelledby="cta-title" className="py-20 md:py-24">
+    <section aria-labelledby="cta-title" className="py-14 md:py-16">
       <Container>
         <Reveal>
-          <div className="tilt-3d relative isolate overflow-hidden rounded-panel px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--c1)] [background:var(--feature-bg)]">
+          <div className="tilt-3d relative isolate overflow-hidden rounded-panel px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--fill-1)] [background:var(--feature-bg)]">
             <div
               aria-hidden="true"
               className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1.4px)] [mask-image:radial-gradient(ellipse_at_top_right,#000,transparent_70%)] bg-size-[22px_22px]"

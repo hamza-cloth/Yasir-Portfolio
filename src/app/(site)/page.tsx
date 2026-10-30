@@ -2,6 +2,7 @@ import { CareerTimeline } from "@/components/home/CareerTimeline";
 import { CtaBand } from "@/components/home/CtaBand";
 import { GlanceGrid } from "@/components/home/GlanceGrid";
 import { Hero } from "@/components/home/Hero";
+import { LatestNotes } from "@/components/home/LatestNotes";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { ProjectStack } from "@/components/home/ProjectStack";
 import { ServiceRows } from "@/components/home/ServiceRows";
@@ -11,6 +12,7 @@ import { PROCESS } from "@/lib/content/process";
 import { SERVICES } from "@/lib/content/services";
 import { getCredentials } from "@/lib/data/credentials";
 import { getExperience } from "@/lib/data/experience";
+import { getLatestNotes } from "@/lib/data/notes";
 import { getProjectSummaries } from "@/lib/data/projects";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getSkills } from "@/lib/data/skills";
@@ -31,13 +33,23 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [settings, projects, experience, credentials, skills] = await Promise.all([
+  const [settings, projects, experience, credentials, skills, notes] = await Promise.all([
     getSiteSettings(),
     getProjectSummaries(),
     getExperience(),
     getCredentials(),
     getSkills(),
+    getLatestNotes(3),
   ]);
+  const layers = groupSkillsByLayer(skills);
+  const skillCount = layers.reduce((sum, group) => sum + group.skills.length, 0);
+  const hasCcna = credentials.some((credential) => credential.kind === "TRAINING");
+  const stats = [
+    { value: experience.length, label: "Support roles" },
+    { value: projects.length, label: "Products in build" },
+    { value: skillCount, label: "Skills listed" },
+    ...(hasCcna ? [{ value: "CCNA", label: "Cisco trained" }] : []),
+  ];
 
   return (
     <>
@@ -46,6 +58,7 @@ export default async function HomePage() {
         roleLine={settings.roleLine}
         photo={await getProfilePhoto(settings.photoUrl)}
         openToWork={settings.openToWork}
+        stats={stats}
       />
       <LogoStrip />
       <GlanceGrid
@@ -53,7 +66,7 @@ export default async function HomePage() {
         projects={projects}
         experience={experience}
         credentials={credentials}
-        layers={groupSkillsByLayer(skills)}
+        layers={layers}
       />
       <ServiceRows services={SERVICES} />
       <ProjectStack projects={projects} />
@@ -68,6 +81,7 @@ export default async function HomePage() {
         steps={PROCESS}
       />
       <CareerTimeline entries={buildTimeline(experience, credentials)} />
+      <LatestNotes notes={notes} />
       <CtaBand email={settings.email} availability={settings.availability} />
     </>
   );

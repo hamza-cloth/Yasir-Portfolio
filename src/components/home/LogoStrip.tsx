@@ -9,25 +9,37 @@ const NAMES = [
   { name: "MUIT Noida", note: "BCA" },
 ];
 
+function NameList({ hidden = false }: { hidden?: boolean }) {
+  return (
+    <ul aria-hidden={hidden || undefined} className="flex flex-none items-center">
+      {NAMES.map((item) => (
+        <li key={item.name} className="flex items-center gap-3 px-7 md:px-10">
+          <span className="text-[clamp(1.05rem,1.6vw,1.35rem)] font-extrabold tracking-[-0.03em] whitespace-nowrap text-fg/55">
+            {item.name}
+          </span>
+          <span className="label-mono rounded-pill border border-line px-2 py-0.5 text-faint">
+            {item.note}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// A slow marquee; with reduced motion it stops and the copy is hidden from view.
 export function LogoStrip() {
   return (
-    <section aria-labelledby="logos-title" className="py-10">
-      <Container className="flex flex-col items-center gap-6">
+    <section aria-labelledby="logos-title" className="py-8">
+      <Container className="flex flex-col items-center gap-5">
         <h2 id="logos-title" className="label-mono text-faint">
           Trained, studied and worked with
         </h2>
-        <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 md:gap-x-14">
-          {NAMES.map((item) => (
-            <li key={item.name} className="group flex flex-col items-center gap-0.5">
-              <span className="text-[clamp(1.05rem,1.6vw,1.35rem)] font-extrabold tracking-[-0.03em] text-fg/40 transition-colors duration-300 group-hover:text-fg">
-                {item.name}
-              </span>
-              <span className="label-mono text-xs text-faint opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                {item.note}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="marquee w-full overflow-hidden">
+          <div className="marquee-track flex w-max">
+            <NameList />
+            <NameList hidden />
+          </div>
+        </div>
       </Container>
     </section>
   );

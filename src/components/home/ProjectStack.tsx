@@ -9,8 +9,8 @@ import { ProjectStackCard } from "./ProjectStackCard";
 
 export function ProjectStack({ projects }: { projects: ProjectSummary[] }) {
   return (
-    <section aria-labelledby="projects-title" className="py-24">
-      <Container className="flex flex-col gap-12">
+    <section aria-labelledby="projects-title" className="py-14 md:py-16">
+      <Container className="flex flex-col gap-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHead
             eyebrow="Selected work"

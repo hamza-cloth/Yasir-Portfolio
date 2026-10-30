@@ -14,7 +14,7 @@ export function CcnaTile({ issuer, topics, className }: CcnaTileProps) {
   return (
     <Tile
       className={cn(
-        "flex flex-col gap-5 border-transparent text-white shadow-[0_24px_50px_-24px_var(--c1)] [background:var(--feature-bg)]",
+        "flex flex-col gap-5 border-transparent text-white shadow-[0_24px_50px_-24px_var(--fill-1)] [background:var(--feature-bg)]",
         className,
       )}
     >

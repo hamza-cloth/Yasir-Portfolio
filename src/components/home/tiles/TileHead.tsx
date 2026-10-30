@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 type TileHeadProps = {
   eyebrow: string;
   title?: ReactNode;
-  // Light text for the blue and black tiles.
+  // White text for the feature tile.
   inverse?: boolean;
 };
 
@@ -15,12 +15,12 @@ export function TileHead({ eyebrow, title, inverse = false }: TileHeadProps) {
       <p
         className={cn(
           "label-mono flex items-center gap-2",
-          inverse ? "text-white/70" : "text-current opacity-75",
+          inverse ? "text-white/75" : "text-c1-text",
         )}
       >
         <span
           aria-hidden="true"
-          className={cn("size-1.5 rounded-full", inverse ? "bg-white" : "bg-current")}
+          className={cn("size-1.5 rounded-full", inverse ? "bg-white" : "bg-c1")}
         />
         {eyebrow}
       </p>

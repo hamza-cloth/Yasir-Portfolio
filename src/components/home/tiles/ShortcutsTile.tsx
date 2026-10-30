@@ -11,29 +11,27 @@ const SHORTCUTS = [
   { keys: "`", label: "Terminal" },
 ];
 
-// The one dark card on the page, in every look.
+// The terminal and command menu, one key away.
 export function ShortcutsTile({ className }: { className?: string }) {
   return (
-    <Tile
-      className={cn("flex flex-col gap-5 border-transparent bg-[#0e1220] text-white", className)}
-    >
-      <TileHead eyebrow="Shortcuts" title="Keyboard first" inverse />
+    <Tile className={cn("flex flex-col gap-5 text-fg", className)}>
+      <TileHead eyebrow="Shortcuts" title="Keyboard first" />
       <dl className="flex flex-col gap-2.5">
         {SHORTCUTS.map((shortcut) => (
           <div key={shortcut.keys} className="flex items-center justify-between gap-4">
             <dt>
-              <kbd className="label-mono inline-grid min-w-10 place-items-center rounded-lg border border-white/20 bg-white/10 px-2 py-1 text-white">
+              <kbd className="label-mono inline-grid min-w-10 place-items-center rounded-lg border border-line-2 bg-surface-2 px-2 py-1 text-fg shadow-[0_2px_0_var(--line-2)]">
                 {shortcut.keys}
               </kbd>
             </dt>
-            <dd className="text-sm text-white/70">{shortcut.label}</dd>
+            <dd className="text-sm text-muted">{shortcut.label}</dd>
           </div>
         ))}
       </dl>
       <button
         type="button"
         onClick={requestTerminal}
-        className="mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-pill bg-white px-4 text-sm font-semibold text-[#0e1220] transition-transform hover:-translate-y-0.5"
+        className="btn-accent mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-(--r-button) px-4 text-sm font-semibold transition-transform hover:-translate-y-0.5"
       >
         <span aria-hidden="true" className="font-mono">
           &gt;_

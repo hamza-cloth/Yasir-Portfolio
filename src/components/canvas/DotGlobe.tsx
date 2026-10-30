@@ -88,14 +88,14 @@ export function DotGlobe({ className }: { className?: string }) {
       onSetup: () => {
         colorsRef.current = {
           dot: readCssVar("--c1"),
+          // Arcs alternate the look's two accents, so the globe matches the rest of the page.
           arcs: [
             readCssVar("--c1"),
-            readCssVar("--amber"),
-            readCssVar("--ok"),
-            readCssVar("--tint-lilac-ink"),
-            readCssVar("--tint-butter-ink"),
+            readCssVar("--c2"),
+            readCssVar("--c1-text"),
+            readCssVar("--c2"),
           ],
-          hub: readCssVar("--amber"),
+          hub: readCssVar("--c2"),
           label: readCssVar("--fg"),
           labelFont: `500 12px ${readCssVar("--ff-mono")}`,
         };

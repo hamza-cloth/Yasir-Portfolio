@@ -1,5 +1,5 @@
 /* Design tokens. Structure (type scale, spacing, z-index) lives on :root; each of the four
-   looks is a colour-and-shape set on [data-look]. Selectors are not tied to :root, so the
+   looks is a colour set on [data-look]. Selectors are not tied to :root, so the
    admin can preview any look inside a container that carries data-look. */
 
 /* Type and shape shared by every look. */
@@ -11,7 +11,7 @@
   --display-tracking: -0.035em;
   --display-leading: 1;
   /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
-  --fs-hero-split: clamp(2.6rem, min(5.4vw, 10svh), 5.4rem);
+  --fs-hero-split: clamp(2.6rem, min(4.9vw, 9.5svh), 4.9rem);
   --fs-hero-stack: clamp(2.2rem, 10.5vw, 4rem);
   --r-pill: 999px;
   --r-field: 14px;
@@ -58,6 +58,27 @@
   --shiki-token-link: var(--c1);
 }
 
+/* One design for every look: the same corners, button fill, feature cards, card sheen and page
+   wash. A look only supplies colours (above and below); these recipes turn them into surfaces. */
+:root,
+[data-look] {
+  --r-panel: 28px;
+  --r-tile: 24px;
+  --r-card: 20px;
+  --r-button: 999px;
+  --accent-fill: linear-gradient(110deg, var(--fill-1), var(--fill-2));
+  --feature-bg: linear-gradient(125deg, var(--fill-1), var(--fill-2));
+  --accent-gradient: linear-gradient(100deg, var(--c1-text), var(--c2-text));
+  --card-sheen: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--c1) 5%, transparent),
+    transparent 40%
+  );
+  --page-wash:
+    radial-gradient(56rem 34rem at 88% 0%, var(--wash-1), transparent 70%),
+    radial-gradient(40rem 28rem at 0% 12%, var(--wash-2), transparent 70%);
+}
+
 /* ---- Porcelain: light, white cards, royal blue. The default. ---- */
 :root,
 [data-look="porcelain"] {
@@ -86,6 +107,14 @@
   --curtain: #0e1220;
   --curtain-fg: #f5f6f8;
   --curtain-muted: #a3a8b5;
+  --c2: #7c4dff;
+  --c2-text: #6a3fd1;
+  --glow-2: rgba(124, 77, 255, 0.14);
+  /* Buttons and feature cards: white text on this pair, in every look. */
+  --fill-1: #2b59ff;
+  --fill-2: #6d3cf5;
+  --wash-1: rgba(43, 89, 255, 0.1);
+  --wash-2: rgba(124, 77, 255, 0.07);
 
   --tint-blue: #e7edff;
   --tint-blue-ink: #1d3fbf;
@@ -98,19 +127,9 @@
   --tint-butter: #fff4c7;
   --tint-butter-ink: #8a6a00;
 
-  --r-panel: 28px;
-  --r-tile: 28px;
-  --r-card: 24px;
-  --r-button: 999px;
-  /* The bold feature cards (CCNA, contact) always carry white text on this. */
-  --feature-bg: #2b59ff;
-  --accent-fill: var(--c1);
-  --accent-gradient: linear-gradient(100deg, #2b59ff, #5b7cff);
   --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --shadow-soft: 0 1px 2px rgba(14, 18, 32, 0.04), 0 12px 32px -14px rgba(14, 18, 32, 0.12);
   --shadow-lift: 0 2px 6px rgba(14, 18, 32, 0.05), 0 30px 60px -28px rgba(14, 18, 32, 0.22);
-  --card-sheen: none;
-  --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(43, 89, 255, 0.08), transparent 70%);
   --dot-grid: rgba(14, 18, 32, 0.07);
   --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232b59ff' stroke-width='3.2' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E");
 
@@ -149,6 +168,14 @@
   --curtain: #0a0f1e;
   --curtain-fg: #e6edf7;
   --curtain-muted: #93a3bf;
+  --c2: #3b82f6;
+  --c2-text: #93c5fd;
+  --glow-2: rgba(59, 130, 246, 0.22);
+  /* Buttons and feature cards: white text on this pair, in every look. */
+  --fill-1: #0e7490;
+  --fill-2: #1d4ed8;
+  --wash-1: rgba(34, 211, 238, 0.13);
+  --wash-2: rgba(59, 130, 246, 0.1);
 
   --tint-blue: #12243f;
   --tint-blue-ink: #8fd8ff;
@@ -161,19 +188,9 @@
   --tint-butter: #2a2614;
   --tint-butter-ink: #fde68a;
 
-  --r-panel: 22px;
-  --r-tile: 20px;
-  --r-card: 16px;
-  --r-button: 12px;
-  /* The bold feature cards (CCNA, contact) always carry white text on this. */
-  --feature-bg: linear-gradient(125deg, #0e7490, #1e40af);
-  --accent-fill: linear-gradient(100deg, #22d3ee, #3b82f6);
-  --accent-gradient: linear-gradient(100deg, #67e8f9, #3b82f6);
   --edge-light: inset 0 1px 0 rgba(148, 180, 255, 0.08);
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(0, 0, 0, 0.7);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(0, 0, 0, 0.8);
-  --card-sheen: linear-gradient(180deg, rgba(148, 180, 255, 0.04), transparent 40%);
-  --page-wash: radial-gradient(56rem 34rem at 80% -10%, rgba(34, 211, 238, 0.12), transparent 70%);
   --dot-grid: rgba(148, 180, 255, 0.07);
   --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%2322d3ee' stroke-width='3.2' stroke-linecap='round' opacity='.7'/%3E%3C/svg%3E");
 
@@ -212,6 +229,14 @@
   --curtain: #2a1a1f;
   --curtain-fg: #fbf5ec;
   --curtain-muted: #c9b6ad;
+  --c2: #db2777;
+  --c2-text: #9d174d;
+  --glow-2: rgba(219, 39, 119, 0.14);
+  /* Buttons and feature cards: white text on this pair, in every look. */
+  --fill-1: #c2410c;
+  --fill-2: #9d174d;
+  --wash-1: rgba(249, 115, 22, 0.15);
+  --wash-2: rgba(219, 39, 119, 0.07);
 
   --tint-blue: #f3e3ee;
   --tint-blue-ink: #7c2d5b;
@@ -224,21 +249,9 @@
   --tint-butter: #fbefc9;
   --tint-butter-ink: #8a6100;
 
-  --r-panel: 32px;
-  --r-tile: 32px;
-  --r-card: 26px;
-  --r-button: 999px;
-  /* The bold feature cards (CCNA, contact) always carry white text on this. */
-  --feature-bg: linear-gradient(125deg, #ea580c, #9d174d);
-  --accent-fill: linear-gradient(100deg, #f97316, #db2777);
-  --accent-gradient: linear-gradient(100deg, #f97316, #7c2d5b);
   --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --shadow-soft: 0 1px 2px rgba(42, 26, 31, 0.05), 0 14px 34px -16px rgba(124, 45, 91, 0.16);
   --shadow-lift: 0 2px 6px rgba(42, 26, 31, 0.06), 0 30px 60px -28px rgba(124, 45, 91, 0.28);
-  --card-sheen: none;
-  --page-wash:
-    radial-gradient(50rem 30rem at 85% -12%, rgba(249, 115, 22, 0.14), transparent 70%),
-    radial-gradient(36rem 24rem at 0% 6%, rgba(124, 45, 91, 0.08), transparent 70%);
   --dot-grid: rgba(42, 26, 31, 0.07);
   --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%23f97316' stroke-width='3.2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
 
@@ -277,6 +290,14 @@
   --curtain: #0d0b26;
   --curtain-fg: #eeeafe;
   --curtain-muted: #a9a3d6;
+  --c2: #2dd4bf;
+  --c2-text: #5eead4;
+  --glow-2: rgba(45, 212, 191, 0.18);
+  /* Buttons and feature cards: white text on this pair, in every look. */
+  --fill-1: #6d28d9;
+  --fill-2: #0f766e;
+  --wash-1: rgba(139, 92, 246, 0.26);
+  --wash-2: rgba(45, 212, 191, 0.12);
 
   --tint-blue: #1e2457;
   --tint-blue-ink: #a5b4fc;
@@ -289,21 +310,9 @@
   --tint-butter: #2b2a44;
   --tint-butter-ink: #fde68a;
 
-  --r-panel: 26px;
-  --r-tile: 24px;
-  --r-card: 20px;
-  --r-button: 999px;
-  /* The bold feature cards (CCNA, contact) always carry white text on this. */
-  --feature-bg: linear-gradient(125deg, #6d28d9, #0f766e);
-  --accent-fill: linear-gradient(100deg, #8b5cf6, #2dd4bf);
-  --accent-gradient: linear-gradient(100deg, #c4b5fd, #5eead4);
   --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(5, 3, 30, 0.8);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(5, 3, 30, 0.9);
-  --card-sheen: linear-gradient(180deg, rgba(196, 181, 253, 0.05), transparent 45%);
-  --page-wash:
-    radial-gradient(48rem 30rem at 85% -10%, rgba(139, 92, 246, 0.28), transparent 70%),
-    radial-gradient(40rem 28rem at 0% 10%, rgba(45, 212, 191, 0.14), transparent 70%);
   --dot-grid: rgba(196, 181, 253, 0.06);
   --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232dd4bf' stroke-width='3.2' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E");
 
