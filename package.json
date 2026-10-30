@@ -13,6 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "ebooks:pdf": "tsx scripts/build-ebook-pdfs.ts",
     "db:up": "docker compose up -d db",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

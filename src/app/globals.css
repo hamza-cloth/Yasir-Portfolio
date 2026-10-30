@@ -6,6 +6,7 @@
 @import "../styles/home.css";
 @import "../styles/prose.css";
 @import "../styles/pages.css";
+@import "../styles/ebooks.css";
 @import "../styles/motion.css";
 
 @custom-variant paper (&:where([data-look="porcelain"], [data-look="porcelain"] *));
