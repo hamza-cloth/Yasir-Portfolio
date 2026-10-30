@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { INLINE_NAV_QUERY } from "@/lib/site-nav";
 
 import { CommandButton } from "./CommandButton";
 import { Logo } from "./Logo";
@@ -23,6 +25,10 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  // Widening the window to the inline-nav breakpoint closes the menu (and releases its scroll
+  // lock); adjusted during render, as derived state.
+  const inlineNav = useMediaQuery(INLINE_NAV_QUERY);
+  if (inlineNav && menuOpen) setMenuOpen(false);
 
   return (
     <>
@@ -36,11 +42,11 @@ export function Header() {
         <Container className="flex h-(--header-h) items-center">
           <div className="header-pill flex h-16 w-full items-center gap-3 rounded-pill border border-line bg-surface/80 pr-2 pl-3 shadow-(--shadow-soft) backdrop-blur-xl backdrop-saturate-150">
             <Logo />
-            <NavPills pathname={pathname} className="mx-auto hidden lg:block" />
-            <div className="ml-auto flex min-w-0 items-center gap-1.5 lg:ml-0">
+            <NavPills pathname={pathname} className="mx-auto hidden laptop:block" />
+            <div className="ml-auto flex min-w-0 items-center gap-1.5 laptop:ml-0">
               <CommandButton className="max-sm:hidden" />
               <LookButton />
-              <Button href="/contact" variant="accent" size="sm" className="max-lg:hidden">
+              <Button href="/contact" variant="accent" size="sm" className="max-laptop:hidden">
                 Hire me
                 <Icon name="arrow-up-right" size={15} />
               </Button>
@@ -49,7 +55,7 @@ export function Header() {
                 open={menuOpen}
                 onToggle={() => setMenuOpen((open) => !open)}
                 controls={MOBILE_MENU_ID}
-                className="lg:hidden"
+                className="laptop:hidden"
               />
             </div>
           </div>

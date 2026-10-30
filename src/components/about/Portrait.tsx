@@ -25,7 +25,7 @@ export function Portrait({ name, photo }: PortraitProps) {
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-panel border border-line bg-surface-solid shadow-(--shadow-soft)">
+    <div className="tilt-3d relative aspect-[4/5] w-full overflow-hidden rounded-panel border border-line bg-surface-solid shadow-(--shadow-soft)">
       {photo && !failed ? (
         <Image
           src={photo.src}

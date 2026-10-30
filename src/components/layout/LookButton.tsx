@@ -17,7 +17,9 @@ export function LookButton({ className }: { className?: string }) {
       <span aria-hidden="true" className="signal-dot" />
       <span className="sr-only">Look: </span>
       {LOOKS.map((look) => (
-        <span key={look} className="look-label" data-look-label={look}>
+        // 1024-1200px: only the dot shows, to make room for the inline nav; the name stays for
+        // screen readers.
+        <span key={look} className="look-label laptop:max-[75rem]:sr-only" data-look-label={look}>
           {LOOK_LABELS[look]}
         </span>
       ))}

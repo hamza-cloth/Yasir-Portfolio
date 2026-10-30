@@ -79,7 +79,9 @@
     }
   }
 
+  /* Only the "+" turns, so the 44px circle's box never grows past the row. */
   .osi-chevron {
+    display: inline-block;
     transition: transform 300ms var(--easing-entrance);
   }
 

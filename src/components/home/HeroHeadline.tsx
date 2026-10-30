@@ -3,9 +3,11 @@ import type { ReactNode } from "react";
 import { cssVars } from "@/lib/css-vars";
 import type { Look } from "@/lib/look";
 
+// The underlined phrase stays on one line, except on the narrowest phones (under 360px), where
+// the longest phrases are wider than the column and may wrap inside the underline instead.
 function Scribble({ children }: { children: ReactNode }) {
   return (
-    <span className="relative inline-block whitespace-nowrap text-c1-text">
+    <span className="relative inline-block text-c1-text min-[22.5rem]:whitespace-nowrap">
       {children}
       <svg
         aria-hidden="true"

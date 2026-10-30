@@ -12,6 +12,9 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/resume", label: "Resume" },
 ];
 
+// Matches the `laptop:` breakpoint (64rem): from here up the header shows every link inline.
+export const INLINE_NAV_QUERY = "(min-width: 64rem)";
+
 export const ALL_PAGES: readonly NavItem[] = [
   { href: "/", label: "Home" },
   ...NAV_ITEMS,

@@ -105,7 +105,7 @@ export function PageCurtain() {
     <div
       ref={curtainRef}
       aria-hidden="true"
-      className="page-curtain fixed inset-y-0 left-0 z-(--z-toast) grid h-dvh w-screen place-items-center bg-curtain text-curtain-fg"
+      className="page-curtain fixed inset-y-0 left-0 z-(--z-curtain) grid h-dvh w-screen place-items-center bg-curtain text-curtain-fg"
     >
       <div className="flex w-full flex-col items-center gap-6 px-6">
         <p className="label-mono text-curtain-muted">Routing to</p>

@@ -30,7 +30,7 @@ function TerminalBody({ context, onClose }: Omit<TerminalOverlayProps, "open">) 
 
 export function TerminalOverlay({ open, onClose, context }: TerminalOverlayProps) {
   return (
-    <Dialog open={open} onClose={onClose} label="Terminal" panelClassName="max-w-2xl">
+    <Dialog open={open} onClose={onClose} label="Terminal" panelClassName="max-w-[40rem]">
       <TerminalBody context={context} onClose={onClose} />
     </Dialog>
   );

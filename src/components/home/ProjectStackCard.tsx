@@ -29,7 +29,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
     <li className="stack-card md:sticky" style={cssVars({ "--stack-index": index })}>
       <article
         className={cn(
-          "grid gap-10 overflow-hidden rounded-panel p-[clamp(22px,4vw,56px)] shadow-(--shadow-soft) md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center",
+          "tilt-3d grid gap-10 overflow-hidden rounded-panel p-[clamp(22px,4vw,56px)] shadow-(--shadow-soft) md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center",
           tint?.panel,
         )}
       >

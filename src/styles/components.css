@@ -144,10 +144,12 @@
     }
   }
 
-  /* A .reveal-group wrapper stays put; only its .stagger children animate (see motion.css). */
+  /* A .reveal-group wrapper stays put; only its .stagger children animate (see motion.css).
+     Sections rise into view and tip upright from a slight 3D lean. */
   .reveal[data-reveal="hidden"]:not(.reveal-group) {
     opacity: 0;
-    transform: translate3d(0, 24px, 0);
+    transform: perspective(1200px) translate3d(0, 32px, 0) rotateX(8deg);
+    transform-origin: 50% 100%;
   }
 
   .reveal[data-reveal="shown"]:not(.reveal-group) {
@@ -209,27 +211,18 @@
     transform: translate3d(0, -100%, 0);
   }
 
-  .site-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: var(--surface);
-    border-bottom: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
-    opacity: 0;
-    transition: opacity 300ms var(--easing-entrance);
+  /* The floating pill carries the header background. Once the page scrolls under it, it gets a
+     firmer edge and a deeper shadow so it reads above the content. */
+  .header-pill {
+    transition:
+      box-shadow 250ms var(--easing-entrance),
+      border-color 250ms var(--easing-entrance);
   }
 
-  /* The floating pill carries the header background; no full-width bar behind it. */
-  .site-header::before {
-    display: none;
-  }
-
-  .site-header[data-scrolled="true"]::before,
-  .site-header[data-menu-open="true"]::before {
-    opacity: 1;
+  .site-header[data-scrolled="true"] .header-pill,
+  .site-header[data-menu-open="true"] .header-pill {
+    border-color: var(--line-2);
+    box-shadow: var(--shadow-lift);
   }
 
   .menu-bar {

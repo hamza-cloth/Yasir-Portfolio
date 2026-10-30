@@ -61,7 +61,7 @@ export function MobileMenu({
       inert={!open}
       data-open={open}
       data-lenis-prevent
-      className="mobile-menu fixed inset-y-0 left-0 z-(--z-overlay) h-dvh w-screen overflow-y-auto overscroll-contain bg-bg bg-(image:--page-wash) pt-[calc(var(--header-h)+env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] lg:hidden"
+      className="mobile-menu fixed inset-y-0 left-0 z-(--z-overlay) h-dvh w-screen overflow-y-auto overscroll-contain bg-bg bg-(image:--page-wash) pt-[calc(var(--header-h)+env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] laptop:hidden"
     >
       <Container className="flex min-h-full flex-col gap-10 py-8">
         <nav aria-label="Mobile">

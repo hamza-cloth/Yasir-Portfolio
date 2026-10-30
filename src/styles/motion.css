@@ -297,7 +297,8 @@
   /* ---- Staggered children inside a <Reveal>. ---- */
   .reveal[data-reveal="hidden"] .stagger > * {
     opacity: 0;
-    transform: translate3d(0, 26px, 0);
+    transform: perspective(900px) translate3d(0, 28px, 0) rotateX(12deg);
+    transform-origin: 50% 100%;
   }
 
   .reveal[data-reveal="shown"] .stagger > * {

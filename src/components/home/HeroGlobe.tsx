@@ -59,7 +59,7 @@ const ICONS: Record<StatusCard["icon"], string> = {
 // Purely illustrative; every fact on the cards is stated in readable content elsewhere.
 export function HeroGlobe({ className }: { className?: string }) {
   return (
-    <div className={cn("relative mx-auto aspect-square w-full", className)}>
+    <div className={cn("tilt-3d relative mx-auto aspect-square w-full", className)}>
       <div aria-hidden="true" className="globe-sphere absolute inset-[10%] rounded-full" />
       <div aria-hidden="true" className="orbit absolute inset-[3%] rounded-full" />
       <div aria-hidden="true" className="orbit-tilt absolute -inset-[4%]">

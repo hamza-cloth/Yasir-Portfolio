@@ -12,7 +12,7 @@
   --display-leading: 1;
   /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
   --fs-hero-split: clamp(2.6rem, min(5.4vw, 10svh), 5.4rem);
-  --fs-hero-stack: clamp(2.4rem, 10.5vw, 4rem);
+  --fs-hero-stack: clamp(2.2rem, 10.5vw, 4rem);
   --r-pill: 999px;
   --r-field: 14px;
   --r-chip: 10px;
@@ -33,12 +33,14 @@
   --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
 
-  /* One stacking scale for the whole site. */
+  /* One stacking scale for the whole site: header < dropdowns < mobile menu < dialogs
+     (command menu, terminal, confirms) < page curtain < toasts < cursor. */
   --z-base: 0;
   --z-header: 50;
   --z-dropdown: 100;
   --z-overlay: 200;
   --z-modal: 300;
+  --z-curtain: 350;
   --z-toast: 400;
   --z-cursor: 500;
 
