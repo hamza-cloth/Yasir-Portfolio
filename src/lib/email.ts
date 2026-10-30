@@ -2,6 +2,7 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { reportError } from "@/lib/monitoring";
 import { MESSAGE_TOPICS, type MessageInput } from "@/lib/validation/message";
 
 // Resend's shared sender works without a verified domain, but only delivers to the account owner.
@@ -29,5 +30,8 @@ export async function sendContactEmail(message: MessageInput): Promise<boolean> 
       message.body,
     ].join("\n"),
   });
+  // Logged so a rejected key or sender shows up in the Vercel logs instead of failing silently.
+  if (error)
+    reportError(error, { where: "contact-email", name: error.name, message: error.message });
   return !error;
 }
