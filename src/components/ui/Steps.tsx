@@ -20,7 +20,7 @@ type StepsProps = {
 // A dashed line links the number badges on wide screens.
 export function Steps({ id, eyebrow, title, steps }: StepsProps) {
   return (
-    <section aria-labelledby={id} className="py-14 md:py-16">
+    <section aria-labelledby={id} className="section-y">
       <Container className="flex flex-col gap-10">
         <SectionHead eyebrow={eyebrow} titleId={id} title={title} />
         <ol className="relative grid grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-4">
@@ -31,7 +31,7 @@ export function Steps({ id, eyebrow, title, steps }: StepsProps) {
           {steps.map((step, index) => (
             <li key={step.title} className="relative min-w-0">
               <Reveal delay={index * 90} className="h-full">
-                <div className="spotlight tilt-3d surface relative isolate flex h-full flex-col gap-4 overflow-hidden rounded-tile border border-line p-6 transition-[border-color] duration-500 ease-entrance hover:border-line-2">
+                <div className="spotlight tilt-3d surface relative isolate flex h-full flex-col gap-4 overflow-hidden rounded-tile border border-line p-6 transition-[border-color] duration-500 ease-entrance hover:border-line-hover">
                   <span
                     aria-hidden="true"
                     className="btn-accent grid size-11 place-items-center rounded-full font-display text-lg shadow-[0_8px_20px_-8px_var(--fill-1)]"

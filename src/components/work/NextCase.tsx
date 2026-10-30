@@ -7,7 +7,7 @@ import type { ProjectSummary } from "@/lib/content/types";
 
 export function NextCase({ project }: { project: ProjectSummary }) {
   return (
-    <section aria-label="Next case study" className="py-24">
+    <section aria-label="Next case study" className="section-y">
       <Container>
         <Link
           href={`/work/${project.slug}`}

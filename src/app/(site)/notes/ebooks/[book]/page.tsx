@@ -81,7 +81,7 @@ export default async function EbookPage({ params }: { params: Params }) {
                   <Reveal delay={index * 60}>
                     <Link
                       href={`/notes/ebooks/${book.slug}/${chapter.slug}`}
-                      className="surface group/row flex items-start gap-5 rounded-card border border-line p-5 transition-[border-color,transform] duration-500 ease-entrance hover:-translate-y-0.5 hover:border-line-2 md:p-6"
+                      className="surface group/row flex items-start gap-5 rounded-card border border-line p-5 transition-[border-color,transform] duration-500 ease-entrance hover:-translate-y-0.5 hover:border-line-hover md:p-6"
                     >
                       <span className="grid size-11 flex-none place-items-center rounded-full border border-line-2 font-display text-lg text-c1-text">
                         {index + 1}

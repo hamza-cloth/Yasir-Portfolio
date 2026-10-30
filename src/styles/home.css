@@ -5,6 +5,15 @@
     }
   }
 
+  .hero-tagline {
+    font-family: var(--ff-display);
+    font-size: clamp(1.45rem, 2.5vw, 2.15rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
   .status-dot {
     position: relative;
     width: 8px;
@@ -120,6 +129,7 @@
   }
 
   [data-look="porcelain"] .look-swatch[data-swatch="porcelain"],
+  [data-look="midnight-ink"] .look-swatch[data-swatch="midnight-ink"],
   [data-look="midnight-ops"] .look-swatch[data-swatch="midnight-ops"],
   [data-look="sunset-fibre"] .look-swatch[data-swatch="sunset-fibre"],
   [data-look="aurora"] .look-swatch[data-swatch="aurora"] {
@@ -173,5 +183,118 @@
       radial-gradient(38rem 24rem at 100% 0%, var(--glow), transparent 70%),
       radial-gradient(28rem 20rem at 0% 100%, var(--glow-2), transparent 70%);
     opacity: 0.8;
+  }
+}
+
+/* ---- Hero portrait: photo in a gold ring, a turning arc, a glow and the globe behind ---- */
+@layer components {
+  .portrait {
+    --ring-gap: 18px;
+  }
+
+  /* A radial gradient, not a blur filter: blurred layers leak into WebKit's scroll width. */
+  .portrait-glow {
+    position: absolute;
+    inset: -22%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(201, 164, 92, 0.18), transparent 72%);
+  }
+
+  .portrait-globe {
+    position: absolute;
+    inset: -26%;
+    opacity: 0.5;
+  }
+
+  .portrait-ring,
+  .portrait-arc {
+    position: absolute;
+    inset: calc(var(--ring-gap) * -1);
+    border-radius: 50%;
+  }
+
+  .portrait-ring {
+    border: 1px solid var(--line);
+  }
+
+  /* One gold arc on the outer ring, masked to a 2px band, turning once every 20 seconds. */
+  .portrait-arc {
+    background: conic-gradient(from 0deg, transparent 0 62%, var(--c1) 88%, transparent 100%);
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2px),
+      #000 calc(100% - 1.5px)
+    );
+    mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+    animation: portrait-spin 20s linear infinite;
+  }
+
+  @keyframes portrait-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .portrait-photo {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border: 4px solid var(--c1);
+    border-radius: 50%;
+    background: var(--surface-2);
+    box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.75);
+    animation: portrait-in 700ms var(--easing-entrance) both;
+  }
+
+  @keyframes portrait-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+
+  .portrait-badge {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--surface-solid) 80%, transparent);
+    padding: 10px 14px;
+    white-space: nowrap;
+    box-shadow: var(--shadow-lift);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    animation: badge-float 6s ease-in-out infinite alternate;
+  }
+
+  .portrait-badge[data-slot="0"] {
+    top: 6%;
+    left: -12%;
+  }
+
+  .portrait-badge[data-slot="1"] {
+    right: -10%;
+    bottom: 8%;
+    animation-delay: -3s;
+  }
+
+  @keyframes badge-float {
+    from {
+      transform: translateY(-6px);
+    }
+    to {
+      transform: translateY(6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portrait-arc,
+    .portrait-badge,
+    .portrait-photo {
+      animation: none;
+    }
   }
 }

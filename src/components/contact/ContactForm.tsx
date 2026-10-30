@@ -12,7 +12,7 @@ import { MESSAGE_TOPICS, type MessageTopicValue } from "@/lib/message-topics";
 const INITIAL: ContactState = { status: "idle" };
 
 const fieldClass =
-  "w-full rounded-field border border-line-2 bg-bg/60 px-4 py-3.5 text-fg placeholder:text-faint transition-[border-color,box-shadow] duration-300 outline-none focus:border-c1/70 focus:shadow-[0_0_0_4px_var(--highlight)] aria-invalid:border-red/70";
+  "min-h-12 w-full rounded-field border border-line bg-surface-solid px-4 py-3 text-fg placeholder:text-faint transition-[border-color,box-shadow] duration-200 outline-none hover:border-line-2 focus:border-c1 focus:shadow-[0_0_0_3px_var(--highlight)] aria-invalid:border-red/70";
 
 function FieldError({ id, error }: { id: string; error?: string }) {
   if (!error) return null;
@@ -137,7 +137,7 @@ export function ContactForm({ email }: { email: string }) {
         <button
           type="submit"
           disabled={pending}
-          className={buttonClassName("primary", "lg", "btn-shine min-w-44")}
+          className={buttonClassName("accent", "lg", "min-w-44")}
         >
           {pending ? (
             <>

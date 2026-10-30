@@ -54,7 +54,7 @@ describe("runCommand", () => {
     });
     expect(runCommand("theme dark", context).effect).toEqual({
       type: "theme",
-      look: "midnight-ops",
+      look: "midnight-ink",
     });
     expect(runCommand("theme light", context).effect).toEqual({ type: "theme", look: "porcelain" });
     expect(runCommand("theme neon", context).lines[0]?.kind).toBe("error");

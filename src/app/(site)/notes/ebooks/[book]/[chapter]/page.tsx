@@ -115,7 +115,7 @@ export default async function ChapterPage({ params }: { params: Params }) {
           {previous ? (
             <Link
               href={`/notes/ebooks/${book.slug}/${previous.slug}`}
-              className="surface group flex flex-col gap-2 rounded-panel border border-line p-6 transition-colors duration-500 hover:border-line-2 md:p-8"
+              className="surface group flex flex-col gap-2 rounded-panel border border-line p-6 transition-colors duration-500 hover:border-line-hover md:p-8"
             >
               <span className="label-mono inline-flex items-center gap-2 text-faint">
                 <Icon name="arrow-right" size={14} className="rotate-180" />
@@ -133,7 +133,7 @@ export default async function ChapterPage({ params }: { params: Params }) {
               href={
                 next ? `/notes/ebooks/${book.slug}/${next.slug}` : `/notes/ebooks/${nextBook?.slug}`
               }
-              className="surface group flex flex-col items-end gap-2 rounded-panel border border-line p-6 text-right transition-colors duration-500 hover:border-line-2 md:p-8"
+              className="surface group flex flex-col items-end gap-2 rounded-panel border border-line p-6 text-right transition-colors duration-500 hover:border-line-hover md:p-8"
             >
               <span className="label-mono inline-flex items-center gap-2 text-faint">
                 {next ? "Next chapter" : `Next book · Layer ${nextBook?.layer}`}

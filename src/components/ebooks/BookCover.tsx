@@ -23,7 +23,7 @@ export function BookCover({ book, className, size = "shelf" }: BookCoverProps) {
         </div>
         <div className="book3d-front">
           <div className="flex items-start justify-between gap-3">
-            <span className="label-mono text-white/80">{book.subtitle}</span>
+            <span className="label-mono text-on-fill/80">{book.subtitle}</span>
             <span className="book3d-numeral">L{book.layer}</span>
           </div>
           <div className="flex flex-col gap-3">
@@ -33,7 +33,7 @@ export function BookCover({ book, className, size = "shelf" }: BookCoverProps) {
               ))}
             </ol>
             <span className="book3d-title">{book.title}</span>
-            <span className="label-mono text-white/75">
+            <span className="label-mono text-on-fill/75">
               {book.chapters.length} chapters · Yasir Abdullah
             </span>
           </div>

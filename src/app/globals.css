@@ -25,6 +25,8 @@
 
 @theme inline {
   --color-white: #ffffff;
+  --color-on-fill: var(--on-fill);
+  --color-line-hover: var(--line-hover);
   --color-black: #000000;
   --color-bg: var(--bg);
   --color-bg-2: var(--bg-2);

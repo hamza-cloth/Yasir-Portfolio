@@ -1,16 +1,23 @@
 import { REDUCED_MOTION_QUERY } from "./motion";
 
-// The four complete design looks. Each is a set of CSS variables on <html data-look="…">;
-// layout and content never change between them.
-export const LOOKS = ["porcelain", "midnight-ops", "sunset-fibre", "aurora"] as const;
+// The complete design looks. Each is a set of CSS variables on <html data-look="…">; layout and
+// content never change between them. Midnight Ink is the brand and comes first.
+export const LOOKS = [
+  "midnight-ink",
+  "porcelain",
+  "midnight-ops",
+  "sunset-fibre",
+  "aurora",
+] as const;
 
 export type Look = (typeof LOOKS)[number];
 export type ColorTheme = "dark" | "light";
 export type LookMode = "random" | "sequential" | "fixed";
 
-export const DEFAULT_LOOK: Look = "porcelain";
+export const DEFAULT_LOOK: Look = "midnight-ink";
 
 export const LOOK_LABELS: Record<Look, string> = {
+  "midnight-ink": "Midnight Ink",
   porcelain: "Porcelain",
   "midnight-ops": "Midnight Ops",
   "sunset-fibre": "Sunset Fibre",
@@ -18,6 +25,7 @@ export const LOOK_LABELS: Record<Look, string> = {
 };
 
 export const LOOK_THEMES: Record<Look, ColorTheme> = {
+  "midnight-ink": "dark",
   porcelain: "light",
   "midnight-ops": "dark",
   "sunset-fibre": "light",
@@ -26,6 +34,7 @@ export const LOOK_THEMES: Record<Look, ColorTheme> = {
 
 // Swatches for the admin preview and the look picker: background, surface, accent.
 export const LOOK_SWATCHES: Record<Look, [string, string, string]> = {
+  "midnight-ink": ["#0b0d12", "#12151c", "#c9a45c"],
   porcelain: ["#f5f6f8", "#ffffff", "#2b59ff"],
   "midnight-ops": ["#0a0f1e", "#111a30", "#22d3ee"],
   "sunset-fibre": ["#fbf5ec", "#fffdf9", "#f97316"],
@@ -38,9 +47,10 @@ export type LookConfig = {
   fixed: Look;
 };
 
+// Every visit opens on the brand look; visitors can still switch with the look picker.
 export const DEFAULT_LOOK_CONFIG: LookConfig = {
   enabled: [...LOOKS],
-  mode: "random",
+  mode: "fixed",
   fixed: DEFAULT_LOOK,
 };
 

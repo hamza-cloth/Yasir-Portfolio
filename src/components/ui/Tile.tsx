@@ -7,7 +7,7 @@ export function Tile({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "spotlight tilt-3d surface @container relative isolate min-w-0 overflow-hidden rounded-tile border border-line p-6 transition-colors duration-500 hover:border-line-2 md:p-7",
+        "spotlight tilt-3d surface @container relative isolate min-w-0 overflow-hidden rounded-tile border border-line p-6 transition-colors duration-500 hover:border-line-hover md:p-7",
         className,
       )}
       {...props}

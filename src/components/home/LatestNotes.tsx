@@ -12,7 +12,7 @@ export function LatestNotes({ notes }: { notes: NoteSummary[] }) {
   if (notes.length === 0) return null;
 
   return (
-    <section aria-labelledby="notes-title" className="py-14 md:py-16">
+    <section aria-labelledby="notes-title" className="section-y">
       <Container className="flex flex-col gap-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHead

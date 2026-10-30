@@ -12,21 +12,21 @@ type CtaBandProps = {
 // The big blue contact card that closes the home and About pages.
 export function CtaBand({ email, availability }: CtaBandProps) {
   return (
-    <section aria-labelledby="cta-title" className="py-14 md:py-16">
+    <section aria-labelledby="cta-title" className="section-y">
       <Container>
         <Reveal>
-          <div className="tilt-3d relative isolate overflow-hidden rounded-panel px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-white shadow-[0_40px_80px_-40px_var(--fill-1)] [background:var(--feature-bg)]">
+          <div className="tilt-3d relative isolate overflow-hidden rounded-panel px-[clamp(24px,6vw,80px)] py-[clamp(40px,7vw,88px)] text-on-fill shadow-[0_40px_80px_-40px_var(--fill-1)] [background:var(--feature-bg)]">
             <div
               aria-hidden="true"
               className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1.4px)] [mask-image:radial-gradient(ellipse_at_top_right,#000,transparent_70%)] bg-size-[22px_22px]"
             />
             <div
               aria-hidden="true"
-              className="absolute -top-40 -right-32 -z-10 size-[30rem] rounded-full border-[40px] border-white/8"
+              className="absolute -top-40 -right-32 -z-10 size-[30rem] rounded-full border-[40px] border-on-fill/8"
             />
             <div
               aria-hidden="true"
-              className="absolute -bottom-48 -left-24 -z-10 size-[26rem] rounded-full bg-white/8 blur-2xl"
+              className="absolute -bottom-48 -left-24 -z-10 size-[26rem] rounded-full bg-on-fill/8 blur-2xl"
             />
 
             <ul
@@ -72,21 +72,21 @@ export function CtaBand({ email, availability }: CtaBandProps) {
             </ul>
 
             <div className="flex max-w-3xl flex-col items-start gap-6">
-              <p className="label-mono inline-flex items-center gap-2 rounded-pill bg-white/15 px-3 py-1.5 text-white">
+              <p className="label-mono inline-flex items-center gap-2 rounded-pill bg-on-fill/15 px-3 py-1.5 text-on-fill">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-[#7dffb0]" />
                 {availability}
               </p>
               <h2
                 id="cta-title"
-                className="text-[clamp(2.3rem,4.4vw,3.75rem)] leading-[1.02] tracking-[-0.035em] text-white"
+                className="text-[clamp(2.3rem,4.4vw,3.75rem)] leading-[1.02] tracking-[-0.035em] text-on-fill"
               >
                 Need someone who can fix the network and ship the app?
               </h2>
-              <p className="max-w-xl text-lg text-white/80">
+              <p className="max-w-xl text-lg text-on-fill/80">
                 Tell me about the role or the problem. I reply within a day, India Standard Time.
               </p>
 
-              <div className="mt-2 flex w-full max-w-xl flex-col gap-2 rounded-[22px] bg-white/12 p-2 backdrop-blur-sm sm:flex-row sm:items-center">
+              <div className="mt-2 flex w-full max-w-xl flex-col gap-2 rounded-[22px] bg-on-fill/12 p-2 backdrop-blur-sm sm:flex-row sm:items-center">
                 <label className="sr-only" htmlFor="cta-email">
                   Email address
                 </label>
@@ -94,7 +94,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
                   id="cta-email"
                   readOnly
                   value={email}
-                  className="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-[0.95rem] text-white outline-none"
+                  className="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-[0.95rem] text-on-fill outline-none"
                 />
                 <CopyButton value={email} variant="white">
                   Copy
@@ -108,7 +108,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
                 </Button>
                 <a
                   href={`mailto:${email}`}
-                  className="inline-flex min-h-12 items-center gap-2 font-semibold text-white/90 underline-offset-4 hover:underline"
+                  className="inline-flex min-h-12 items-center gap-2 font-semibold text-on-fill/90 underline-offset-4 hover:underline"
                 >
                   <Icon name="mail" size={17} />
                   Open in your mail app

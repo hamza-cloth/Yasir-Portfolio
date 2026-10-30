@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { LogoMark } from "@/components/brand/LogoMark";
 import { Avatar } from "@/components/ui/Avatar";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/cn";
@@ -144,7 +145,7 @@ export function AdminShell({ photo, children }: AdminShellProps) {
 
   return (
     <div
-      data-look={theme === "dark" ? "midnight-ops" : "porcelain"}
+      data-look={theme === "dark" ? "midnight-ink" : "porcelain"}
       className="min-h-svh bg-bg font-body text-fg"
       style={{ colorScheme: theme === "dark" ? "dark" : "light" }}
     >
@@ -167,8 +168,8 @@ export function AdminShell({ photo, children }: AdminShellProps) {
             href="/admin"
             className={cn("flex items-center gap-3 px-1", collapsed && "md:justify-center")}
           >
-            <span className="grid size-10 flex-none place-items-center rounded-xl bg-fg font-display text-sm text-bg">
-              YA
+            <span className="grid size-10 flex-none place-items-center rounded-xl border border-line bg-bg text-fg">
+              <LogoMark className="h-6" />
             </span>
             <span className={cn("flex flex-col leading-tight", collapsed && "md:hidden")}>
               <span className="font-bold tracking-[-0.02em]">Admin</span>

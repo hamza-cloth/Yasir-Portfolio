@@ -19,7 +19,7 @@ const ICONS = [
 
 export function ServiceRows({ services }: { services: Service[] }) {
   return (
-    <section aria-labelledby="services-title" className="py-14 md:py-16">
+    <section aria-labelledby="services-title" className="section-y">
       <Container className="flex flex-col gap-10">
         <SectionHead
           eyebrow="Services"
@@ -36,7 +36,7 @@ export function ServiceRows({ services }: { services: Service[] }) {
             return (
               <li key={service.title} className="min-w-0">
                 <Reveal delay={index * 90} className="h-full">
-                  <article className="spotlight tilt-3d surface group relative isolate flex h-full flex-col gap-5 overflow-hidden rounded-tile border border-line p-7 transition-[border-color,box-shadow] duration-500 ease-entrance hover:border-line-2 hover:shadow-(--shadow-lift)">
+                  <article className="spotlight tilt-3d surface group relative isolate flex h-full flex-col gap-5 overflow-hidden rounded-tile border border-line p-7 transition-[border-color,box-shadow] duration-500 ease-entrance hover:border-line-hover hover:shadow-(--shadow-lift)">
                     <div className="flex items-start justify-between gap-4">
                       <span
                         aria-hidden="true"

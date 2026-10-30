@@ -65,7 +65,7 @@ export function GlanceGrid({
   const toolbox = TOOLBOX.filter((skill) => skills.has(skill));
 
   return (
-    <section aria-labelledby="glance-title" className="py-14 md:py-16">
+    <section aria-labelledby="glance-title" className="section-y">
       <Container className="flex flex-col gap-10">
         <SectionHead
           eyebrow="At a glance"

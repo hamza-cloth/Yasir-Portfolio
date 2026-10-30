@@ -14,23 +14,23 @@ export function CcnaTile({ issuer, topics, className }: CcnaTileProps) {
   return (
     <Tile
       className={cn(
-        "flex flex-col gap-5 border-transparent text-white shadow-[0_24px_50px_-24px_var(--fill-1)] [background:var(--feature-bg)]",
+        "flex flex-col gap-5 border-transparent text-on-fill shadow-[0_24px_50px_-24px_var(--fill-1)] [background:var(--feature-bg)]",
         className,
       )}
     >
       <TileHead eyebrow="Training" title="Cisco CCNA" inverse />
-      <p className="text-white/80">Trained at {issuer}, practised on Cisco IOS lab topologies.</p>
+      <p className="text-on-fill/80">Trained at {issuer}, practised on Cisco IOS lab topologies.</p>
       <ul className="flex flex-wrap gap-2">
         {topics.map((topic) => (
           <li
             key={topic}
-            className="label-mono rounded-pill bg-white/15 px-3 py-1.5 text-white backdrop-blur-sm"
+            className="label-mono rounded-pill bg-on-fill/15 px-3 py-1.5 text-on-fill backdrop-blur-sm"
           >
             {topic}
           </li>
         ))}
       </ul>
-      <TileLink href="/notes" className="text-white">
+      <TileLink href="/notes" className="text-on-fill">
         Lab notes
       </TileLink>
     </Tile>

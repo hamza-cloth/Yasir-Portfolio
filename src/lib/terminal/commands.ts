@@ -18,7 +18,7 @@ const lines = (...items: TerminalLine[]): TerminalResult => ({ lines: items });
 
 // "dark" and "light" pick the default look of that theme.
 const THEME_ALIASES = new Map<string, Look>([
-  ["dark", "midnight-ops"],
+  ["dark", "midnight-ink"],
   ["light", "porcelain"],
 ]);
 

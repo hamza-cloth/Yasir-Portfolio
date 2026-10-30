@@ -31,8 +31,11 @@ export default async function SkillsPage() {
         }
         lead="Sorted the way networks are: by OSI layer, from the cable at L1 to the app at L7. Layer 3 is open; expand the rest."
       />
-      <section aria-label="Skills by OSI layer" className="pb-12">
+      <section aria-labelledby="osi-title" className="pb-12">
         <Container>
+          <h2 id="osi-title" className="sr-only">
+            Skills by OSI layer
+          </h2>
           <OsiAccordion layers={groupSkillsByLayer(skills)} />
         </Container>
       </section>

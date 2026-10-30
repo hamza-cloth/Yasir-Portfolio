@@ -711,7 +711,7 @@
     overflow: hidden;
     transform: translateZ(calc(var(--d) / 2));
     padding: 11% 10%;
-    color: #fff;
+    color: var(--on-fill);
     text-align: left;
     background: var(--feature-bg);
     box-shadow:
@@ -779,7 +779,7 @@
     font-weight: 800;
     line-height: 0.8;
     letter-spacing: -0.06em;
-    color: rgb(255 255 255 / 0.92);
+    color: color-mix(in srgb, var(--on-fill) 92%, transparent);
   }
 
   .book3d-title {
@@ -799,12 +799,12 @@
     height: 4px;
     flex: 1;
     border-radius: 2px;
-    background: rgb(255 255 255 / 0.25);
+    background: color-mix(in srgb, var(--on-fill) 25%, transparent);
   }
 
   .book3d-meter li[data-on] {
-    background: #fff;
-    box-shadow: 0 0 8px #fff;
+    background: var(--on-fill);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--on-fill) 60%, transparent);
   }
 
   /* ---- Chapter reader ---- */

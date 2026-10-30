@@ -1,17 +1,19 @@
-import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 
-const jakarta = Plus_Jakarta_Sans({
+// Brand type: Space Grotesk for headings, wordmark and body; JetBrains Mono for labels, tags
+// and code. Self-hosted by next/font, so there is no request to Google and no layout shift.
+const grotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-grotesk",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-geist-mono",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
-export const fontVariables = [jakarta, geistMono].map((font) => font.variable).join(" ");
+export const fontVariables = [grotesk, jetbrainsMono].map((font) => font.variable).join(" ");

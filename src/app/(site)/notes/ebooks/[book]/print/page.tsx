@@ -37,18 +37,18 @@ export default async function EbookPrintPage({ params }: { params: Params }) {
 
   return (
     <Container className="ebook-print flex flex-col gap-16 pt-[calc(var(--header-h)+40px)] pb-16 print:pt-0">
-      <header className="flex min-h-[70vh] flex-col justify-between gap-10 rounded-panel p-[clamp(28px,6vw,64px)] text-white [background:var(--feature-bg)] print:min-h-[250mm]">
-        <p className="label-mono text-white/80">{book.subtitle}</p>
+      <header className="flex min-h-[70vh] flex-col justify-between gap-10 rounded-panel p-[clamp(28px,6vw,64px)] text-on-fill [background:var(--feature-bg)] print:min-h-[250mm]">
+        <p className="label-mono text-on-fill/80">{book.subtitle}</p>
         <div className="flex flex-col gap-6">
-          <p className="font-display text-[clamp(5rem,14vw,9rem)] leading-[0.8] font-extrabold tracking-[-0.06em] text-white/90">
+          <p className="font-display text-[clamp(5rem,14vw,9rem)] leading-[0.8] font-extrabold tracking-[-0.06em] text-on-fill/90">
             L{book.layer}
           </p>
           <h1 className="text-[clamp(2.4rem,6vw,4.4rem)] leading-[1] tracking-[-0.035em]">
             {book.title}
           </h1>
-          <p className="max-w-2xl text-xl text-white/85">{book.summary}</p>
+          <p className="max-w-2xl text-xl text-on-fill/85">{book.summary}</p>
         </div>
-        <p className="label-mono text-white/80">
+        <p className="label-mono text-on-fill/80">
           Yasir Abdullah · {SITE_URL.replace(/^https?:\/\//, "")}/notes/ebooks/{book.slug}
         </p>
       </header>

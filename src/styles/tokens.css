@@ -4,34 +4,36 @@
 
 /* Type and shape shared by every look. */
 :root {
-  --ff-display: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-body: var(--font-jakarta), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-display: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-body: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
   --ff-serif: var(--ff-display);
-  --display-weight: 800;
-  --display-tracking: -0.035em;
-  --display-leading: 1;
-  /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. Capped by
-     width so "Software that works." stays inside its column and clear of the globe. */
-  --fs-hero-split: clamp(2.6rem, min(4.6vw, 9.5svh), 4rem);
-  --fs-hero-stack: clamp(2.2rem, 10.5vw, 4rem);
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+  --display-leading: 1.05;
+  /* The hero name. Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
+  --fs-hero-split: clamp(2.5rem, min(5vw, 9.5svh), 4.5rem);
+  --fs-hero-stack: clamp(2.5rem, 9vw, 4rem);
   --r-pill: 999px;
-  --r-field: 14px;
+  --r-field: 12px;
   --r-chip: 10px;
 }
 
 :root {
-  --ff-mono: var(--font-geist-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --ff-mono: var(--font-jetbrains-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
   --fs-h1: clamp(2.25rem, 5vw + 1rem, 5rem);
-  --fs-h2: clamp(1.9rem, 3vw + 0.9rem, 3.25rem);
+  --fs-h2: clamp(2rem, 3.5vw, 3rem);
   --fs-body: 1.0625rem;
   --fs-label: 0.75rem;
 
-  /* 16px on phones, growing to 32px; the content column tops out at 1280px. */
-  --gutter: clamp(16px, 3vw, 32px);
-  --container: 1280px;
+  /* 20px on phones, growing to 48px; the content column tops out at 1200px. */
+  --gutter: clamp(20px, 5vw, 48px);
+  --container: 1200px;
+  /* Vertical rhythm between major sections. */
+  --section-y: clamp(72px, 10vw, 128px);
   --header-h: 88px;
 
   --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-reveal: cubic-bezier(0.22, 1, 0.36, 1);
   --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
 
   /* One stacking scale for the whole site: header < dropdowns < mobile menu < dialogs
@@ -65,11 +67,13 @@
 [data-look] {
   --r-panel: 28px;
   --r-tile: 24px;
-  --r-card: 20px;
-  --r-button: 999px;
+  --r-card: 24px;
+  --r-button: 12px;
   --accent-fill: linear-gradient(110deg, var(--fill-1), var(--fill-2));
   --feature-bg: linear-gradient(125deg, var(--fill-1), var(--fill-2));
   --accent-gradient: linear-gradient(100deg, var(--c1-text), var(--c2-text));
+  /* Card borders on hover: the accent at half strength (gold on Midnight Ink). */
+  --line-hover: color-mix(in srgb, var(--c1) 50%, transparent);
   --card-sheen: linear-gradient(
     180deg,
     color-mix(in oklab, var(--c1) 5%, transparent),
@@ -80,8 +84,80 @@
     radial-gradient(40rem 28rem at 0% 12%, var(--wash-2), transparent 70%);
 }
 
-/* ---- Porcelain: light, white cards, royal blue. The default. ---- */
+/* ---- Midnight Ink: the brand. Ink surfaces, ivory text, Signature Gold used sparingly. The
+   default look, and what the page shows before any script runs. ---- */
 :root,
+[data-look="midnight-ink"] {
+  color-scheme: dark;
+
+  /* Brand palette, named once; the look's roles below are drawn from it. */
+  --ink: #0b0d12;
+  --ink-2: #12151c;
+  --ink-3: #1a1e27;
+  --ivory: #f4f1ea;
+  --gold: #c9a45c;
+  --gold-soft: #e3c687;
+  --gold-deep: #7a5c24;
+
+  --bg: #0b0d12;
+  --bg-2: #0e1016;
+  --surface: rgba(18, 21, 28, 0.8);
+  --surface-solid: #12151c;
+  --surface-2: #1a1e27;
+  --fg: #f4f1ea;
+  --muted: #8b93a7;
+  --faint: #8a8fa0;
+  --line: #2a2f3b;
+  --line-2: #3a4050;
+  --c1: #c9a45c;
+  --c1-ink: #0b0d12;
+  --c1-text: #c9a45c;
+  --c1-soft: #2a2416;
+  --amber: #e3c687;
+  --amber-ink: #1a1408;
+  --highlight: rgba(201, 164, 92, 0.18);
+  --ok: #5fcf9a;
+  --red: #f07a7a;
+  --glow: rgba(201, 164, 92, 0.16);
+  --curtain: #0b0d12;
+  --curtain-fg: #f4f1ea;
+  --curtain-muted: #8b93a7;
+  --c2: #e3c687;
+  --c2-text: #e3c687;
+  --glow-2: rgba(227, 198, 135, 0.1);
+  /* Buttons and feature cards: solid gold with ink text. */
+  --on-fill: #0b0d12;
+  --fill-1: #c9a45c;
+  --fill-2: #d8b673;
+  --wash-1: rgba(201, 164, 92, 0.08);
+  --wash-2: rgba(244, 241, 234, 0.03);
+
+  --tint-blue: #161b26;
+  --tint-blue-ink: #b9c4dc;
+  --tint-mint: #13201b;
+  --tint-mint-ink: #8fdcb8;
+  --tint-peach: #241b12;
+  --tint-peach-ink: #e9b98a;
+  --tint-lilac: #1c1a26;
+  --tint-lilac-ink: #c7bde6;
+  --tint-butter: #242014;
+  --tint-butter-ink: #e3c687;
+
+  --edge-light: inset 0 1px 0 rgba(244, 241, 234, 0.05);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5), 0 20px 50px -24px rgba(0, 0, 0, 0.8);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.5), 0 36px 70px -30px rgba(0, 0, 0, 0.85);
+  --dot-grid: rgba(244, 241, 234, 0.035);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%23c9a45c' stroke-width='3.2' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #e3c687;
+  --shiki-token-parameter: #e9b98a;
+  --shiki-token-function: #c7bde6;
+  --shiki-token-constant: #8fdcb8;
+  --shiki-token-string: #e9b98a;
+  --shiki-token-string-expression: #e9b98a;
+}
+
+/* ---- Porcelain: light, white cards, royal blue. ---- */
 [data-look="porcelain"] {
   color-scheme: light;
 
@@ -111,7 +187,8 @@
   --c2: #7c4dff;
   --c2-text: #6a3fd1;
   --glow-2: rgba(124, 77, 255, 0.14);
-  /* Buttons and feature cards: white text on this pair, in every look. */
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
   --fill-1: #2b59ff;
   --fill-2: #6d3cf5;
   --wash-1: rgba(43, 89, 255, 0.1);
@@ -172,7 +249,8 @@
   --c2: #3b82f6;
   --c2-text: #93c5fd;
   --glow-2: rgba(59, 130, 246, 0.22);
-  /* Buttons and feature cards: white text on this pair, in every look. */
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
   --fill-1: #0e7490;
   --fill-2: #1d4ed8;
   --wash-1: rgba(34, 211, 238, 0.13);
@@ -233,7 +311,8 @@
   --c2: #db2777;
   --c2-text: #9d174d;
   --glow-2: rgba(219, 39, 119, 0.14);
-  /* Buttons and feature cards: white text on this pair, in every look. */
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
   --fill-1: #c2410c;
   --fill-2: #9d174d;
   --wash-1: rgba(249, 115, 22, 0.15);
@@ -294,7 +373,8 @@
   --c2: #2dd4bf;
   --c2-text: #5eead4;
   --glow-2: rgba(45, 212, 191, 0.18);
-  /* Buttons and feature cards: white text on this pair, in every look. */
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
   --fill-1: #6d28d9;
   --fill-2: #0f766e;
   --wash-1: rgba(139, 92, 246, 0.26);

@@ -22,6 +22,7 @@ const COLOURS = [
   "--glow-2",
   "--fill-1",
   "--fill-2",
+  "--on-fill",
   "--wash-1",
   "--wash-2",
 ];
@@ -35,6 +36,7 @@ const SHARED = [
   "--feature-bg",
   "--card-sheen",
   "--page-wash",
+  "--line-hover",
 ];
 
 describe("look tokens", () => {

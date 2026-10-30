@@ -19,12 +19,12 @@ import { getSkills } from "@/lib/data/skills";
 import { groupSkillsByLayer } from "@/lib/osi";
 import { getProfilePhoto } from "@/lib/profile-photo";
 import { pageMetadata } from "@/lib/seo";
-import { SITE_DESCRIPTION } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/site";
 import { buildTimeline } from "@/lib/timeline";
 
 export async function generateMetadata() {
   const metadata = await pageMetadata({
-    title: "Yasir Abdullah · Software & Network Engineer",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     path: "/",
   });
@@ -59,6 +59,14 @@ export default async function HomePage() {
         photo={await getProfilePhoto(settings.photoUrl)}
         openToWork={settings.openToWork}
         stats={stats}
+        email={settings.email}
+        linkedinUrl={settings.linkedinUrl}
+        githubUrl={settings.githubUrl}
+        badges={[
+          ...(hasCcna ? [{ title: "Cisco CCNA", detail: "trained" }] : []),
+          { title: `${projects.length} products`, detail: "in build" },
+          { title: `${experience.length} support roles`, detail: "technical support" },
+        ]}
       />
       <LogoStrip />
       <GlanceGrid

@@ -29,6 +29,36 @@
     letter-spacing: var(--display-tracking);
   }
 
+  /* Vertical rhythm for major sections, with a hairline between two in a row. */
+  .section-y {
+    padding-block: var(--section-y);
+  }
+
+  .section-y + .section-y {
+    border-top: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c1-text);
+  }
+
+  .eyebrow-rule {
+    width: 28px;
+    height: 2px;
+    flex: none;
+    background: currentColor;
+  }
+
   .label-mono {
     font-family: var(--ff-mono);
     font-size: var(--fs-label);
@@ -72,7 +102,7 @@
   /* The accent button: the look's two-colour fill, always with white text. */
   .btn-accent {
     background: var(--accent-fill);
-    color: #ffffff;
+    color: var(--on-fill);
   }
 
   /* Big step numbers and similar display figures. */
@@ -97,7 +127,7 @@
   .hero-name {
     font-size: var(--fs-hero-stack);
     line-height: var(--display-leading);
-    letter-spacing: -0.035em;
+    letter-spacing: -0.02em;
   }
 
   .glow-hover {
@@ -145,19 +175,18 @@
   }
 
   /* A .reveal-group wrapper stays put; only its .stagger children animate (see motion.css).
-     Sections rise into view and tip upright from a slight 3D lean. */
+     Sections and cards fade in and rise 16px, once. */
   .reveal[data-reveal="hidden"]:not(.reveal-group) {
     opacity: 0;
-    transform: perspective(1200px) translate3d(0, 32px, 0) rotateX(8deg);
-    transform-origin: 50% 100%;
+    transform: translate3d(0, 16px, 0);
   }
 
   .reveal[data-reveal="shown"]:not(.reveal-group) {
     opacity: 1;
     transform: none;
     transition:
-      opacity 1000ms var(--easing-entrance),
-      transform 1000ms var(--easing-entrance);
+      opacity 600ms var(--easing-reveal),
+      transform 600ms var(--easing-reveal);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
@@ -192,14 +221,11 @@
   }
 
   [data-look="porcelain"] .look-label[data-look-label="porcelain"],
+  [data-look="midnight-ink"] .look-label[data-look-label="midnight-ink"],
   [data-look="midnight-ops"] .look-label[data-look-label="midnight-ops"],
   [data-look="sunset-fibre"] .look-label[data-look-label="sunset-fibre"],
   [data-look="aurora"] .look-label[data-look-label="aurora"] {
     display: inline;
-  }
-
-  .site-header {
-    transition: transform 450ms var(--easing-entrance);
   }
 
   /* While the mobile menu is open the header sits above it, so the close button stays reachable. */
@@ -211,18 +237,32 @@
     transform: translate3d(0, -100%, 0);
   }
 
-  /* The floating pill carries the header background. Once the page scrolls under it, it gets a
-     firmer edge and a deeper shadow so it reads above the content. */
-  .header-pill {
+  /* Transparent over the top of the page; once it scrolls 24px, frosted glass with a hairline. */
+  .site-header {
+    border-bottom: 1px solid transparent;
     transition:
-      box-shadow 250ms var(--easing-entrance),
+      transform 450ms var(--easing-entrance),
+      background-color 250ms var(--easing-entrance),
       border-color 250ms var(--easing-entrance);
   }
 
-  .site-header[data-scrolled="true"] .header-pill,
-  .site-header[data-menu-open="true"] .header-pill {
-    border-color: var(--line-2);
-    box-shadow: var(--shadow-lift);
+  .site-header[data-scrolled="true"],
+  .site-header[data-menu-open="true"] {
+    border-bottom-color: var(--line);
+    background-color: color-mix(in srgb, var(--bg) 75%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    right: 0.625rem;
+    bottom: 6px;
+    left: 0.625rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--c1);
   }
 
   .menu-bar {
@@ -455,5 +495,39 @@
   .mobile-menu-item,
   .mobile-menu[data-open="true"] .mobile-menu-item {
     transition: none;
+  }
+}
+
+/* ---- Brand logo ---- */
+/* The Y is Signature Gold on dark looks and a deeper gold on light ones, where #c9a45c is too pale. */
+:root,
+[data-look] {
+  --logo-y: #c9a45c;
+  --logo-tag: #c9a45c;
+}
+
+[data-look="porcelain"],
+[data-look="sunset-fibre"] {
+  --logo-y: #a8823a;
+  --logo-tag: #7a5c24;
+}
+
+@layer components {
+  .logo-name {
+    font-family: var(--ff-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+    color: var(--fg);
+  }
+
+  .logo-tagline {
+    font-family: var(--ff-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    white-space: nowrap;
+    color: var(--logo-tag);
   }
 }

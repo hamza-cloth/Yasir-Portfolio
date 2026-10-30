@@ -6,7 +6,7 @@ import type { DomainGroup } from "@/lib/skill-domains";
 
 export function DomainCards({ domains }: { domains: DomainGroup[] }) {
   return (
-    <section aria-labelledby="domains-title" className="py-20">
+    <section aria-labelledby="domains-title" className="section-y">
       <Container className="flex flex-col gap-10">
         <SectionHead eyebrow="Domains" titleId="domains-title" title="The same skills, by job" />
         <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">

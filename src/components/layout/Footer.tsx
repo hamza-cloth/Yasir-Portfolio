@@ -1,3 +1,4 @@
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/Button";
@@ -8,6 +9,7 @@ import { ALL_PAGES } from "@/lib/site-nav";
 
 import { FooterName } from "./FooterName";
 import { IstClock } from "./IstClock";
+import { Logo } from "./Logo";
 
 type FooterProps = {
   settings: SiteSettingsData;
@@ -16,7 +18,15 @@ type FooterProps = {
 const linkClass =
   "inline-flex min-h-11 min-w-11 items-center gap-2 text-muted transition-colors duration-300 hover:text-fg";
 
-export function Footer({ settings }: FooterProps) {
+// Cached for a day, so the year rolls over without reading the clock on every render.
+async function copyrightYear(): Promise<number> {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
+}
+
+export async function Footer({ settings }: FooterProps) {
+  const year = await copyrightYear();
   const elsewhere = [
     { label: "LinkedIn", href: settings.linkedinUrl, icon: "linkedin" },
     { label: "GitHub", href: settings.githubUrl, icon: "github" },
@@ -31,7 +41,7 @@ export function Footer({ settings }: FooterProps) {
       <Container className="flex flex-col gap-16">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           <div className="flex min-w-0 flex-col items-start gap-4">
-            <p className="text-lg font-semibold tracking-[-0.02em] text-fg">{settings.name}</p>
+            <Logo />
             <p className="max-w-sm text-muted">{settings.roleLine}</p>
             <p className="label-mono flex items-center gap-2.5 text-muted">
               <span aria-hidden="true" className="status-dot" />
@@ -86,7 +96,9 @@ export function Footer({ settings }: FooterProps) {
         <FooterName name={settings.name} />
 
         <div className="-mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-faint">
-          <p>© {settings.name}. All rights reserved.</p>
+          <p>
+            © {year} {settings.name}. All rights reserved.
+          </p>
           <p>Designed &amp; built in {settings.location.split(",").at(-1)?.trim() ?? "India"}.</p>
         </div>
       </Container>

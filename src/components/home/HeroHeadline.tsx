@@ -27,15 +27,13 @@ function Scribble({ children }: { children: ReactNode }) {
   );
 }
 
-// One headline for every look; only its colours change.
+// The promise under the name; the name itself is the page's h1.
 export function HeroHeadline() {
   return (
-    <h1
-      id="hero-title"
-      className="intro-lcp hero-name hero-name--split max-w-[14ch] text-fg"
-      style={cssVars({ "--i": 1 })}
-    >
-      Networks that stay up. <Scribble>Software that works.</Scribble>
-    </h1>
+    <p className="intro hero-tagline text-fg" style={cssVars({ "--i": 3 })}>
+      {/* Two lines on purpose: each half stays whole instead of wrapping mid-phrase. */}
+      <span className="block">Networks that stay up.</span>{" "}
+      <Scribble>Software that works.</Scribble>
+    </p>
   );
 }

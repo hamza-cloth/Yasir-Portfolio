@@ -40,8 +40,9 @@ export function Header() {
         className="site-header fixed inset-x-0 top-0 z-(--z-header) pt-[env(safe-area-inset-top)]"
       >
         <Container className="flex h-(--header-h) items-center">
-          <div className="header-pill flex h-16 w-full items-center gap-3 rounded-pill border border-line bg-surface/80 pr-2 pl-3 shadow-(--shadow-soft) backdrop-blur-xl backdrop-saturate-150">
-            <Logo />
+          <div className="flex h-16 w-full items-center gap-3">
+            {/* Full logo where there is room: from 640px, except beside the inline nav until 1320px. */}
+            <Logo wordmarkClassName="max-[40rem]:hidden laptop:max-xl:hidden" />
             <NavPills pathname={pathname} className="mx-auto hidden laptop:block" />
             <div className="ml-auto flex min-w-0 items-center gap-1.5 laptop:ml-0">
               <CommandButton className="max-sm:hidden" />

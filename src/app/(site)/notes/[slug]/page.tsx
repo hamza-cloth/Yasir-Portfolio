@@ -66,7 +66,7 @@ export default async function NotePage({ params }: { params: Params }) {
           <Container>
             <Link
               href={`/notes/${next.slug}`}
-              className="surface group flex flex-col gap-3 rounded-panel border border-line p-[clamp(24px,4vw,48px)] transition-colors duration-500 hover:border-line-2 md:flex-row md:items-center md:justify-between"
+              className="surface group flex flex-col gap-3 rounded-panel border border-line p-[clamp(24px,4vw,48px)] transition-colors duration-500 hover:border-line-hover md:flex-row md:items-center md:justify-between"
             >
               <span className="flex flex-col gap-3">
                 <span className="label-mono text-faint">Next note</span>

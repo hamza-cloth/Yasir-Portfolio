@@ -4,6 +4,7 @@ import { connection } from "next/server";
 
 import { AlreadySignedIn } from "@/components/admin/AlreadySignedIn";
 import { LoginForm } from "@/components/admin/LoginForm";
+import { LogoMark } from "@/components/brand/LogoMark";
 import { Aurora } from "@/components/canvas/Aurora";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -170,7 +171,7 @@ export default async function LoginPage() {
       {/* Brand panel, shown beside the form from large screens up. */}
       <aside
         aria-label="About the admin"
-        className="relative isolate hidden overflow-hidden text-white [background:var(--feature-bg)] lg:order-first lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16"
+        className="relative isolate hidden overflow-hidden text-on-fill [background:var(--feature-bg)] lg:order-first lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16"
       >
         <div
           aria-hidden="true"
@@ -178,34 +179,32 @@ export default async function LoginPage() {
         />
         <div
           aria-hidden="true"
-          className="absolute -right-40 -bottom-48 -z-10 size-[36rem] rounded-full bg-white/10 blur-3xl"
+          className="absolute -right-40 -bottom-48 -z-10 size-[36rem] rounded-full bg-on-fill/10 blur-3xl"
         />
 
         <Link href="/" className="inline-flex min-h-11 items-center gap-3 self-start font-bold">
-          <span
-            aria-hidden="true"
-            className="grid size-10 place-items-center rounded-full bg-white text-[0.9rem] font-extrabold tracking-[-0.04em] text-[#0e1220]"
-          >
-            YA
+          {/* The favicon's ink tile, so the gold Y stays visible on a gold panel. */}
+          <span className="grid size-11 place-items-center rounded-xl bg-[#0b0d12] text-[#f4f1ea] [--logo-y:#c9a45c]">
+            <LogoMark className="h-7" />
           </span>
           {settings.name}
           <span className="sr-only">, back to the site</span>
         </Link>
 
         <div className="max-w-md py-12">
-          <p className="label-mono text-white/90">Portfolio admin</p>
-          <h2 className="mt-4 text-[clamp(2.1rem,3.2vw,3rem)] leading-[1.05] tracking-[-0.035em] text-white">
+          <p className="label-mono text-on-fill/90">Portfolio admin</p>
+          <h2 className="mt-4 text-[clamp(2.1rem,3.2vw,3rem)] leading-[1.05] tracking-[-0.035em] text-on-fill">
             Every part of the site, edited in one place.
           </h2>
           <ul className="mt-10 flex flex-col gap-6">
             {FEATURES.map((feature) => (
               <li key={feature.title} className="flex gap-4">
-                <span className="grid size-11 flex-none place-items-center rounded-xl bg-white/15 ring-1 ring-white/25">
+                <span className="grid size-11 flex-none place-items-center rounded-xl bg-on-fill/15 ring-1 ring-on-fill/25">
                   <Icon name={feature.icon} size={19} />
                 </span>
                 <span>
-                  <span className="block font-semibold text-white">{feature.title}</span>
-                  <span className="mt-0.5 block text-[0.95rem] leading-relaxed text-white/90">
+                  <span className="block font-semibold text-on-fill">{feature.title}</span>
+                  <span className="mt-0.5 block text-[0.95rem] leading-relaxed text-on-fill/90">
                     {feature.body}
                   </span>
                 </span>
@@ -214,7 +213,7 @@ export default async function LoginPage() {
           </ul>
         </div>
 
-        <p className="flex items-center gap-2 text-sm text-white/90">
+        <p className="flex items-center gap-2 text-sm text-on-fill/90">
           <Icon name="database" size={16} />
           Changes publish to the live site as soon as you save.
         </p>

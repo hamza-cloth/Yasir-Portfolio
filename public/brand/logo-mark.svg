@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 0 80 92" role="img" aria-label="Yasir Abdullah logo">
+  <defs><clipPath id="ya-clip"><rect x="0" y="0" width="100" height="88"/></clipPath></defs>
+  <g clip-path="url(#ya-clip)" fill="none" stroke-linejoin="miter" stroke-miterlimit="4">
+    <path d="M38.9 44 L50 60 L61.1 44 M50 60 L50 100" stroke="#C9A45C" stroke-width="7"/>
+    <path d="M14.9 100 L50 18 L85.1 100" stroke="#F4F1EA" stroke-width="11"/>
+  </g>
+</svg>

@@ -317,14 +317,13 @@
   /* ---- Staggered children inside a <Reveal>. ---- */
   .reveal[data-reveal="hidden"] .stagger > * {
     opacity: 0;
-    transform: perspective(900px) translate3d(0, 28px, 0) rotateX(12deg);
-    transform-origin: 50% 100%;
+    transform: translate3d(0, 16px, 0);
   }
 
   .reveal[data-reveal="shown"] .stagger > * {
     transition:
-      opacity 900ms var(--easing-entrance),
-      transform 900ms var(--easing-entrance);
+      opacity 600ms var(--easing-reveal),
+      transform 600ms var(--easing-reveal);
   }
 
   .reveal[data-reveal="shown"] .stagger > :nth-child(2) {

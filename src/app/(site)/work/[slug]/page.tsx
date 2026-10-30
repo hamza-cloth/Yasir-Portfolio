@@ -55,7 +55,7 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
         </PlayWhenVisible>
       </Container>
 
-      <section aria-labelledby="overview-title" className="py-20">
+      <section aria-labelledby="overview-title" className="section-y">
         <Container className="grid gap-10 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
           <SectionHead eyebrow="Overview" titleId="overview-title" title="What it is" />
           <Markdown source={project.overview} className="text-lg" />
@@ -63,7 +63,7 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
       </section>
 
       {project.decisions.length > 0 ? (
-        <section aria-labelledby="decisions-title" className="py-20">
+        <section aria-labelledby="decisions-title" className="section-y">
           <Container className="flex flex-col gap-10">
             <SectionHead
               eyebrow="Decisions"
@@ -75,7 +75,7 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
         </section>
       ) : null}
 
-      <section aria-labelledby="architecture-title" className="py-20">
+      <section aria-labelledby="architecture-title" className="section-y">
         <Container className="flex flex-col gap-10">
           <SectionHead
             eyebrow="Architecture"
