@@ -78,7 +78,7 @@ export function CtaBand({ email, availability }: CtaBandProps) {
               </p>
               <h2
                 id="cta-title"
-                className="text-[clamp(2.3rem,5vw,4.25rem)] leading-[1.02] tracking-[-0.035em] text-white"
+                className="text-[clamp(2.3rem,4.4vw,3.75rem)] leading-[1.02] tracking-[-0.035em] text-white"
               >
                 Need someone who can fix the network and ship the app?
               </h2>

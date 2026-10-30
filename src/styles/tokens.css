@@ -10,8 +10,9 @@
   --display-weight: 800;
   --display-tracking: -0.035em;
   --display-leading: 1;
-  /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
-  --fs-hero-split: clamp(2.6rem, min(4.9vw, 9.5svh), 4.9rem);
+  /* Capped by height too, so the whole hero fits a 768px-tall laptop screen. Capped by
+     width so "Software that works." stays inside its column and clear of the globe. */
+  --fs-hero-split: clamp(2.6rem, min(4.6vw, 9.5svh), 4rem);
   --fs-hero-stack: clamp(2.2rem, 10.5vw, 4rem);
   --r-pill: 999px;
   --r-field: 14px;
@@ -23,7 +24,7 @@
   --fs-h1: clamp(2.25rem, 5vw + 1rem, 5rem);
   --fs-h2: clamp(1.9rem, 3vw + 0.9rem, 3.25rem);
   --fs-body: 1.0625rem;
-  --fs-label: 0.72rem;
+  --fs-label: 0.75rem;
 
   /* 16px on phones, growing to 32px; the content column tops out at 1280px. */
   --gutter: clamp(16px, 3vw, 32px);

@@ -25,7 +25,7 @@ export function ProjectStackCard({ project, index }: ProjectStackCardProps) {
             <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
             {String(index + 1).padStart(2, "0")} · {project.statusLabel}
           </p>
-          <h3 className="text-[clamp(2rem,4vw,3.2rem)] leading-[1] tracking-[-0.035em]">
+          <h3 className="text-[clamp(2rem,3vw,2.6rem)] leading-[1.05] tracking-[-0.035em]">
             {project.title}
           </h3>
           <p className="text-lg font-semibold tracking-[-0.01em] text-fg">{project.tagline}</p>
