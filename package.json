@@ -4,12 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "predev": "kill-port 3000",
+    "dev": "next dev -p 3000",
     "build": "next build",
     "vercel-build": "tsx scripts/migrate-deploy.ts && next build",
     "start": "next start",
+    "preview": "next start -p 3001",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm test && tsx scripts/build-offline.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
@@ -22,7 +25,7 @@
     "postinstall": "prisma generate"
   },
   "engines": {
-    "node": ">=20.9"
+    "node": ">=24"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",
@@ -66,6 +69,7 @@
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.3",
     "eslint-config-prettier": "^10.1.8",
+    "kill-port": "^2.0.1",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^7.10.1",
