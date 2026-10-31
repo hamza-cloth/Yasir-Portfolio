@@ -10,7 +10,7 @@ import { isTwoFactorAvailable } from "@/lib/auth/totp";
 import { cn } from "@/lib/cn";
 import { getSiteConfig } from "@/lib/data/site-config";
 import { getDb } from "@/lib/db";
-import { isEmailConfigured } from "@/lib/email";
+import { canEmailVisitors, emailProvider, isEmailConfigured } from "@/lib/email";
 import { isBlobConfigured } from "@/lib/media";
 
 export const metadata = { title: "System health" };
@@ -82,11 +82,18 @@ export default async function HealthPage() {
         : "Not reachable. Check DATABASE_URL.",
     },
     {
-      label: "Email (Resend)",
+      label: "Email alerts to you",
       ok: isEmailConfigured(),
       detail: isEmailConfigured()
-        ? "Alerts, replies, invitations and password resets can be sent."
-        : "RESEND_API_KEY or CONTACT_TO_EMAIL is missing: no alerts, replies, invitations or reset emails.",
+        ? `New messages and leads are emailed to you (${emailProvider() === "smtp" ? "SMTP" : "Resend"}).`
+        : "No email provider or CONTACT_TO_EMAIL: alerts are off. Messages are still saved here.",
+    },
+    {
+      label: "Email to visitors (replies, invitations, newsletter)",
+      ok: canEmailVisitors(),
+      detail: canEmailVisitors()
+        ? `Sent as “${process.env.EMAIL_FROM_NAME || "Yasir Portfolio"}” in the branded template, via ${emailProvider() === "smtp" ? "SMTP" : "Resend"}.`
+        : "Not possible yet: Resend's test sender only delivers to your own inbox. Free fix with Gmail: turn on 2-step verification, create an app password (myaccount.google.com/apppasswords), then set SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USER=your Gmail address and SMTP_PASS=the app password on Vercel, and redeploy. With your own domain verified in Resend, EMAIL_FROM works too.",
     },
     {
       label: "Uploads (Vercel Blob)",

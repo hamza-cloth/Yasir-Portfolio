@@ -20,6 +20,16 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 5 — direct replies and branded email (2026-10-31)
+
+- **Reply from the admin:** each message has "Reply as Yasir Portfolio" with four templates and a
+  live preview of the exact email; sent replies show under the message as a thread.
+- **Branded email:** one premium template (logo, ink header with a gold rule, signature with
+  contact links, quoted original) for replies, invitations, password resets, the newsletter,
+  subscription confirmations and the admin's alerts. Sender name "Yasir Portfolio".
+- **Gmail SMTP:** with `SMTP_HOST`/`SMTP_USER`/`SMTP_PASS` set, email goes through SMTP and reaches
+  anyone without a domain; System health explains the setup.
+
 ### Phase 4 — project planner and the missing features (2026-10-31)
 
 - **Project planner (/estimate):** no price while requirements are gathered (project, platforms,

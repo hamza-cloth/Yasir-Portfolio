@@ -222,6 +222,18 @@ model Message {
   @@index([archived, spam, createdAt])
 }
 
+// A reply sent from the admin; messageId has no foreign key so replies survive the trash.
+model MessageReply {
+  id        String   @id @default(cuid())
+  messageId String
+  subject   String
+  body      String   @db.Text
+  sentBy    String
+  createdAt DateTime @default(now())
+
+  @@index([messageId, createdAt])
+}
+
 model RateLimitHit {
   id        String   @id @default(cuid())
   key       String

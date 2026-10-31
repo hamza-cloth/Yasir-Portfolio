@@ -3,7 +3,7 @@
 import { randomBytes } from "node:crypto";
 
 import { getDb } from "@/lib/db";
-import { sendAdminEmail } from "@/lib/email";
+import { sendBrandedEmail } from "@/lib/email";
 import { notify } from "@/lib/notify";
 import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 
@@ -46,10 +46,17 @@ export async function subscribe(
       }));
     if (!existing)
       await notify("subscriber", `New subscriber: ${email}`, undefined, "/admin/subscribers");
-    await sendAdminEmail({
+    await sendBrandedEmail({
       to: email,
       subject: "Confirm your subscription",
-      text: `Thanks for signing up for new notes and projects.\n\nConfirm here:\n${siteUrl()}/subscribe?token=${subscriber.token}\n\nIf you didn't sign up, ignore this email and nothing happens.`,
+      preheader: "One click and you're on the list.",
+      eyebrow: "Newsletter",
+      heading: "Confirm your subscription",
+      body: "Thanks for signing up for new notes and projects, about once a month.\n\nConfirm with the button below. If you didn't sign up, ignore this email and nothing happens.",
+      cta: {
+        label: "Confirm my subscription",
+        href: `${siteUrl()}/subscribe?token=${subscriber.token}`,
+      },
     });
   } catch {
     return { status: "error", message: "Signing up failed. Please try again." };

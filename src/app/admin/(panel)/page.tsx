@@ -130,8 +130,8 @@ export default async function DashboardPage() {
         <ul className="mb-6 flex flex-col gap-2">
           {!isEmailConfigured() ? (
             <li className="rounded-card border border-amber/30 bg-amber/8 px-5 py-3 text-sm">
-              Email alerts are off: add <code className="font-mono">RESEND_API_KEY</code> to get an
-              email for each message. Messages are saved here either way.
+              Email alerts are off: set up email (System health shows how) to get an email for each
+              message. Messages are saved here either way.
             </li>
           ) : null}
           {!isBlobConfigured() ? (

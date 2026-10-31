@@ -27,7 +27,7 @@ import {
 } from "@/lib/auth/totp";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { getDb } from "@/lib/db";
-import { sendAdminEmail } from "@/lib/email";
+import { canEmailVisitors, emailContact, sendBrandedEmail } from "@/lib/email";
 import { DEFAULT_PRICES } from "@/lib/estimate";
 import { reportError } from "@/lib/monitoring";
 import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
@@ -341,22 +341,28 @@ export async function sendNewsletter(_previous: FormResult, form: FormData): Pro
   if (body.length < 20) return { error: "Write the newsletter first (20 characters at least)." };
   if (body.length > 20_000) return { error: "Keep it under 20,000 characters." };
 
-  const footer = (token: string | null) =>
-    token
-      ? `\n\n—\nYou get this because you subscribed at ${siteUrl()}.\nUnsubscribe: ${siteUrl()}/subscribe?token=${token}`
-      : "\n\n—\n(Test copy: real subscribers get an unsubscribe link here.)";
-
   if (testOnly) {
-    const sent = await sendAdminEmail({
+    const sent = await sendBrandedEmail({
       to: admin.email,
       subject: `[Test] ${subject}`,
-      text: body + footer(null),
+      preheader: body.slice(0, 110),
+      eyebrow: "Newsletter · test copy",
+      heading: subject,
+      body,
+      signature: true,
+      contact: emailContact(),
+      footerNote: "Test copy: real subscribers get an unsubscribe link here.",
     });
     return sent
       ? { ok: `Test sent to ${admin.email}. Check it, then send to everyone.` }
       : { error: "Email is not configured (RESEND_API_KEY), or the send failed." };
   }
 
+  if (!canEmailVisitors()) {
+    return {
+      error: "Email can only reach your own inbox right now. Add the Gmail SMTP settings first.",
+    };
+  }
   const recipients = await db.subscriber.findMany({
     where: { status: "CONFIRMED" },
     select: { email: true, token: true },
@@ -368,7 +374,17 @@ export async function sendNewsletter(_previous: FormResult, form: FormData): Pro
     const batch = recipients.slice(index, index + 10);
     const results = await Promise.all(
       batch.map((recipient) =>
-        sendAdminEmail({ to: recipient.email, subject, text: body + footer(recipient.token) }),
+        sendBrandedEmail({
+          to: recipient.email,
+          subject,
+          preheader: body.slice(0, 110),
+          eyebrow: "Newsletter",
+          heading: subject,
+          body,
+          signature: true,
+          contact: emailContact(),
+          footerNote: `You get this because you subscribed at ${siteUrl()}. Unsubscribe: ${siteUrl()}/subscribe?token=${recipient.token}`,
+        }),
       ),
     );
     sent += results.filter(Boolean).length;
@@ -411,6 +427,13 @@ export async function setMessageLabels(form: FormData): Promise<void> {
   refresh();
 }
 
+// The big line at the top of a reply: the subject without "Re:", or a friendly default.
+function replyHeading(subject: string): string {
+  const topic = subject.replace(/^re:\s*/i, "").trim();
+  if (!topic || /^your message$/i.test(topic)) return "Thanks for getting in touch";
+  return topic.charAt(0).toUpperCase() + topic.slice(1);
+}
+
 export async function replyToMessage(
   id: string,
   _previous: FormResult,
@@ -424,18 +447,34 @@ export async function replyToMessage(
   if (body.length < 2) return { error: "Write a reply first." };
   if (body.length > 8000) return { error: "Keep the reply under 8,000 characters." };
 
-  const sent = await sendAdminEmail({
-    to: message.email,
-    subject,
-    text: body,
-    replyTo: admin.email,
-  });
-  if (!sent) {
+  if (!canEmailVisitors()) {
     return {
-      error: "Email is not configured (RESEND_API_KEY), or the send failed. Nothing was sent.",
+      error:
+        "Email can only reach your own inbox right now. Add the Gmail SMTP settings (see System health) to reply to visitors.",
     };
   }
-  await db.message.update({ where: { id }, data: { read: true } });
+  const contact = emailContact();
+  const sent = await sendBrandedEmail({
+    to: message.email,
+    subject,
+    // Their answer comes back to the site's contact inbox.
+    replyTo: contact.email ?? admin.email,
+    preheader: body.slice(0, 110),
+    eyebrow: "Reply to your message",
+    heading: replyHeading(subject),
+    body,
+    quote: {
+      label: `Your message · ${message.createdAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`,
+      text: message.body.slice(0, 1500),
+    },
+    signature: true,
+    contact,
+  });
+  if (!sent) return { error: "The email could not be sent. Check System health and try again." };
+  await db.$transaction([
+    db.messageReply.create({ data: { messageId: id, subject, body, sentBy: admin.email } }),
+    db.message.update({ where: { id }, data: { read: true } }),
+  ]);
   await audit(admin.email, "update", "message", `Replied to ${message.name}`, id);
   refresh();
   return { ok: `Reply sent to ${message.email}.` };
@@ -601,10 +640,14 @@ export async function inviteUser(_previous: InviteResult, form: FormData): Promi
     },
   });
   const link = `${siteUrl()}/admin/login/invite?token=${token}`;
-  const emailed = await sendAdminEmail({
+  const emailed = await sendBrandedEmail({
     to: email,
     subject: "You're invited to the portfolio admin",
-    text: `${admin.email} invited you as ${role.toLowerCase()}.\n\nSet your password here (valid ${INVITE_DAYS} days):\n${link}`,
+    preheader: `${admin.email} invited you to help run the portfolio.`,
+    eyebrow: "Invitation",
+    heading: "You're invited to the admin",
+    body: `${admin.email} invited you to the portfolio admin as ${role.toLowerCase()}.\n\nChoose a password to finish. The link works once, for ${INVITE_DAYS} days.`,
+    cta: { label: "Accept the invitation", href: link },
   });
   await audit(admin.email, "security", "user", `Invited ${email} as ${role}`);
   refresh();
@@ -706,10 +749,14 @@ export async function requestPasswordReset(
       expires: new Date(Date.now() + RESET_MINUTES * 60_000),
     },
   });
-  await sendAdminEmail({
+  await sendBrandedEmail({
     to: email,
     subject: "Reset your portfolio admin password",
-    text: `Someone asked to reset the admin password for ${email}.\n\nChoose a new one here (valid ${RESET_MINUTES} minutes):\n${siteUrl()}/admin/login/reset?token=${token}\n\nIf it wasn't you, ignore this email.`,
+    preheader: `A password reset was asked for ${email}.`,
+    eyebrow: "Password reset",
+    heading: "Choose a new password",
+    body: `Someone asked to reset the admin password for ${email}. The link below works for ${RESET_MINUTES} minutes.\n\nIf it wasn't you, ignore this email: nothing changes.`,
+    cta: { label: "Choose a new password", href: `${siteUrl()}/admin/login/reset?token=${token}` },
   });
   await audit(email, "security", "user", "Asked for a password reset", user.id);
   return done;
