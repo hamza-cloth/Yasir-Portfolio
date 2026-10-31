@@ -62,6 +62,8 @@ const price = z.number().int().min(0).max(100_000_000);
 export const pricingSchema = z.object({
   base: z.record(z.string().max(40), price),
   feature: z.record(z.string().max(40), price),
+  // The launch-pricing ceiling, when changed from PRICING.maxPrice (0 = no ceiling).
+  cap: price.optional(),
 });
 export type PricingOverrides = z.infer<typeof pricingSchema>;
 

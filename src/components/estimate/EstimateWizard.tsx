@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
 
 import { buttonClassName } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -250,47 +257,89 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
     },
   ];
 
+  // Share of the requirement steps completed, for the rail, the ring and the phone bar.
+  const progress = progressStep / STEPS.length;
+  const ringLength = 2 * Math.PI * 22;
+  const scope = [
+    { label: "Platforms", value: input ? input.platforms.length : 0 },
+    { label: "Features", value: labels ? labels.features.length : 0 },
+    { label: "Extras", value: labels ? labels.services.length : 0 },
+  ];
+
+  // The cards' soft light follows the pointer.
+  function spotlight(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "mouse") return;
+    const card = (event.target as HTMLElement).closest<HTMLElement>(".est-card, .est-chip");
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+    card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+  }
+
+  const backButton = (size: "md" | "sm") =>
+    state.step > 1 ? (
+      <button
+        type="button"
+        onClick={() => go(state.step - 1)}
+        aria-label={size === "sm" ? "Back" : undefined}
+        className={buttonClassName("line", size, size === "sm" ? "px-3" : undefined)}
+      >
+        <Icon name="arrow-right" size={16} className="rotate-180" />
+        {size === "md" ? "Back" : null}
+      </button>
+    ) : null;
+
   return (
     <>
-      <div className="estimate print:hidden">
+      <div className="estimate print:hidden" onPointerMove={spotlight}>
         <p aria-live="polite" className="sr-only">
           {announce}
         </p>
 
         {/* Progress */}
-        <nav aria-label="Calculator steps" className="mb-8">
-          <div className="est-progress" aria-hidden="true">
-            <span style={{ width: `${(progressStep / STEPS.length) * 100}%` }} />
+        <nav aria-label="Calculator steps" className="est-stepper mb-6">
+          <div className="relative" style={{ "--progress": progress } as CSSProperties}>
+            <span aria-hidden="true" className="est-rail" />
+            <span aria-hidden="true" className="est-rail-fill" />
+            <ol>
+              {[...STEPS, "Report"].map((label, index) => {
+                const step = index + 1;
+                const reachable =
+                  step === 1 || (step === REPORT ? stepValid(REPORT) : stepValid(step - 1));
+                const done = step < state.step || (onReport && step < REPORT);
+                return (
+                  <li key={label}>
+                    <button
+                      type="button"
+                      onClick={() => (step === REPORT ? analyse() : go(step))}
+                      disabled={!reachable || (step === state.step && !analysing)}
+                      aria-current={step === state.step ? "step" : undefined}
+                      className="est-step-link"
+                      data-done={done}
+                    >
+                      <span className="est-node">
+                        {done ? (
+                          <Icon name="check" size={13} />
+                        ) : step === REPORT ? (
+                          <Icon name="sparkle" size={13} />
+                        ) : (
+                          step
+                        )}
+                      </span>
+                      <span className="max-md:sr-only">{label}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
           </div>
-          <ol className="mt-4 grid grid-cols-7 gap-1.5">
-            {[...STEPS, "Report"].map((label, index) => {
-              const step = index + 1;
-              const reachable =
-                step === 1 || (step === REPORT ? stepValid(REPORT) : stepValid(step - 1));
-              return (
-                <li key={label}>
-                  <button
-                    type="button"
-                    onClick={() => (step === REPORT ? analyse() : go(step))}
-                    disabled={!reachable || (step === state.step && !analysing)}
-                    aria-current={step === state.step ? "step" : undefined}
-                    className="est-step-link"
-                    data-done={step < state.step}
-                  >
-                    <span className="font-mono">{step === REPORT ? "★" : step}</span>
-                    <span className="max-xl:sr-only">{label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
         </nav>
 
         <div
           className={
             onReport || analysing
               ? "flex flex-col"
-              : "grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start"
+              : "grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
           }
         >
           <div
@@ -301,7 +350,7 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
                 ? "Your project report"
                 : `Step ${Math.min(state.step, STEPS.length)} of ${STEPS.length}: ${STEPS[Math.min(state.step, STEPS.length) - 1]}`
             }
-            className="scroll-mt-28 outline-none"
+            className={`min-w-0 scroll-mt-28 outline-none ${onReport || analysing ? "" : "est-stage"}`}
           >
             <div key={analysing ? "analysing" : state.step} className="est-panel">
               {analysing ? <Analysing onDone={finishAnalysis} /> : null}
@@ -355,16 +404,7 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
 
             {!onReport && !analysing ? (
               <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-line pt-6 max-lg:hidden">
-                {state.step > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => go(state.step - 1)}
-                    className={buttonClassName("line", "md")}
-                  >
-                    <Icon name="arrow-right" size={16} className="rotate-180" />
-                    Back
-                  </button>
-                ) : null}
+                {backButton("md")}
                 {state.step < STEPS.length ? (
                   <button
                     type="button"
@@ -372,7 +412,7 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
                     disabled={!stepValid(state.step)}
                     className={buttonClassName("accent", "md")}
                   >
-                    {state.step === 5 ? "Review" : "Next"}
+                    {state.step === 5 ? "Review" : "Continue"}
                     <Icon name="arrow-right" size={16} />
                   </button>
                 ) : null}
@@ -381,7 +421,7 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
                   <button
                     type="button"
                     onClick={startOver}
-                    className="ml-auto text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+                    className="ml-auto min-h-11 text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
                   >
                     Start over
                   </button>
@@ -392,45 +432,88 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
               <button
                 type="button"
                 onClick={startOver}
-                className="mt-6 self-start text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+                className="mt-6 min-h-11 self-start text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
               >
                 Start a new estimate
               </button>
             ) : null}
           </div>
 
-          {/* Requirements so far: a sticky sidebar on desktop. No price until the report. */}
+          {/* Requirements so far: a sticky "live blueprint" on desktop. No price until the report. */}
           {!onReport && !analysing ? (
             <aside aria-label="Your requirements" className="est-summary max-lg:hidden">
-              <p className="label-mono text-faint">Your requirements</p>
-              <ol className="mt-2 flex flex-col gap-3">
+              <div className="flex items-center gap-4">
+                <span className="est-ring" aria-hidden="true">
+                  <svg width="56" height="56" viewBox="0 0 56 56">
+                    <circle className="est-ring-track" cx="28" cy="28" r="22" strokeWidth="4" />
+                    <circle
+                      className="est-ring-value"
+                      cx="28"
+                      cy="28"
+                      r="22"
+                      strokeWidth="4"
+                      strokeDasharray={ringLength}
+                      strokeDashoffset={ringLength * (1 - progress)}
+                    />
+                  </svg>
+                  <span className="est-ring-label text-sm">{Math.round(progress * 100)}%</span>
+                </span>
+                <span className="flex flex-col">
+                  <span className="label-mono text-c1-text">Live blueprint</span>
+                  <span className="font-display text-lg font-semibold text-fg">
+                    {type?.label ?? "Your project"}
+                  </span>
+                </span>
+              </div>
+
+              <ol className="est-timeline">
                 {checklist.map((item) => {
                   const done = state.step > item.step && Boolean(item.value);
+                  const active = state.step === item.step;
                   return (
-                    <li key={item.label} className="flex gap-3">
-                      <span className="est-stage-dot mt-0.5" data-done={done}>
+                    <li key={item.label} className="relative flex gap-3">
+                      <span className="est-stage-dot mt-0.5" data-done={done} data-active={active}>
                         {done ? <Icon name="check" size={11} /> : null}
                       </span>
                       <span className="flex min-w-0 flex-col">
-                        <span className="text-sm font-semibold text-fg">{item.label}</span>
+                        <span
+                          className={`text-sm font-semibold ${done || active ? "text-fg" : "text-faint"}`}
+                        >
+                          {item.label}
+                        </span>
                         <span className="truncate text-sm text-muted">
-                          {done ? item.value : "—"}
+                          {done ? item.value : active ? "In progress…" : "—"}
                         </span>
                       </span>
                     </li>
                   );
                 })}
               </ol>
-              <div className="mt-4 flex items-start gap-2.5 rounded-field bg-c1-soft p-3 text-sm text-c1-text">
-                <Icon name="sparkle" size={16} className="mt-0.5 flex-none" />
-                <span>
-                  Your cost, timeline and tech stack appear after the analysis, worked out from
-                  every answer.
-                </span>
+
+              <div className="est-scope">
+                {scope.map((item) => (
+                  <div key={item.label}>
+                    <strong>{item.value}</strong>
+                    <span className="label-mono text-faint">{item.label}</span>
+                  </div>
+                ))}
               </div>
-              <p className="mt-1 inline-flex w-fit items-center gap-2 text-xs text-muted">
+
+              {prices.cap > 0 ? (
+                <div className="est-offer">
+                  <Icon name="sparkle" size={18} className="mt-0.5 flex-none" />
+                  <span className="flex flex-col gap-0.5 text-sm">
+                    <span className="font-semibold">Launch pricing</span>
+                    <span className="opacity-85">
+                      No build goes above {formatInr(prices.cap)}, whatever the scope.
+                    </span>
+                  </span>
+                </div>
+              ) : null}
+              <p className="inline-flex w-fit items-center gap-2 text-xs text-muted">
                 <Icon name="shield" size={13} />
-                {PRICING.supportMonths} months support free with every build
+                Cost, timeline and stack appear after the analysis · {PRICING.supportMonths} months
+                support free
               </p>
             </aside>
           ) : null}
@@ -439,6 +522,11 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
         {/* Navigation: a sticky bar on phones and tablets */}
         {!onReport && !analysing ? (
           <div className="est-bar lg:hidden">
+            <span
+              aria-hidden="true"
+              className="est-bar-progress"
+              style={{ width: `${progress * 100}%` }}
+            />
             <div className="min-w-0">
               <p className="label-mono text-faint">
                 Step {Math.min(state.step, STEPS.length)} of {STEPS.length}
@@ -448,16 +536,7 @@ export function EstimateWizard({ email, location, site, prices }: EstimateWizard
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {state.step > 1 ? (
-                <button
-                  type="button"
-                  onClick={() => go(state.step - 1)}
-                  aria-label="Back"
-                  className={buttonClassName("line", "sm", "px-3")}
-                >
-                  <Icon name="arrow-right" size={16} className="rotate-180" />
-                </button>
-              ) : null}
+              {backButton("sm")}
               {state.step < STEPS.length ? (
                 <button
                   type="button"

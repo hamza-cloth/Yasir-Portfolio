@@ -226,9 +226,11 @@ export async function savePricing(_previous: FormResult, form: FormData): Promis
     }
     return result;
   };
+  const cap = changed({ cap: DEFAULT_PRICES.cap }, "price").cap;
   return saveConfig("pricing", {
     base: changed(DEFAULT_PRICES.base, "base"),
     feature: changed(DEFAULT_PRICES.feature, "feature"),
+    ...(cap === undefined ? {} : { cap }),
   });
 }
 

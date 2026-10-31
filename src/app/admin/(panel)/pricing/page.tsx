@@ -54,7 +54,8 @@ export default async function PricingPage() {
   const overridden =
     Object.entries(prices.base).filter(([id, value]) => DEFAULT_PRICES.base[id] !== value).length +
     Object.entries(prices.feature).filter(([id, value]) => DEFAULT_PRICES.feature[id] !== value)
-      .length;
+      .length +
+    (prices.cap === DEFAULT_PRICES.cap ? 0 : 1);
 
   return (
     <>
@@ -64,6 +65,18 @@ export default async function PricingPage() {
         action={{ href: "/estimate", label: "Open the planner" }}
       />
       <AdminForm action={savePricing} submitLabel="Save prices">
+        <FormSection title="Launch pricing">
+          <p className="text-sm text-muted md:col-span-2">
+            No estimate goes above this amount: bigger builds keep their full scope and timeline,
+            and the report shows the price held at this ceiling. Set 0 to remove it.
+          </p>
+          <PriceInput
+            name="price-cap"
+            label="Maximum estimate"
+            value={prices.cap}
+            fallback={DEFAULT_PRICES.cap}
+          />
+        </FormSection>
         <FormSection title="Base price per project type">
           <p className="text-sm text-muted md:col-span-2">
             The starting price of each type, before features. A changed price has a gold border.

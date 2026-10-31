@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import {
@@ -21,9 +21,12 @@ import {
 } from "@/config/pricing";
 import { cn } from "@/lib/cn";
 
-import { CategoryIcon, PlatformIcon } from "./icons";
+import { CategoryIcon, PlatformIcon, SearchIcon, ServiceIcon } from "./icons";
 
 // No step shows a price: the cost appears only after the review, as one analysed report.
+
+// The stagger index for a card's entrance animation.
+const order = (index: number) => ({ "--i": index }) as CSSProperties;
 
 function CheckBadge() {
   return (
@@ -34,19 +37,26 @@ function CheckBadge() {
 }
 
 function StepHead({
+  step,
   eyebrow,
   title,
   children,
 }: {
+  step: number;
   eyebrow: string;
   title: string;
   children?: string;
 }) {
   return (
-    <div className="flex flex-col gap-2">
-      <p className="label-mono text-c1-text">{eyebrow}</p>
-      <h2 className="est-legend">{title}</h2>
-      {children ? <p className="max-w-2xl text-muted">{children}</p> : null}
+    <div className="est-head">
+      <span aria-hidden="true" className="est-head-num">
+        {String(step).padStart(2, "0")}
+      </span>
+      <div className="flex min-w-0 flex-col gap-2">
+        <p className="label-mono text-c1-text">{eyebrow}</p>
+        <h2 className="est-legend">{title}</h2>
+        {children ? <p className="max-w-2xl text-muted">{children}</p> : null}
+      </div>
     </div>
   );
 }
@@ -67,16 +77,33 @@ export function StepProjectType({
       (category === "all" || type.category === category) &&
       (!needle || `${type.label} ${type.description}`.toLowerCase().includes(needle)),
   );
+  const tabs = [{ id: "all" as const, label: "All" }, ...CATEGORIES].map((item) => ({
+    ...item,
+    count:
+      item.id === "all"
+        ? PROJECT_TYPES.length
+        : PROJECT_TYPES.filter((type) => type.category === item.id).length,
+  }));
 
   return (
-    <fieldset className="flex flex-col gap-6">
+    <fieldset className="flex min-w-0 flex-col gap-7">
       <legend className="sr-only">What do you want to build?</legend>
-      <StepHead eyebrow="Step 1 · Project" title="What do you want to build?">
+      <StepHead step={1} eyebrow="Project" title="What do you want to build?">
         Pick the closest match. The features it usually needs are ticked for you on the next steps.
       </StepHead>
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
-          {[{ id: "all" as const, label: "All" }, ...CATEGORIES].map((item) => (
+      <div className="flex flex-col gap-4">
+        <label className="est-search lg:max-w-sm">
+          <span className="sr-only">Search project types</span>
+          <SearchIcon />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search, e.g. CRM or store"
+          />
+        </label>
+        <div className="est-tabs" role="group" aria-label="Filter by category">
+          {tabs.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -85,28 +112,26 @@ export function StepProjectType({
               className="est-tab"
             >
               {item.label}
+              <span className="est-tab-count" aria-hidden="true">
+                {item.count}
+              </span>
             </button>
           ))}
         </div>
-        <label className="relative block lg:w-64">
-          <span className="sr-only">Search project types</span>
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search, e.g. CRM"
-            className="min-h-11 w-full rounded-field border border-line bg-surface-solid px-4 text-fg outline-none placeholder:text-faint focus:border-c1"
-          />
-        </label>
       </div>
       {visible.length === 0 ? (
-        <p className="rounded-card border border-dashed border-line p-6 text-muted">
+        <p className="rounded-card border border-dashed border-line-2 p-6 text-muted">
           Nothing matches “{query}”. Try another word, or pick “Something Else / Custom Idea”.
         </p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {visible.map((type) => (
-            <label key={type.id} className="est-card" data-selected={value === type.id}>
+          {visible.map((type, index) => (
+            <label
+              key={type.id}
+              className="est-card est-stagger"
+              style={order(index)}
+              data-selected={value === type.id}
+            >
               <input
                 type="radio"
                 name="project-type"
@@ -119,16 +144,21 @@ export function StepProjectType({
               <span className="est-icon">
                 <CategoryIcon category={type.category} />
               </span>
-              <span className="text-[1.05rem] leading-snug font-semibold text-fg">
+              <span className="pr-6 text-[1.05rem] leading-snug font-semibold text-fg">
                 {type.label}
               </span>
               <span className="text-sm text-muted">{type.description}</span>
-              <span className="label-mono mt-auto text-faint">
-                {type.recommended.length > 0
-                  ? `${type.recommended.length} core features included`
-                  : "Scoped together with you"}
-              </span>
               {type.legalNote ? <span className="text-xs text-faint">{LEGAL_NOTE}</span> : null}
+              <span className="est-card-foot">
+                <span className="label-mono text-faint">
+                  {type.recommended.length > 0
+                    ? `${type.recommended.length} core features`
+                    : "Scoped with you"}
+                </span>
+                <span aria-hidden="true" className="est-card-arrow">
+                  <Icon name="arrow-right" size={14} />
+                </span>
+              </span>
             </label>
           ))}
         </div>
@@ -154,18 +184,19 @@ export function StepDevices({
   const crossPlatform = value.includes("android") && value.includes("ios");
 
   return (
-    <fieldset className="flex flex-col gap-6">
+    <fieldset className="flex min-w-0 flex-col gap-7">
       <legend className="sr-only">Where should it run?</legend>
-      <StepHead eyebrow="Step 2 · Platforms" title="Where should it run?">
+      <StepHead step={2} eyebrow="Platforms" title="Where should it run?">
         Pick one or more. Every website works on phones too.
       </StepHead>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {PLATFORMS.map((platform) => {
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {PLATFORMS.map((platform, index) => {
           const disabled = platform.id === "pwa" && !value.includes("web");
           return (
             <label
               key={platform.id}
-              className="est-card est-card--row"
+              className="est-card est-stagger"
+              style={order(index)}
               data-selected={value.includes(platform.id)}
               data-disabled={disabled}
             >
@@ -177,11 +208,11 @@ export function StepDevices({
                 className="sr-only"
               />
               <CheckBadge />
-              <span className="est-icon flex-none">
-                <PlatformIcon platform={platform.id} />
+              <span className="est-icon">
+                <PlatformIcon platform={platform.id} size={24} />
               </span>
-              <span className="flex flex-col gap-0.5">
-                <span className="font-semibold text-fg">{platform.label}</span>
+              <span className="flex flex-col gap-1">
+                <span className="text-[1.05rem] font-semibold text-fg">{platform.label}</span>
                 <span className="text-sm text-muted">{platform.description}</span>
               </span>
             </label>
@@ -189,7 +220,7 @@ export function StepDevices({
         })}
       </div>
       {crossPlatform ? (
-        <p className="inline-flex w-fit items-center gap-2 rounded-pill border border-c1 px-3 py-1.5 text-sm text-c1-text">
+        <p className="est-note">
           <Icon name="check" size={14} />
           Android + iOS share one cross-platform codebase, which keeps the cost down
         </p>
@@ -216,57 +247,71 @@ export function StepFeatures({
     (id) => FEATURES.find((feature) => feature.id === id)?.group !== "services",
   ).length;
   const missingRecommended = recommended.filter((id) => !value.includes(id));
+  let index = 0;
 
   return (
-    <div className="flex flex-col gap-7">
-      <StepHead eyebrow="Step 3 · Features" title="Which features do you need?">
-        Recommended ones for your project are already ticked. Add or remove anything; the analysis
+    <div className="flex flex-col gap-8">
+      <StepHead step={3} eyebrow="Features" title="Which features do you need?">
+        Recommended ones for your project are already on. Switch anything on or off; the analysis
         prices exactly what you choose.
       </StepHead>
       <div className="flex flex-wrap items-center gap-3">
-        <span className="label-mono rounded-pill bg-c1-soft px-3 py-1.5 text-c1-text">
+        <span className="est-pill">
+          <Icon name="check" size={13} />
           {selected} selected
         </span>
         {missingRecommended.length > 0 ? (
           <button
             type="button"
             onClick={() => onChange([...value, ...missingRecommended])}
-            className="text-sm font-semibold text-c1-text underline-offset-4 hover:underline"
+            className="min-h-11 text-sm font-semibold text-c1-text underline-offset-4 hover:underline"
           >
             Add the {missingRecommended.length} recommended again
           </button>
         ) : null}
       </div>
-      {groups.map((group) => (
-        <fieldset key={group.id} className="flex flex-col gap-3">
-          <legend className="label-mono mb-3 text-faint">{group.label}</legend>
-          <div className="flex flex-wrap gap-2.5">
-            {FEATURES.filter((feature) => feature.group === group.id).map((feature) => (
-              <label
-                key={feature.id}
-                className="est-chip"
-                data-selected={value.includes(feature.id)}
-              >
-                <input
-                  type="checkbox"
-                  checked={value.includes(feature.id)}
-                  onChange={() => toggle(feature.id)}
-                  className="sr-only"
-                />
-                <span aria-hidden="true" className="est-chip-box">
-                  <Icon name="check" size={12} />
-                </span>
-                <span className="text-fg">
-                  {feature.label}
-                  {recommended.includes(feature.id) ? (
-                    <span className="est-recommended">Recommended</span>
-                  ) : null}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      ))}
+      {groups.map((group) => {
+        const items = FEATURES.filter((feature) => feature.group === group.id);
+        const on = items.filter((feature) => value.includes(feature.id)).length;
+        return (
+          <fieldset key={group.id} className="flex flex-col gap-3">
+            <legend className="sr-only">{group.label}</legend>
+            <div aria-hidden="true" className="est-group-head">
+              <span className="label-mono text-fg">{group.label}</span>
+              <span className="label-mono text-faint">
+                {on}/{items.length}
+              </span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((feature) => (
+                <label
+                  key={feature.id}
+                  className="est-chip est-stagger"
+                  style={order(index++)}
+                  data-selected={value.includes(feature.id)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={value.includes(feature.id)}
+                    onChange={() => toggle(feature.id)}
+                    className="sr-only"
+                  />
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <span className="leading-snug text-fg">{feature.label}</span>
+                    {recommended.includes(feature.id) ? (
+                      <span className="est-recommended">
+                        <Icon name="sparkle" size={10} />
+                        Recommended
+                      </span>
+                    ) : null}
+                  </span>
+                  <span aria-hidden="true" className="est-switch" />
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        );
+      })}
     </div>
   );
 }
@@ -277,22 +322,25 @@ function Segmented<T extends string>({
   name,
   choices,
   value,
+  offset,
   onChange,
 }: {
   legend: string;
   name: string;
   choices: Choice<T>[];
   value: T;
+  offset: number;
   onChange: (value: T) => void;
 }) {
   return (
-    <fieldset className="flex flex-col gap-3">
-      <legend className="label-mono mb-3 text-faint">{legend}</legend>
+    <fieldset className="flex min-w-0 flex-col gap-3">
+      <legend className="label-mono mb-3 text-fg">{legend}</legend>
       <div className="grid gap-3 sm:grid-cols-3">
-        {choices.map((choice) => (
+        {choices.map((choice, index) => (
           <label
             key={choice.id}
-            className="est-card est-card--compact"
+            className="est-card est-card--compact est-stagger"
+            style={order(offset + index)}
             data-selected={value === choice.id}
           >
             <input
@@ -304,7 +352,15 @@ function Segmented<T extends string>({
               className="sr-only"
             />
             <CheckBadge />
-            <span className="font-semibold text-fg">{choice.label}</span>
+            <span aria-hidden="true" className="est-meter mb-1">
+              {[0, 1, 2].map((bar) => (
+                <span
+                  key={bar}
+                  data-on={bar <= Math.round((index * 2) / Math.max(1, choices.length - 1))}
+                />
+              ))}
+            </span>
+            <span className="text-[1.05rem] font-semibold text-fg">{choice.label}</span>
             <span className="text-sm text-muted">{choice.description}</span>
           </label>
         ))}
@@ -328,12 +384,15 @@ export function StepDesign({
 }) {
   return (
     <div className="flex flex-col gap-8">
-      <StepHead eyebrow="Step 4 · Design & scale" title="Look, size and speed" />
+      <StepHead step={4} eyebrow="Design & scale" title="Look, size and speed">
+        How polished it should feel, how many people will use it, and how soon you need it.
+      </StepHead>
       <Segmented
         legend="Design level"
         name="design"
         choices={DESIGN_LEVELS}
         value={design}
+        offset={0}
         onChange={(id) => onChange({ design: id })}
       />
       <Segmented
@@ -341,6 +400,7 @@ export function StepDesign({
         name="scale"
         choices={SCALES}
         value={scale}
+        offset={3}
         onChange={(id) => onChange({ scale: id })}
       />
       <Segmented
@@ -348,6 +408,7 @@ export function StepDesign({
         name="delivery"
         choices={DELIVERY}
         value={delivery}
+        offset={6}
         onChange={(id) => onChange({ delivery: id })}
       />
     </div>
@@ -364,16 +425,17 @@ export function StepExtras({
 }) {
   const services = FEATURES.filter((feature) => feature.group === "services");
   return (
-    <fieldset className="flex flex-col gap-6">
+    <fieldset className="flex min-w-0 flex-col gap-7">
       <legend className="sr-only">Anything else you need help with?</legend>
-      <StepHead eyebrow="Step 5 · Extras" title="Anything else you need help with?">
+      <StepHead step={5} eyebrow="Extras" title="Anything else you need help with?">
         Optional. Skip this step if you already have these covered.
       </StepHead>
       <div className="grid gap-4 sm:grid-cols-2">
-        {services.map((service) => (
+        {services.map((service, index) => (
           <label
             key={service.id}
-            className="est-card est-card--compact"
+            className="est-card est-card--row est-stagger"
+            style={order(index)}
             data-selected={value.includes(service.id)}
           >
             <input
@@ -389,10 +451,15 @@ export function StepExtras({
               className="sr-only"
             />
             <CheckBadge />
-            <span className="font-semibold text-fg">{service.label}</span>
-            {service.description ? (
-              <span className="text-sm text-muted">{service.description}</span>
-            ) : null}
+            <span className="est-icon">
+              <ServiceIcon id={service.id} />
+            </span>
+            <span className="flex min-w-0 flex-col gap-1 pr-6">
+              <span className="font-semibold text-fg">{service.label}</span>
+              {service.description ? (
+                <span className="text-sm text-muted">{service.description}</span>
+              ) : null}
+            </span>
           </label>
         ))}
       </div>
@@ -413,31 +480,43 @@ export function StepReview({
   onAnalyse: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-6">
-      <StepHead eyebrow="Step 6 · Review" title="Check your requirements">
+    <div className="flex flex-col gap-7">
+      <StepHead step={6} eyebrow="Review" title="Check your requirements">
         Everything look right? The analysis plans the build module by module and works out the cost
         and timeline from exactly these answers.
       </StepHead>
-      <dl className="surface divide-y divide-line rounded-tile border border-line px-5">
-        {rows.map((row) => (
-          <div key={row.label} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-3.5">
-            <dt className="label-mono w-full text-faint sm:w-36 sm:flex-none">{row.label}</dt>
-            <dd className="min-w-0 flex-1 text-fg">{row.value}</dd>
-            <dd>
-              <button
-                type="button"
-                onClick={() => onEdit(row.step)}
-                className="min-h-11 text-sm font-semibold text-c1-text underline-offset-4 hover:underline"
-              >
-                Edit<span className="sr-only"> {row.label.toLowerCase()}</span>
-              </button>
-            </dd>
-          </div>
+      <ul className="grid gap-3 md:grid-cols-2">
+        {rows.map((row, index) => (
+          <li
+            key={row.label}
+            className={cn(
+              "est-review-row est-stagger",
+              row.label === "Features" && "md:col-span-2",
+            )}
+            style={order(index)}
+          >
+            <span aria-hidden="true" className="est-review-index">
+              {String(row.step).padStart(2, "0")}
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="label-mono text-faint">{row.label}</span>
+              <span className="text-fg">{row.value}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onEdit(row.step)}
+              className="min-h-11 flex-none rounded-pill px-3 text-sm font-semibold text-c1-text hover:bg-c1-soft"
+            >
+              Edit<span className="sr-only"> {row.label.toLowerCase()}</span>
+            </button>
+          </li>
         ))}
-      </dl>
+      </ul>
       <div className="est-analyse-cta">
-        <div className="flex flex-col gap-1">
-          <p className="font-semibold text-fg">Ready for your project report</p>
+        <div className="flex max-w-md flex-col gap-1">
+          <p className="font-display text-lg font-semibold text-fg">
+            Ready for your project report
+          </p>
           <p className="text-sm text-muted">
             Cost per module, tech stack, phases and payment plan. Free, instant, no sign-up.
           </p>

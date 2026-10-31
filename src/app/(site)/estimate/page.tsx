@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 
+import { EstimateHero } from "@/components/estimate/EstimateHero";
 import { EstimateWizard } from "@/components/estimate/EstimateWizard";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
-import { PRICING } from "@/config/pricing";
 import { getPriceTable } from "@/lib/data/pricing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { pageMetadata } from "@/lib/seo";
@@ -34,20 +33,10 @@ export default async function EstimatePage() {
   return (
     <section
       aria-labelledby="estimate-title"
-      className="pt-[calc(var(--header-h)+48px)] pb-32 lg:pb-(--section-y)"
+      className="pt-[calc(var(--header-h)+40px)] pb-32 lg:pb-(--section-y)"
     >
-      <Container className="flex flex-col gap-10">
-        <header className="flex max-w-3xl flex-col gap-5 print:hidden">
-          <Eyebrow>Project cost calculator</Eyebrow>
-          <h1 id="estimate-title" className="text-h1 leading-[1.02]">
-            Plan your project, then see the real cost
-          </h1>
-          <p className="text-lg leading-relaxed text-muted">
-            Tell me what you need in six quick steps. Then the planner analyses your requirements
-            and builds a full-stack report: cost by module, tech stack, timeline and payment plan —
-            with {PRICING.supportMonths} months of support free.
-          </p>
-        </header>
+      <Container className="flex flex-col gap-12 lg:gap-14">
+        <EstimateHero cap={prices.cap} />
         {/* Its own boundary, so React hydrates the calculator as a separate task. */}
         <Suspense fallback={null}>
           <EstimateWizard

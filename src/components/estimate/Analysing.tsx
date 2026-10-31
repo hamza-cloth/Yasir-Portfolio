@@ -12,16 +12,23 @@ const STAGES = [
   "Working out timeline & cost",
 ];
 
+// Where the radar's blips light up, as [top, left] percentages.
+const BLIPS = [
+  [22, 64],
+  [58, 18],
+  [70, 72],
+];
+
 // The short "analysis" between the review and the report. It is honest theatre: the maths is
 // instant, but a beat here makes clear the price was worked out from the answers, not picked.
 export function Analysing({ onDone }: { onDone: () => void }) {
   const reducedMotion = useReducedMotion();
   const [stage, setStage] = useState(0);
-  const stepMs = reducedMotion ? 150 : 650;
+  const stepMs = reducedMotion ? 150 : 700;
 
   useEffect(() => {
     if (stage >= STAGES.length) {
-      const timer = window.setTimeout(onDone, reducedMotion ? 50 : 300);
+      const timer = window.setTimeout(onDone, reducedMotion ? 50 : 350);
       return () => window.clearTimeout(timer);
     }
     const timer = window.setTimeout(() => setStage((current) => current + 1), stepMs);
@@ -32,20 +39,32 @@ export function Analysing({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="est-analysing" role="status" aria-live="polite">
-      <div aria-hidden="true" className="est-orbit">
+      <div aria-hidden="true" className="est-radar">
         <span />
         <span />
-        <Icon name="sparkle" size={26} />
+        <span />
+        <div className="est-radar-sweep" />
+        {BLIPS.map(([top, left], index) => (
+          <i
+            key={index}
+            className="est-radar-blip"
+            style={{ top: `${top}%`, left: `${left}%`, animationDelay: `${index * 0.5}s` }}
+          />
+        ))}
+        <div className="est-radar-core">{Math.round(progress * 100)}%</div>
       </div>
-      <p className="font-display text-xl font-semibold text-fg">Analysing your project…</p>
+      <div className="flex flex-col gap-1">
+        <p className="font-display text-2xl font-semibold text-fg">Analysing your project…</p>
+        <p className="text-sm text-muted">Building your full-stack report from every answer</p>
+      </div>
       <div className="est-bar-track w-full max-w-sm" aria-hidden="true">
-        <span style={{ width: `${progress * 100}%` }} />
+        <span style={{ width: `${progress * 100}%`, transition: "width 600ms ease" }} />
       </div>
-      <ol className="flex w-full max-w-sm flex-col gap-2 text-left text-sm">
+      <ol className="est-timeline w-full max-w-sm text-left text-sm">
         {STAGES.map((label, index) => (
           <li
             key={label}
-            className="flex items-center gap-2.5"
+            className="relative flex items-center gap-3"
             data-state={index < stage ? "done" : index === stage ? "active" : "waiting"}
           >
             <span className="est-stage-dot">

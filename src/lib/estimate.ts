@@ -24,18 +24,26 @@ import {
   type ScaleId,
 } from "@/config/pricing";
 
-// Base price per project type id and price per feature id.
-export type PriceTable = { base: Record<string, number>; feature: Record<string, number> };
+// Base price per project type id, price per feature id, and the launch-pricing ceiling
+// (0 = none).
+export type PriceTable = {
+  base: Record<string, number>;
+  feature: Record<string, number>;
+  cap: number;
+};
 
 export const DEFAULT_PRICES: PriceTable = {
   base: Object.fromEntries(PROJECT_TYPES.map((type) => [type.id, type.base])),
   feature: Object.fromEntries(FEATURES.map((feature) => [feature.id, feature.price])),
+  cap: PRICING.maxPrice,
 };
 
 // The defaults with any valid override on top; unknown ids and bad numbers are ignored.
 export function priceTableWith(
   overrides:
-    { base?: Record<string, unknown>; feature?: Record<string, unknown> } | null | undefined,
+    | { base?: Record<string, unknown>; feature?: Record<string, unknown>; cap?: unknown }
+    | null
+    | undefined,
 ): PriceTable {
   const valid = (value: unknown): value is number =>
     typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100_000_000;
@@ -49,6 +57,7 @@ export function priceTableWith(
   return {
     base: merge(DEFAULT_PRICES.base, overrides?.base),
     feature: merge(DEFAULT_PRICES.feature, overrides?.feature),
+    cap: valid(overrides?.cap) ? overrides.cap : DEFAULT_PRICES.cap,
   };
 }
 
@@ -70,12 +79,16 @@ export type Estimate = {
   weeksMax: number;
   platformFactor: number;
   subtotal: number;
+  // The range the scope prices at before the launch-pricing ceiling; null when under it.
+  standard: { low: number; high: number; subtotal: number } | null;
   breakdown: BreakdownLine[];
   supportMonths: number;
   summaryText: string;
 };
 
 export class EstimateInputError extends Error {}
+
+export const LAUNCH_PRICING_LABEL = "Launch pricing";
 
 const money = new Intl.NumberFormat(PRICING.locale, {
   style: "currency",
@@ -158,7 +171,19 @@ export function calculateEstimate(
     breakdown.push({ label, amount: next - running });
     running = next;
   }
-  const subtotal = running;
+  // Launch pricing: the upper end may not pass the ceiling, so the subtotal is held at
+  // ceiling ÷ rangeHigh and the difference is its own (negative) line.
+  const ceilingSubtotal = prices.cap > 0 ? prices.cap / PRICING.rangeHigh : Infinity;
+  const subtotal = Math.min(running, ceilingSubtotal);
+  const standard =
+    subtotal < running
+      ? {
+          low: roundTo(running * PRICING.rangeLow),
+          high: roundTo(running * PRICING.rangeHigh),
+          subtotal: running,
+        }
+      : null;
+  if (standard) breakdown.push({ label: LAUNCH_PRICING_LABEL, amount: subtotal - running });
 
   let weeks =
     (type.baseWeeks + PRICING.weeksPerFeature * features.length) *
@@ -168,11 +193,12 @@ export function calculateEstimate(
 
   const estimate = {
     low: roundTo(subtotal * PRICING.rangeLow),
-    high: roundTo(subtotal * PRICING.rangeHigh),
+    high: Math.min(roundTo(subtotal * PRICING.rangeHigh), prices.cap > 0 ? prices.cap : Infinity),
     weeksMin: Math.ceil(weeks),
     weeksMax: Math.ceil(weeks * PRICING.weeksRangeFactor),
     platformFactor,
     subtotal,
+    standard,
     breakdown,
     supportMonths: PRICING.supportMonths,
   };
@@ -185,7 +211,7 @@ export function calculateEstimate(
     `Devices: ${platformLabels.join(", ")}`,
     `Features: ${features.length > 0 ? features.map((feature) => feature.label).join(", ") : "None selected"}`,
     `Design: ${design.label} · Users: ${scale.description} · Delivery: ${delivery.label}`,
-    `Estimate: ${formatInr(estimate.low)} – ${formatInr(estimate.high)} (approx.)`,
+    `Estimate: ${formatInr(estimate.low)} – ${formatInr(estimate.high)} (approx.${standard ? ", launch pricing" : ""})`,
     `Timeline: approx. ${estimate.weeksMin} – ${estimate.weeksMax} weeks`,
     `Support: ${PRICING.supportMonths} months free`,
   ].join("\n");
@@ -293,7 +319,8 @@ export function analyseEstimate(input: EstimateInput, estimate: Estimate): Analy
     } else if (line.label.startsWith("Scale")) {
       spread(line.amount, { backend: 0.45, database: 0.25, launch: 0.3 });
     } else {
-      // Priority delivery: more hands on every part, in proportion.
+      // Priority delivery (more hands on every part) and the launch-pricing ceiling (a lower
+      // price on every part) both apply in proportion.
       const before = [...totals.values()].reduce((sum, value) => sum + value, 0) || 1;
       for (const [id, value] of [...totals.entries()]) add(id, (line.amount * value) / before);
     }
@@ -369,9 +396,11 @@ export function analyseEstimate(input: EstimateInput, estimate: Estimate): Analy
     high: roundTo(estimate.high * milestone.share, 500),
   }));
 
+  // Complexity follows the scope, so it uses the subtotal before the launch-pricing ceiling.
+  const scope = estimate.standard?.subtotal ?? estimate.subtotal;
   const score = Math.min(
     10,
-    Math.max(1, Math.round(Math.log2(Math.max(estimate.subtotal, 8_000) / 8_000) * 1.15 + 1)),
+    Math.max(1, Math.round(Math.log2(Math.max(scope, 8_000) / 8_000) * 1.15 + 1)),
   );
   const label =
     score <= 3 ? "Simple" : score <= 5 ? "Moderate" : score <= 7 ? "Complex" : "Advanced";

@@ -28,6 +28,9 @@ function input(overrides: Partial<EstimateInput>): EstimateInput {
   };
 }
 
+// The arithmetic tests price the full scope, without the launch-pricing ceiling.
+const UNCAPPED = { ...DEFAULT_PRICES, cap: 0 };
+
 const sum = (amounts: number[]) => amounts.reduce((total, amount) => total + amount, 0);
 
 describe("calculateEstimate", () => {
@@ -45,6 +48,7 @@ describe("calculateEstimate", () => {
     // factor 1 + 0.8 + 0.8 − 0.4 = 2.2; (60,000 + 70,000 features) × 2.2 = 2,86,000
     const estimate = calculateEstimate(
       input({ type: "ecommerce", platforms: ["web", "android", "ios"] }),
+      UNCAPPED,
     );
     expect(estimate.platformFactor).toBeCloseTo(2.2);
     expect(estimate.subtotal).toBeCloseTo(286_000);
@@ -55,7 +59,7 @@ describe("calculateEstimate", () => {
 
   it("adds premium design to a web CRM, in price and in time", () => {
     // (1,20,000 + 53,000 features) × 1.3 = 2,24,900; weeks (7 + 2) + 1 = 10
-    const estimate = calculateEstimate(input({ type: "crm", design: "premium" }));
+    const estimate = calculateEstimate(input({ type: "crm", design: "premium" }), UNCAPPED);
     expect(estimate.subtotal).toBeCloseTo(224_900);
     expect(estimate.low).toBe(191_000);
     expect(estimate.high).toBe(270_000);
@@ -70,8 +74,8 @@ describe("calculateEstimate", () => {
   });
 
   it("speeds up priority delivery by a quarter and charges 25% more", () => {
-    const standard = calculateEstimate(input({ type: "booking" }));
-    const priority = calculateEstimate(input({ type: "booking", delivery: "priority" }));
+    const standard = calculateEstimate(input({ type: "booking" }), UNCAPPED);
+    const priority = calculateEstimate(input({ type: "booking", delivery: "priority" }), UNCAPPED);
     expect(priority.subtotal).toBeCloseTo(standard.subtotal * 1.25);
     expect(priority.weeksMin).toBeLessThan(standard.weeksMin);
   });
@@ -95,6 +99,58 @@ describe("calculateEstimate", () => {
     expect(summaryText).toContain("Project: Portfolio / Personal Website");
     expect(summaryText).toContain("₹20,000 – ₹28,000");
     expect(summaryText).toContain("6 months free");
+  });
+});
+
+describe("launch pricing ceiling", () => {
+  const big = input({ type: "ecommerce", platforms: ["web", "android", "ios"] });
+
+  it("holds a bigger build at ₹1,50,000 and keeps its full scope", () => {
+    const estimate = calculateEstimate(big);
+    expect([estimate.low, estimate.high]).toEqual([106_000, 150_000]); // subtotal 1,25,000
+    expect(estimate.standard).toEqual({ low: 243_000, high: 343_000, subtotal: 286_000 });
+    expect([estimate.weeksMin, estimate.weeksMax]).toEqual([11, 14]);
+    const last = estimate.breakdown.at(-1);
+    expect(last?.label).toBe("Launch pricing");
+    expect(last?.amount).toBeCloseTo(125_000 - 286_000);
+    expect(sum(estimate.breakdown.map((line) => line.amount))).toBeCloseTo(estimate.subtotal, 6);
+    expect(estimate.summaryText).toContain("₹1,06,000 – ₹1,50,000 (approx., launch pricing)");
+  });
+
+  it("never lets any selection pass the ceiling", () => {
+    for (const type of PROJECT_TYPES) {
+      const estimate = calculateEstimate(
+        input({
+          type: type.id,
+          platforms: ["web", "pwa", "android", "ios", "desktop"],
+          features: FEATURES.map((feature) => feature.id),
+          design: "premium",
+          scale: "large",
+          delivery: "priority",
+        }),
+      );
+      expect(estimate.high, type.id).toBeLessThanOrEqual(150_000);
+    }
+  });
+
+  it("leaves a build under the ceiling as it is", () => {
+    const estimate = calculateEstimate(input({ type: "portfolio" }));
+    expect(estimate.standard).toBeNull();
+    expect(estimate.breakdown.some((line) => line.label === "Launch pricing")).toBe(false);
+  });
+
+  it("follows the admin's ceiling, and 0 removes it", () => {
+    expect(calculateEstimate(big, priceTableWith({ cap: 200_000 })).high).toBe(200_000);
+    expect(calculateEstimate(big, priceTableWith({ cap: 0 })).high).toBe(343_000);
+    expect(priceTableWith({ cap: -5 }).cap).toBe(150_000);
+  });
+
+  it("scores complexity on the full scope, not the held price", () => {
+    const atCeiling = input({ type: "saas" });
+    const huge = input({ ...big, design: "premium", scale: "large" });
+    const scoreOf = (selection: EstimateInput) =>
+      analyseEstimate(selection, calculateEstimate(selection)).complexity.score;
+    expect(scoreOf(huge)).toBeGreaterThan(scoreOf(atCeiling));
   });
 });
 

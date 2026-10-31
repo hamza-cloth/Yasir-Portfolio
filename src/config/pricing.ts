@@ -10,6 +10,9 @@ export const PRICING = {
   // The range shown: subtotal × rangeLow to subtotal × rangeHigh.
   rangeLow: 0.85,
   rangeHigh: 1.2,
+  // Launch pricing: no estimate's upper end goes above this (0 = no ceiling). Bigger builds keep
+  // their real scope and timeline; the price is held at the ceiling. The admin can change it.
+  maxPrice: 150_000,
   supportMonths: 6,
   supportPrice: 0,
   showGstNote: true,

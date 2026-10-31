@@ -20,6 +20,20 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 6 — launch pricing and the planner redesign (2026-11-01)
+
+- **Launch pricing:** no estimate goes above ₹1,50,000 for now. Bigger builds keep their full
+  scope, timeline and complexity; the report shows the standard rate struck through and the range
+  held at ₹1,06,000 – ₹1,50,000. The ceiling is `PRICING.maxPrice` and can be changed or removed
+  (0) from Admin → Pricing.
+- **Planner redesign (/estimate):** a two-column hero with an animated project blueprint; a
+  connected stepper; each step in one card with a large step number; cards with a pointer
+  spotlight and a gradient edge when chosen; feature switches grouped with counts; level meters
+  for design, users and speed; a "live blueprint" sidebar with a progress ring and scope counts.
+- **Analysis and report:** a radar scan while analysing; the report counts its price up, shows a
+  complexity gauge, module bars that grow in, a phase timeline on a shared week axis, a payment
+  track, stack tiles and a closing call to action. Every animation stops under reduced motion.
+
 ### Phase 5 — direct replies and branded email (2026-10-31)
 
 - **Reply from the admin:** each message has "Reply as Yasir Portfolio" with four templates and a
