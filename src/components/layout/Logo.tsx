@@ -1,26 +1,43 @@
 import Link from "next/link";
 
-export function Logo() {
+import { LogoMark } from "@/components/brand/LogoMark";
+import { cn } from "@/lib/cn";
+
+type LogoProps = {
+  variant?: "full" | "mark";
+  // Extra classes for the divider and wordmark, e.g. to hide them at some widths.
+  wordmarkClassName?: string;
+  href?: string;
+  label?: string;
+  className?: string;
+};
+
+// The mark, a hairline divider and the stacked wordmark, linking home.
+export function Logo({
+  variant = "full",
+  wordmarkClassName,
+  href = "/",
+  label = "Yasir Abdullah — Home",
+  className,
+}: LogoProps) {
   return (
     <Link
-      href="/"
-      aria-label="Yasir Abdullah, home"
-      className="group flex min-h-11 flex-none items-center gap-3"
+      href={href}
+      aria-label={label}
+      className={cn("group flex min-h-11 min-w-11 flex-none items-center gap-3 text-fg", className)}
     >
-      <span
-        aria-hidden="true"
-        className="surface grid size-10 place-items-center rounded-xl border border-line-2 transition-transform duration-500 ease-entrance group-hover:-rotate-6 terminal:rounded-none"
-      >
-        <span className="text-gradient font-display text-[0.95rem] leading-none font-semibold tracking-[-0.04em] terminal:text-2xl">
-          YA
+      <LogoMark className="transition-transform duration-500 ease-entrance group-hover:-translate-y-0.5" />
+      {variant === "full" ? (
+        // Hidden from assistive tech: the link's name is its aria-label, so the visible
+        // wordmark must not add words that the label does not contain.
+        <span aria-hidden="true" className={cn("flex items-center gap-3", wordmarkClassName)}>
+          <span aria-hidden="true" className="h-9 w-px bg-line" />
+          <span className="flex flex-col gap-1 leading-none">
+            <span className="logo-name">YASIR ABDULLAH</span>
+            <span className="logo-tagline">SOFTWARE &amp; NETWORK ENGINEER</span>
+          </span>
         </span>
-      </span>
-      <span aria-hidden="true" className="hidden flex-col leading-tight xl:flex">
-        <span className="text-[0.95rem] font-semibold tracking-[-0.02em] text-fg">
-          Yasir Abdullah
-        </span>
-        <span className="text-xs text-muted">Software &amp; Network Engineer</span>
-      </span>
+      ) : null}
     </Link>
   );
 }

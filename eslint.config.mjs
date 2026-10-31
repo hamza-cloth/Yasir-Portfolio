@@ -19,6 +19,11 @@ export default defineConfig([
       "@typescript-eslint/consistent-type-imports": "error",
     },
   },
+  {
+    // Command-line scripts report progress on the console.
+    files: ["prisma/**", "scripts/**"],
+    rules: { "no-console": "off" },
+  },
   globalIgnores([
     ".next/**",
     "out/**",

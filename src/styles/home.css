@@ -1,42 +1,11 @@
 @layer components {
-  @media (min-width: 60rem) {
-    .hero-name--split {
-      font-size: var(--fs-hero-split);
-    }
-  }
-
-  .decode-char {
-    position: relative;
-  }
-
-  .decode-char[data-scrambling="true"] > .decode-real {
-    visibility: hidden;
-  }
-
-  .decode-glyph {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    color: var(--c1);
-    -webkit-text-fill-color: var(--c1);
-    pointer-events: none;
-  }
-
-  .caret {
-    display: inline-block;
-    width: 0.5em;
-    height: 1em;
-    margin-left: 2px;
-    vertical-align: -0.15em;
-    background-color: var(--c1);
-    animation: caret-blink 1s steps(1) infinite;
-  }
-
-  @keyframes caret-blink {
-    50% {
-      opacity: 0;
-    }
+  .hero-tagline {
+    font-family: var(--ff-display);
+    font-size: clamp(1.45rem, 2.5vw, 2.15rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
   .status-dot {
@@ -65,64 +34,6 @@
     to {
       transform: scale(3);
       opacity: 0;
-    }
-  }
-
-  .signal-bar {
-    width: 4px;
-    border-radius: 1px;
-    background-color: var(--c1);
-    transform-origin: bottom center;
-    animation: signal 1.8s var(--easing-entrance) infinite;
-    animation-delay: calc(var(--bar) * 140ms);
-  }
-
-  @keyframes signal {
-    0%,
-    100% {
-      transform: scaleY(1);
-      opacity: 1;
-    }
-    50% {
-      transform: scaleY(0.45);
-      opacity: 0.55;
-    }
-  }
-
-  .grid-spotlight {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 64px 64px;
-    opacity: 0.6;
-    -webkit-mask-image: radial-gradient(
-      420px circle at var(--grid-x, 70%) var(--grid-y, 40%),
-      #000,
-      transparent 70%
-    );
-    mask-image: radial-gradient(
-      420px circle at var(--grid-x, 70%) var(--grid-y, 40%),
-      #000,
-      transparent 70%
-    );
-  }
-
-  .text-outline {
-    color: transparent;
-    -webkit-text-stroke: 1px var(--muted);
-    text-shadow: none;
-  }
-
-  .marquee-track {
-    animation: marquee 38s linear infinite;
-  }
-
-  @keyframes marquee {
-    to {
-      transform: translate3d(-50%, 0, 0);
     }
   }
 
@@ -183,80 +94,1029 @@
     }
   }
 
+  /* The active shift is highlighted; inactive tabs stay fully readable. */
   @keyframes shift-tab {
     0%,
     33.33% {
-      opacity: 1;
+      background-color: var(--c1-soft);
     }
     33.34%,
     100% {
-      opacity: 0.4;
+      background-color: transparent;
     }
   }
 
-  .badge-spin {
-    animation: badge-spin 16s linear infinite;
+  /* ---- Look picker: each swatch is the look's background with its accent inside. ---- */
+  .look-swatch {
+    transition:
+      transform 300ms var(--easing-entrance),
+      box-shadow 300ms var(--easing-entrance);
   }
 
-  @keyframes badge-spin {
+  .look-swatch:hover {
+    transform: scale(1.08);
+  }
+
+  .look-swatch-dot {
+    background: conic-gradient(var(--swatch-accent) 0 50%, var(--swatch-bg) 50% 100%);
+    box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.35);
+  }
+
+  [data-look="porcelain"] .look-swatch[data-swatch="porcelain"],
+  [data-look="midnight-ink"] .look-swatch[data-swatch="midnight-ink"],
+  [data-look="midnight-ops"] .look-swatch[data-swatch="midnight-ops"],
+  [data-look="sunset-fibre"] .look-swatch[data-swatch="sunset-fibre"],
+  [data-look="aurora"] .look-swatch[data-swatch="aurora"] {
+    box-shadow: 0 0 0 2px var(--c1);
+  }
+
+  /* ---- Name marquee: two copies scroll by half their width, faded at both edges. ---- */
+  .marquee {
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .marquee-track {
+    animation: marquee 38s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
     to {
-      transform: rotate(360deg);
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
-  .journey-panel {
-    min-width: 0;
-  }
-
-  .journey-meter {
-    display: none;
-  }
-
-  .journey-track {
-    display: grid;
-    gap: 16px;
-  }
-
-  @media (min-width: 961px) and (prefers-reduced-motion: no-preference) {
-    [data-js] .journey {
-      height: 340vh;
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      mask-image: none;
     }
 
-    [data-js] .journey-sticky {
-      position: sticky;
-      top: 0;
-      height: 100svh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    .marquee-track {
+      width: auto;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 40px;
     }
 
-    [data-js] .journey-track {
-      display: flex;
-      width: max-content;
-      max-width: none;
-      margin: 0;
-      gap: 24px;
-      padding-left: max(var(--gutter), calc((100vw - 1320px) / 2));
-      padding-right: max(var(--gutter), calc((100vw - 1320px) / 2));
-      transform: translate3d(calc(var(--journey-shift, 0px) * -1), 0, 0);
+    .marquee-track > [aria-hidden="true"] {
+      display: none;
     }
 
-    [data-js] .journey-panel {
-      width: min(70vw, 760px);
-      flex: none;
-    }
-
-    [data-js] .journey-meter {
-      display: flex;
+    .marquee-track > ul {
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 12px;
     }
   }
 
-  .journey-progress {
-    transform: scaleX(var(--journey-progress, 0));
-    transform-origin: left center;
-    background-image: var(--accent-gradient);
+  /* ---- Project panels: a soft pool of the look's accent in the top corner. ---- */
+  .project-glow {
+    background:
+      radial-gradient(38rem 24rem at 100% 0%, var(--glow), transparent 70%),
+      radial-gradient(28rem 20rem at 0% 100%, var(--glow-2), transparent 70%);
+    opacity: 0.8;
+  }
+}
+
+/* ---- Hero: pill, name, stats bar and backdrop ---- */
+@property --edge {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@layer components {
+  @media (min-width: 60rem) {
+    .hero-name--split {
+      font-size: var(--fs-hero-split);
+    }
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 10px;
+    border: 1px solid color-mix(in srgb, var(--c1) 35%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface-solid) 70%, transparent);
+    padding: 7px 16px 7px 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--fg);
+    box-shadow: 0 10px 30px -18px var(--c1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-pill .status-dot {
+    margin-left: 4px;
+  }
+
+  .hero-pill-sep {
+    width: 1px;
+    height: 14px;
+    background: var(--line-2);
+  }
+
+  /* The surname: the look's accent, with a slow sheen across it. */
+  .hero-surname {
+    background: linear-gradient(
+      100deg,
+      var(--c1-text) 0%,
+      var(--c1-text) 35%,
+      color-mix(in srgb, var(--c1-text) 55%, white) 50%,
+      var(--c1-text) 65%,
+      var(--c1-text) 100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: hero-sheen 7s ease-in-out 1.4s infinite;
+  }
+
+  [data-look="porcelain"] .hero-surname {
+    background-image: linear-gradient(100deg, var(--c1-text), var(--c2-text), var(--c1-text));
+  }
+
+  @keyframes hero-sheen {
+    0% {
+      background-position: 100% 0;
+    }
+    45%,
+    100% {
+      background-position: 0% 0;
+    }
+  }
+
+  .hero-role {
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .hero-role-line {
+    width: 34px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--c1), transparent);
+  }
+
+  @media (max-width: 63.99rem) {
+    .hero-role-line {
+      display: none;
+    }
+  }
+
+  .hero-cta {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* A sheen crosses the main button every few seconds. */
+  .hero-cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      color-mix(in srgb, white 40%, transparent) 50%,
+      transparent 70%
+    );
+    transform: translateX(-130%);
+    animation: hero-cta-sheen 4.5s ease-in-out 2s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes hero-cta-sheen {
+    40%,
+    100% {
+      transform: translateX(130%);
+    }
+  }
+
+  .hero-cta-ghost {
+    background: color-mix(in srgb, var(--surface-solid) 55%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-social {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--surface-solid) 60%, transparent);
+    color: var(--muted);
+    transition:
+      border-color 250ms,
+      color 250ms,
+      transform 300ms var(--easing-entrance);
+  }
+
+  .hero-social:hover {
+    border-color: var(--c1);
+    color: var(--c1-text);
+    transform: translateY(-3px);
+  }
+
+  /* ---- Stats: one glass bar, four cells ---- */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--surface-solid) 62%, transparent);
+    box-shadow: var(--edge-light), var(--shadow-soft);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  @media (min-width: 48rem) {
+    .hero-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .hero-stat {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: clamp(16px, 2.2vw, 24px);
+    transition: background-color 300ms;
+  }
+
+  .hero-stat + .hero-stat {
+    border-left: 1px solid var(--line);
+  }
+
+  @media (max-width: 47.99rem) {
+    .hero-stat:nth-child(3) {
+      border-left: 0;
+    }
+
+    .hero-stat:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+
+    .hero-stat {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+
+  .hero-stat:hover {
+    background: color-mix(in srgb, var(--c1) 6%, transparent);
+  }
+
+  .hero-stat-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+    border-radius: 13px;
+    background: color-mix(in srgb, var(--c1) 11%, transparent);
+    color: var(--c1-text);
+  }
+
+  /* ---- Backdrop: a faint grid, drifting aurora, and a light that follows the cursor ---- */
+  .hero-gridlines {
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 35%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(70% 60% at 50% 35%, #000 20%, transparent 75%);
+    opacity: 0.55;
+  }
+
+  .hero-aurora {
+    position: absolute;
+    border-radius: 999px;
+    opacity: 0.7;
+    animation: hero-drift 18s ease-in-out infinite alternate;
+  }
+
+  .hero-aurora--one {
+    top: 8%;
+    left: 30%;
+    width: 38rem;
+    height: 20rem;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c1) 22%, transparent),
+      transparent
+    );
+  }
+
+  .hero-aurora--two {
+    top: 30%;
+    right: -6%;
+    width: 30rem;
+    height: 26rem;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c2, var(--c1)) 20%, transparent),
+      transparent
+    );
+    animation-duration: 22s;
+    animation-delay: -8s;
+  }
+
+  @keyframes hero-drift {
+    from {
+      transform: translate3d(-6%, -4%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(8%, 6%, 0) scale(1.15);
+    }
+  }
+
+  /* The cursor light (position set by SpotlightController), under the content. */
+  .hero.spotlight::before {
+    z-index: -1;
+    background: radial-gradient(
+      620px circle at var(--spot-x, 50%) var(--spot-y, 30%),
+      color-mix(in srgb, var(--c1) 9%, transparent),
+      transparent 60%
+    );
+  }
+}
+
+/* ---- Hero portrait: a tall card with a turning edge, caption, badges and orbits ---- */
+@layer components {
+  .portrait {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* A radial gradient, not a blur filter: blurred layers leak into the WebKit scroll width. */
+  .portrait-glow {
+    position: absolute;
+    inset: -18%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c1) 22%, transparent),
+      transparent 72%
+    );
+  }
+
+  .portrait-globe {
+    position: absolute;
+    inset: -22% -30%;
+    opacity: 0.5;
+  }
+
+  .portrait-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 128%;
+    aspect-ratio: 1;
+    border: 1px dashed color-mix(in srgb, var(--c1) 26%, transparent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: portrait-orbit 70s linear infinite;
+  }
+
+  .portrait-orbit::before {
+    content: "";
+    position: absolute;
+    top: 14%;
+    left: 14%;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--c1);
+    box-shadow: 0 0 16px var(--c1);
+  }
+
+  .portrait-orbit--inner {
+    width: 104%;
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--c2, var(--c1)) 18%, transparent);
+    animation-duration: 45s;
+    animation-direction: reverse;
+  }
+
+  .portrait-orbit--inner::before {
+    top: auto;
+    right: 12%;
+    bottom: 10%;
+    left: auto;
+    width: 6px;
+    height: 6px;
+    background: var(--c2, var(--c1));
+  }
+
+  @keyframes portrait-orbit {
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+  /* The card: a 2px edge whose accent light keeps turning. */
+  .portrait-frame {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 34px;
+    padding: 2px;
+    background:
+      conic-gradient(
+        from var(--edge),
+        transparent 0 40%,
+        var(--c1) 60%,
+        var(--c2, var(--c1)) 72%,
+        transparent 88%
+      ),
+      var(--line-2);
+    box-shadow:
+      0 50px 100px -40px rgb(0 0 0 / 0.7),
+      0 0 60px -20px color-mix(in srgb, var(--c1) 45%, transparent);
+    animation:
+      portrait-in 900ms var(--easing-entrance) both,
+      portrait-edge 8s linear infinite;
+  }
+
+  @keyframes portrait-edge {
+    to {
+      --edge: 360deg;
+    }
+  }
+
+  @keyframes portrait-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.96);
+    }
+  }
+
+  .portrait-photo {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 32px;
+    background: var(--surface-2);
+  }
+
+  .portrait-photo img {
+    transition: transform 1.2s var(--easing-entrance);
+  }
+
+  .portrait:hover .portrait-photo img {
+    transform: scale(1.04);
+  }
+
+  .portrait-shade {
+    position: absolute;
+    inset: 45% 0 0;
+    background: linear-gradient(180deg, transparent, rgb(8 10 18 / 0.78));
+  }
+
+  .portrait-caption {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: 20px;
+    background: rgb(12 14 22 / 0.45);
+    padding: 10px 12px 10px 14px;
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  .portrait-live {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.1);
+    padding: 5px 10px;
+    font-family: var(--ff-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .portrait-badge {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--surface-solid) 82%, transparent);
+    padding: 9px 14px 9px 9px;
+    white-space: nowrap;
+    box-shadow: var(--shadow-lift);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    animation:
+      badge-in 700ms var(--easing-entrance) both,
+      badge-float 6s ease-in-out infinite alternate;
+    animation-delay: calc(700ms + var(--slot-delay, 0ms)), var(--float-delay, 0s);
+  }
+
+  .portrait-badge-icon {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--accent-fill);
+    color: var(--on-fill);
+  }
+
+  .portrait-badge[data-slot="0"] {
+    top: 9%;
+    left: -16%;
+  }
+
+  .portrait-badge[data-slot="1"] {
+    top: 44%;
+    right: -18%;
+    --slot-delay: 150ms;
+    --float-delay: -2s;
+  }
+
+  .portrait-badge[data-slot="2"] {
+    bottom: 22%;
+    left: -20%;
+    --slot-delay: 300ms;
+    --float-delay: -4s;
+  }
+
+  /* Phones: badges tuck in so none leaves the screen; the third one is dropped. */
+  @media (max-width: 47.99rem) {
+    .portrait-badge {
+      padding: 7px 11px 7px 7px;
+    }
+
+    .portrait-badge-icon {
+      width: 26px;
+      height: 26px;
+    }
+
+    .portrait-badge[data-slot="0"] {
+      top: 5%;
+      left: -9%;
+    }
+
+    .portrait-badge[data-slot="1"] {
+      top: 38%;
+      right: -9%;
+    }
+
+    .portrait-badge[data-slot="2"] {
+      display: none;
+    }
+  }
+
+  @keyframes badge-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.92);
+    }
+  }
+
+  /* --z (home.css, 3D section) lifts each badge off the card. */
+  @keyframes badge-float {
+    from {
+      translate: 0 -6px var(--z, 0px);
+    }
+    to {
+      translate: 0 6px var(--z, 0px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-surname,
+    .hero-cta::after,
+    .hero-aurora,
+    .portrait-orbit,
+    .portrait-frame,
+    .portrait-badge {
+      animation: none;
+    }
+
+    .portrait:hover .portrait-photo img {
+      transform: none;
+    }
+  }
+}
+
+/* ---- Home sections: eyebrow pills, glowing dividers, cards and marquees ---- */
+@layer components {
+  /* Eyebrows become small pills with a glowing dot (home only; other pages keep the rule). */
+  .home .eyebrow {
+    border: 1px solid color-mix(in srgb, var(--c1) 32%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c1) 7%, var(--surface-solid));
+    padding: 7px 14px 7px 11px;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    box-shadow: 0 8px 24px -16px var(--c1);
+  }
+
+  .home .eyebrow-rule {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--c1);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--c1) 18%, transparent),
+      0 0 12px var(--c1);
+  }
+
+  /* Between two sections: a hairline that fades at both ends, with a glow at its centre. */
+  .home .section-y + .section-y {
+    position: relative;
+    border-top: 0;
+  }
+
+  .home .section-y + .section-y::before,
+  .home .section-y + .section-y::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .home .section-y + .section-y::before {
+    width: min(1100px, 92%);
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--c1) 45%, var(--line-2)) 50%,
+      transparent
+    );
+  }
+
+  .home .section-y + .section-y::after {
+    top: -40px;
+    width: min(420px, 60%);
+    height: 80px;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c1) 12%, transparent),
+      transparent
+    );
+  }
+
+  /* ---- Service cards: a ghost number, an icon tile, an arrow and an accent bar ---- */
+  /* Sits in the empty top row, between the icon and the arrow, cut by the top edge. */
+  .service-ghost {
+    position: absolute;
+    top: -26px;
+    right: 66px;
+    z-index: -1;
+    font-family: var(--ff-display);
+    font-size: 7rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--c1) 22%, transparent);
+    transition:
+      transform 700ms var(--easing-entrance),
+      -webkit-text-stroke-color 500ms;
+  }
+
+  .service-card:hover .service-ghost {
+    transform: translateY(-10px);
+    -webkit-text-stroke-color: color-mix(in srgb, var(--c1) 45%, transparent);
+  }
+
+  .service-icon {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--c1) 30%, transparent);
+    background:
+      radial-gradient(
+        120% 120% at 0% 0%,
+        color-mix(in srgb, var(--c1) 26%, transparent),
+        transparent 70%
+      ),
+      var(--c1-soft);
+  }
+
+  .service-icon::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 1px solid color-mix(in srgb, var(--c1) 35%, transparent);
+    border-radius: 20px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 400ms,
+      transform 500ms var(--easing-entrance);
+  }
+
+  .service-card:hover .service-icon::after {
+    opacity: 1;
+    transform: none;
+  }
+
+  .service-arrow {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--faint);
+    transition:
+      transform 400ms var(--easing-entrance),
+      color 300ms,
+      border-color 300ms,
+      background-color 300ms;
+  }
+
+  .service-card:hover .service-arrow {
+    border-color: transparent;
+    background: var(--accent-fill);
+    color: var(--on-fill);
+    transform: rotate(45deg);
+  }
+
+  .service-bar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c2, var(--c1)));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 700ms var(--easing-entrance);
+  }
+
+  .service-card:hover .service-bar {
+    transform: scaleX(1);
+  }
+
+  /* ---- Process steps: a rail that fills, and a bar on each card ---- */
+  .steps-rail {
+    height: 2px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--c1) 18%, transparent);
+  }
+
+  .steps-rail-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--c1), var(--c2, var(--c1)));
+    box-shadow: 0 0 12px color-mix(in srgb, var(--c1) 60%, transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.6s var(--easing-entrance) 300ms;
+  }
+
+  .steps-rail[data-reveal="shown"] .steps-rail-fill {
+    transform: scaleX(1);
+  }
+
+  .step-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--c1), transparent);
+    transform: scaleX(0.18);
+    transform-origin: left;
+    transition: transform 700ms var(--easing-entrance);
+  }
+
+  .step-card:hover::after {
+    transform: scaleX(1);
+  }
+
+  .step-badge {
+    position: relative;
+  }
+
+  .step-badge::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 1px solid color-mix(in srgb, var(--c1) 40%, transparent);
+    border-radius: inherit;
+    animation: step-ring 2.8s ease-out infinite;
+  }
+
+  @keyframes step-ring {
+    from {
+      opacity: 0.9;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.35);
+    }
+  }
+
+  /* ---- Stack marquee ---- */
+  .marquee-track--reverse {
+    animation-direction: reverse;
+    animation-duration: 46s;
+  }
+
+  .stack-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface-solid) 70%, transparent);
+    padding: 8px 16px 8px 12px;
+    font-family: var(--ff-mono);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    color: var(--muted);
+    transition:
+      border-color 250ms,
+      color 250ms;
+  }
+
+  .stack-chip:hover {
+    border-color: var(--line-hover);
+    color: var(--fg);
+  }
+
+  .stack-chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--c1);
+    box-shadow: 0 0 8px var(--c1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step-badge::after {
+      animation: none;
+    }
+
+    .steps-rail-fill,
+    .service-ghost,
+    .service-bar,
+    .service-arrow {
+      transition: none;
+    }
+  }
+}
+
+/* ---- Hero portrait in 3D: one turning stage, layers at different depths ---- */
+@property --rx {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --ry {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@layer components {
+  .portrait {
+    perspective: 1200px;
+  }
+
+  /* Sways on its own; follows the pointer (set by PortraitStage) while a mouse is over it. */
+  .portrait-3d {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    animation: portrait-sway 9s ease-in-out infinite alternate;
+    transition:
+      --rx 220ms ease-out,
+      --ry 220ms ease-out;
+  }
+
+  .portrait-3d[data-active] {
+    animation: none;
+  }
+
+  @keyframes portrait-sway {
+    from {
+      --rx: 5deg;
+      --ry: -14deg;
+    }
+    to {
+      --rx: -4deg;
+      --ry: 14deg;
+    }
+  }
+
+  /* Depth, back to front: globe, glow, orbits, plates, card, caption, badges. */
+  .portrait-globe {
+    translate: 0 0 -170px;
+  }
+
+  .portrait-glow {
+    translate: 0 0 -130px;
+  }
+
+  .portrait-orbit {
+    translate: 0 0 -90px;
+  }
+
+  .portrait-frame {
+    transform-style: preserve-3d;
+  }
+
+  .portrait-caption {
+    translate: 0 0 46px;
+  }
+
+  .portrait-badge {
+    --z: 90px;
+  }
+
+  .portrait-badge[data-slot="1"] {
+    --z: 120px;
+  }
+
+  .portrait-badge[data-slot="2"] {
+    --z: 70px;
+  }
+
+  /* Two cards stacked behind the photo, offset down and right, so the depth shows at rest too. */
+  .portrait-plate {
+    position: absolute;
+    inset: 0;
+    border: 1px solid color-mix(in srgb, var(--c1) 35%, var(--line-2));
+    border-radius: 34px;
+    background:
+      linear-gradient(
+        150deg,
+        color-mix(in srgb, var(--c1) 26%, transparent),
+        color-mix(in srgb, var(--c2, var(--c1)) 10%, transparent)
+      ),
+      var(--surface-solid);
+    translate: 16px 18px -45px;
+    opacity: 0.85;
+  }
+
+  .portrait-plate--back {
+    translate: 32px 36px -90px;
+    opacity: 0.45;
+  }
+
+  /* A soft light on the photo that follows the pointer. */
+  .portrait-glare {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at var(--gx, 28%) var(--gy, 18%),
+      rgb(255 255 255 / 0.32),
+      transparent 48%
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0.55;
+    transition: opacity 400ms;
+    pointer-events: none;
+  }
+
+  .portrait-3d[data-active] .portrait-glare {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portrait-3d {
+      animation: none;
+      transition: none;
+    }
   }
 }

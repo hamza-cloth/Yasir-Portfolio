@@ -2,8 +2,8 @@ import { arcPoint, isOccluded, rotate, type Vec3 } from "./globe";
 
 export type GlobeColors = {
   dot: string;
-  arc: string;
-  pulse: string;
+  // Arcs cycle through these, so neighbouring routes read apart.
+  arcs: string[];
   hub: string;
   label: string;
   labelFont: string;
@@ -46,16 +46,19 @@ export function drawGlobeFrame(
   context.fillStyle = colors.dot;
   for (const point of scene.points) {
     const p = rotate(point, yaw, pitch);
-    context.globalAlpha = p.z >= 0 ? 0.25 + p.z * 0.6 : 0.07;
+    context.globalAlpha = p.z >= 0 ? 0.3 + p.z * 0.65 : 0.08;
     const s = toScreen(p);
-    const size = p.z >= 0 ? 1.6 : 1.1;
-    context.fillRect(s.x - size / 2, s.y - size / 2, size, size);
+    context.beginPath();
+    context.arc(s.x, s.y, p.z >= 0 ? 1.15 + p.z * 0.5 : 0.8, 0, Math.PI * 2);
+    context.fill();
   }
 
-  context.lineWidth = 1.2;
-  context.strokeStyle = colors.arc;
+  context.lineWidth = 1.6;
+  context.lineCap = "round";
   scene.destinations.forEach((destination, index) => {
-    context.globalAlpha = 0.55;
+    const color = colors.arcs[index % colors.arcs.length] ?? colors.hub;
+    context.strokeStyle = color;
+    context.globalAlpha = 0.75;
     context.beginPath();
     let drawing = false;
     for (let step = 0; step <= ARC_STEPS; step += 1) {
@@ -76,7 +79,7 @@ export function drawGlobeFrame(
     if (!isOccluded(pulse)) {
       const s = toScreen(pulse);
       context.globalAlpha = 0.95;
-      context.fillStyle = colors.pulse;
+      context.fillStyle = color;
       context.beginPath();
       context.arc(s.x, s.y, 2.4, 0, Math.PI * 2);
       context.fill();

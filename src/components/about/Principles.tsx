@@ -8,7 +8,7 @@ export function Principles({ principles }: { principles: Principle[] }) {
   if (principles.length === 0) return null;
 
   return (
-    <section aria-labelledby="principles-title" className="py-20">
+    <section aria-labelledby="principles-title" className="section-y">
       <Container className="flex flex-col gap-10">
         <SectionHead eyebrow="Principles" titleId="principles-title" title="How I like to work" />
         <ol className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">

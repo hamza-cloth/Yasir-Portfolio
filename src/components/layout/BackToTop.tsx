@@ -37,7 +37,7 @@ export function BackToTop() {
       data-visible={visible}
       tabIndex={visible ? 0 : -1}
       aria-hidden={!visible}
-      className="back-to-top glass fixed right-[max(20px,env(safe-area-inset-right))] bottom-[max(20px,env(safe-area-inset-bottom))] z-(--z-header) grid size-12 place-items-center rounded-pill text-fg"
+      className="back-to-top fixed right-[max(20px,env(safe-area-inset-right))] bottom-[max(20px,env(safe-area-inset-bottom))] z-(--z-header) grid size-11 place-items-center rounded-pill border border-c1 bg-bg/80 text-c1-text backdrop-blur-md transition-colors duration-200 hover:bg-c1 hover:text-c1-ink"
     >
       <Icon name="arrow-up" />
       <span className="sr-only">Back to top</span>

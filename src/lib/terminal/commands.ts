@@ -1,6 +1,6 @@
 import { formatIstTime } from "@/lib/ist-time";
+import { isLook, LOOK_LABELS, LOOKS, type Look } from "@/lib/look";
 import { ALL_PAGES } from "@/lib/site-nav";
-import { isSkin, SKIN_LABELS, SKINS } from "@/lib/skin";
 
 import {
   isIpv4,
@@ -15,6 +15,14 @@ const out = (text: string): TerminalLine => ({ kind: "output", text });
 const accent = (text: string): TerminalLine => ({ kind: "accent", text });
 const error = (text: string): TerminalLine => ({ kind: "error", text });
 const lines = (...items: TerminalLine[]): TerminalResult => ({ lines: items });
+
+// "dark" and "light" pick the default look of that theme.
+const THEME_ALIASES = new Map<string, Look>([
+  ["dark", "midnight-ink"],
+  ["light", "porcelain"],
+]);
+
+export const THEME_NAMES = [...LOOKS, ...THEME_ALIASES.keys()];
 
 export const PAGE_NAMES = ALL_PAGES.map((page) =>
   page.href === "/" ? "home" : page.href.slice(1),
@@ -106,12 +114,13 @@ export const COMMANDS: TerminalCommand[] = [
   },
   {
     name: "theme",
-    usage: "theme <ops|paper|terminal>",
-    summary: "switch skin",
+    usage: "theme <look|dark|light>",
+    summary: "switch the look",
     run: (args) => {
-      const skin = args[0]?.toLowerCase();
-      if (!isSkin(skin)) return lines(error(`theme: choose one of ${SKINS.join(", ")}`));
-      return { lines: [accent(`skin → ${SKIN_LABELS[skin]}`)], effect: { type: "theme", skin } };
+      const name = args[0]?.toLowerCase() ?? "";
+      const look = isLook(name) ? name : THEME_ALIASES.get(name);
+      if (!look) return lines(error(`theme: choose one of ${THEME_NAMES.join(", ")}`));
+      return { lines: [accent(`look → ${LOOK_LABELS[look]}`)], effect: { type: "theme", look } };
     },
   },
   {

@@ -1,7 +1,7 @@
 @layer components {
   .shell {
     width: 100%;
-    max-width: calc(1320px + 2 * var(--gutter));
+    max-width: calc(var(--container) + 2 * var(--gutter));
     margin-inline: auto;
     padding-left: max(var(--gutter), env(safe-area-inset-left));
     padding-right: max(var(--gutter), env(safe-area-inset-right));
@@ -29,6 +29,36 @@
     letter-spacing: var(--display-tracking);
   }
 
+  /* Vertical rhythm for major sections, with a hairline between two in a row. */
+  .section-y {
+    padding-block: var(--section-y);
+  }
+
+  .section-y + .section-y {
+    border-top: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c1-text);
+  }
+
+  .eyebrow-rule {
+    width: 28px;
+    height: 2px;
+    flex: none;
+    background: currentColor;
+  }
+
   .label-mono {
     font-family: var(--ff-mono);
     font-size: var(--fs-label);
@@ -47,42 +77,18 @@
     box-shadow: 0 0 0 3px var(--highlight);
   }
 
-  [data-skin="terminal"] .signal-dot {
-    border-radius: 0;
-    box-shadow: 0 0 10px var(--c1);
-  }
-
-  /* Accent words inside headings and leads: a serif italic in the accent gradient. */
+  /* Accent words: the brand blue with a hand-drawn underline beneath. */
   .highlight {
-    font-family: var(--ff-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    padding-right: 0.06em;
+    color: var(--c1-text);
     background-color: transparent;
-    background-image: var(--accent-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    background-image: var(--underline-svg);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.22em;
+    padding-bottom: 0.08em;
     text-shadow: none;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
-  }
-
-  /* In running text the serif reads small next to Geist, so it is nudged up. */
-  :is(p, li) > .highlight {
-    font-size: 1.12em;
-    line-height: 1;
-  }
-
-  [data-skin="terminal"] .highlight {
-    font-style: normal;
-    color: var(--amber);
-    background: none;
-  }
-
-  [data-skin="terminal"] :is(p, li) > .highlight {
-    font-size: inherit;
   }
 
   .text-gradient {
@@ -93,15 +99,17 @@
     text-shadow: none;
   }
 
-  .text-serif-accent {
-    font-family: var(--ff-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+  /* The accent button: the look's two-colour fill, always with white text. */
+  .btn-accent {
+    background: var(--accent-fill);
+    color: var(--on-fill);
   }
 
-  [data-skin="terminal"] .text-serif-accent {
-    font-style: normal;
+  /* Big step numbers and similar display figures. */
+  .text-serif-accent {
+    font-family: var(--ff-display);
+    font-weight: var(--display-weight);
+    letter-spacing: -0.04em;
   }
 
   /* A gradient hairline that fades out at both ends. */
@@ -119,16 +127,6 @@
   .hero-name {
     font-size: var(--fs-hero-stack);
     line-height: var(--display-leading);
-    letter-spacing: -0.055em;
-  }
-
-  [data-skin="terminal"] .hero-name {
-    letter-spacing: 0;
-  }
-
-  /* The serif half of the name sits a touch larger so both lines share a cap height. */
-  .hero-name .text-serif-accent {
-    font-size: 1.08em;
     letter-spacing: -0.02em;
   }
 
@@ -176,20 +174,19 @@
     }
   }
 
-  .reveal[data-reveal="hidden"] {
+  /* A .reveal-group wrapper stays put; only its .stagger children animate (see motion.css).
+     Sections and cards fade in and rise 16px, once. */
+  .reveal[data-reveal="hidden"]:not(.reveal-group) {
     opacity: 0;
-    transform: translate3d(0, 24px, 0);
-    filter: blur(6px);
+    transform: translate3d(0, 16px, 0);
   }
 
-  .reveal[data-reveal="shown"] {
+  .reveal[data-reveal="shown"]:not(.reveal-group) {
     opacity: 1;
     transform: none;
-    filter: none;
     transition:
-      opacity 1000ms var(--easing-entrance),
-      transform 1000ms var(--easing-entrance),
-      filter 1000ms var(--easing-entrance);
+      opacity 600ms var(--easing-reveal),
+      transform 600ms var(--easing-reveal);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
@@ -218,60 +215,54 @@
     }
   }
 
-  .scanlines {
+  /* Only the active look's name shows; CSS picks it, so it is right before hydration too. */
+  .look-label {
     display: none;
   }
 
-  [data-skin="terminal"] .scanlines {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-scanlines);
-    pointer-events: none;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 0,
-        rgba(0, 0, 0, 0) 2px,
-        rgba(0, 0, 0, 0.28) 3px
-      ),
-      radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
-  }
-
-  .skin-label {
-    display: none;
-  }
-
-  [data-skin="ops"] .skin-label[data-skin-label="ops"],
-  [data-skin="paper"] .skin-label[data-skin-label="paper"],
-  [data-skin="terminal"] .skin-label[data-skin-label="terminal"] {
+  [data-look="porcelain"] .look-label[data-look-label="porcelain"],
+  [data-look="midnight-ink"] .look-label[data-look-label="midnight-ink"],
+  [data-look="midnight-ops"] .look-label[data-look-label="midnight-ops"],
+  [data-look="sunset-fibre"] .look-label[data-look-label="sunset-fibre"],
+  [data-look="aurora"] .look-label[data-look-label="aurora"] {
     display: inline;
   }
 
-  .site-header {
-    transition: transform 450ms var(--easing-entrance);
+  /* While the mobile menu is open the header sits above it, so the close button stays reachable. */
+  .site-header[data-menu-open="true"] {
+    z-index: calc(var(--z-overlay) + 1);
   }
 
   .site-header[data-hidden="true"]:not(:focus-within) {
     transform: translate3d(0, -100%, 0);
   }
 
-  .site-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: var(--surface);
-    border-bottom: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
-    opacity: 0;
-    transition: opacity 300ms var(--easing-entrance);
+  /* Transparent over the top of the page; once it scrolls 24px, frosted glass with a hairline. */
+  .site-header {
+    border-bottom: 1px solid transparent;
+    transition:
+      transform 450ms var(--easing-entrance),
+      background-color 250ms var(--easing-entrance),
+      border-color 250ms var(--easing-entrance);
   }
 
-  .site-header[data-scrolled="true"]::before,
-  .site-header[data-menu-open="true"]::before {
-    opacity: 1;
+  .site-header[data-scrolled="true"],
+  .site-header[data-menu-open="true"] {
+    border-bottom-color: var(--line);
+    background-color: color-mix(in srgb, var(--bg) 75%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    right: 0.625rem;
+    bottom: 6px;
+    left: 0.625rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--c1);
   }
 
   .menu-bar {
@@ -387,13 +378,16 @@
     opacity: 0;
   }
 
+  /* Closed overlays never catch a click. */
   .page-curtain {
     clip-path: inset(100% 0 0 0);
     visibility: hidden;
+    pointer-events: none;
   }
 
   .page-curtain[data-active="true"] {
     visibility: visible;
+    pointer-events: auto;
   }
 
   .curtain-line {
@@ -412,11 +406,6 @@
     font-weight: 600;
     letter-spacing: -0.04em;
     fill: url(#footer-name-fade);
-  }
-
-  [data-skin="terminal"] .footer-name text {
-    font-weight: var(--display-weight);
-    letter-spacing: 0;
   }
 }
 
@@ -437,22 +426,108 @@
   }
 }
 
-:root[data-transition="skin"]::view-transition-old(root) {
-  animation: skin-fade-out 300ms var(--easing-entrance) both;
+:root[data-transition="look"]::view-transition-old(root) {
+  animation: look-out 300ms var(--easing-entrance) both;
 }
 
-:root[data-transition="skin"]::view-transition-new(root) {
-  animation: skin-fade-in 300ms var(--easing-entrance) both;
+:root[data-transition="look"]::view-transition-new(root) {
+  animation: look-in 300ms var(--easing-entrance) both;
 }
 
-@keyframes skin-fade-out {
+@keyframes look-out {
   to {
     opacity: 0;
   }
 }
 
-@keyframes skin-fade-in {
+@keyframes look-in {
   from {
     opacity: 0;
+  }
+}
+
+/* Without View Transitions, a look change fades in over 300ms instead. */
+:root[data-transition="look-fade"] body {
+  animation: look-fade 300ms var(--easing-entrance);
+}
+
+@keyframes look-fade {
+  from {
+    opacity: 0.4;
+  }
+}
+
+/* Mobile menu: wipes down and its links rise in; reversed on close. Closed, it is invisible to
+   pointers and assistive tech (it is also inert). */
+.mobile-menu {
+  clip-path: inset(0 0 100% 0);
+  visibility: hidden;
+  transition:
+    clip-path 0.5s var(--easing-wipe),
+    visibility 0s linear 0.5s;
+}
+
+.mobile-menu[data-open="true"] {
+  clip-path: inset(0 0 0 0);
+  visibility: visible;
+  transition: clip-path 0.6s var(--easing-wipe);
+}
+
+.mobile-menu-item {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition:
+    opacity 0.4s var(--easing-entrance),
+    transform 0.4s var(--easing-entrance);
+}
+
+.mobile-menu[data-open="true"] .mobile-menu-item {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s var(--easing-entrance) calc(0.15s + var(--i, 0) * 45ms),
+    transform 0.6s var(--easing-entrance) calc(0.15s + var(--i, 0) * 45ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu,
+  .mobile-menu[data-open="true"],
+  .mobile-menu-item,
+  .mobile-menu[data-open="true"] .mobile-menu-item {
+    transition: none;
+  }
+}
+
+/* ---- Brand logo ---- */
+/* The Y is Signature Gold on dark looks and a deeper gold on light ones, where #c9a45c is too pale. */
+:root,
+[data-look] {
+  --logo-y: #c9a45c;
+  --logo-tag: #c9a45c;
+}
+
+[data-look="porcelain"],
+[data-look="sunset-fibre"] {
+  --logo-y: #a8823a;
+  --logo-tag: #7a5c24;
+}
+
+@layer components {
+  .logo-name {
+    font-family: var(--ff-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+    color: var(--fg);
+  }
+
+  .logo-tagline {
+    font-family: var(--ff-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    white-space: nowrap;
+    color: var(--logo-tag);
   }
 }

@@ -54,8 +54,11 @@ export default async function ExperiencePage() {
         }
         lead="Technical support on cloud business software and on hosting and data-centre services, backed by CCNA training and a degree in progress."
       />
-      <section aria-label="Timeline" className="py-12">
+      <section aria-labelledby="timeline-title" className="py-12">
         <Container className="max-w-4xl">
+          <h2 id="timeline-title" className="sr-only">
+            Timeline
+          </h2>
           <Timeline>
             {timeline.map((entry) => (
               <TimelineItem key={entry.id} entry={entry} />
@@ -63,7 +66,7 @@ export default async function ExperiencePage() {
           </Timeline>
         </Container>
       </section>
-      <section aria-labelledby="interfaces-title" className="py-20">
+      <section aria-labelledby="interfaces-title" className="section-y">
         <Container className="flex flex-col gap-10">
           <SectionHead
             eyebrow="Console"

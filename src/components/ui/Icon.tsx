@@ -2,6 +2,13 @@ import type { SVGProps } from "react";
 
 const PATHS = {
   "arrow-right": "M5 12h14M13 6l6 6-6 6",
+  check: "M5 12.5l4.5 4.5L19 7.5",
+  "chevron-down": "M6 9l6 6 6-6",
+  phone:
+    "M5 4h3l1.5 4.5-2 1.2a11 11 0 0 0 6.8 6.8l1.2-2L20 16v3a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z",
+  // WhatsApp, drawn as an outline: a round speech bubble with its tail, and the handset inside.
+  whatsapp:
+    "M4.5 19.5l1.1-3.9A8.3 8.3 0 1 1 8.6 18.6zM9.2 8.3c.2-.5.6-.5.9-.5h.5l.9 2.1-.6.8c.5 1 1.3 1.8 2.3 2.3l.8-.6 2.1.9v.5c0 .3-.1.7-.5.9-.6.4-1.5.5-2.6 0a8 8 0 0 1-3.6-3.6c-.5-1.1-.4-2 0-2.8z",
   "arrow-up": "M12 19V5M6 11l6-6 6 6",
   "arrow-up-right": "M7 17 17 7M9 7h8v8",
   mail: "M4 6h16v12H4zM4 7l8 6 8-6",
@@ -17,6 +24,17 @@ const PATHS = {
   printer:
     "M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2M7 14h10v6H7z",
   clock: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
+  lock: "M6 11h12v10H6zM8 11V8a4 4 0 0 1 8 0v3",
+  eye: "M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
+  "eye-off":
+    "M3 3l18 18M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.4 17.4 0 0 1-3.2 4.1M6.6 6.6A17.6 17.6 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2",
+  shield: "M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6zM9 12l2 2 4-4",
+  alert: "M12 3 2 20h20zM12 10v4M12 17h.01",
+  list: "M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01",
+  database:
+    "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
+  sparkle:
+    "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z",
 } as const;
 
 export type IconName = keyof typeof PATHS;

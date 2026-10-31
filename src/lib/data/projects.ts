@@ -34,7 +34,8 @@ export async function getProjectSummaries(): Promise<ProjectSummary[]> {
 
   return db.project.findMany({
     where: { published: true },
-    orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+    // Featured projects lead, then the admin's order.
+    orderBy: [{ featured: "desc" }, { order: "asc" }, { createdAt: "asc" }],
     select: SUMMARY_FIELDS,
   });
 }
@@ -60,6 +61,11 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
       overview: true,
       decisions: true,
       coverImageUrl: true,
+      liveUrl: true,
+      githubUrl: true,
+      seoTitle: true,
+      seoDescription: true,
+      gallery: true,
     },
   });
   if (!row) return null;

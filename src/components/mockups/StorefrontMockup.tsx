@@ -5,7 +5,7 @@ import { PhoneStorefront } from "./PhoneStorefront";
 export function StorefrontMockup() {
   return (
     <MockupFrame
-      title="hamza cloth · storefront + delivery"
+      title="hamza-cloth / shop"
       label="Mockup of the Hamza Cloth phone storefront with a bottom navigation bar, beside a Hamza Express delivery route and a payment note credited after UTR approval."
     >
       <div className="grid h-full grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] items-center gap-4 p-4">

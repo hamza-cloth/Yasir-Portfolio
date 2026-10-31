@@ -8,11 +8,11 @@ type InterfaceTableProps = {
 export function InterfaceTable({ entries }: InterfaceTableProps) {
   return (
     <div className="glass overflow-hidden rounded-card">
-      <p className="border-b border-line px-5 py-3 font-mono text-[0.85rem] text-c1-text">
+      <p className="border-b border-line px-5 py-3 font-mono text-sm text-c1-text">
         yasir@r1# show ip interface brief
       </p>
       <div className="overflow-x-auto" role="region" aria-label="Interface table" tabIndex={0}>
-        <table className="w-full min-w-[640px] border-collapse font-mono text-[0.85rem]">
+        <table className="w-full min-w-[640px] border-collapse font-mono text-sm">
           <thead>
             <tr className="text-left text-muted">
               <th scope="col" className="px-5 py-3 font-medium">

@@ -7,7 +7,7 @@ type ScrollState = {
   scrolled: boolean;
 };
 
-const SCROLLED_AFTER = 10;
+const SCROLLED_AFTER = 24;
 const HIDE_AFTER = 120;
 const DIRECTION_TOLERANCE = 6;
 

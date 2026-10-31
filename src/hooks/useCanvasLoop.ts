@@ -11,7 +11,7 @@ export type CanvasFrame = {
 
 type CanvasLoopOptions = {
   animate: boolean;
-  // Changing this redraws (and restarts) the loop, e.g. when the skin changes.
+  // Changing this redraws (and restarts) the loop, e.g. when the look changes.
   redrawKey?: string;
   onSetup?: () => void;
 };
@@ -29,7 +29,12 @@ export function useCanvasLoop(
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
+    let context: CanvasRenderingContext2D | null = null;
+    try {
+      context = canvas?.getContext("2d") ?? null;
+    } catch {
+      // No canvas support: the element simply stays empty; the page around it is unaffected.
+    }
     if (!canvas || !context) return;
 
     let width = 0;

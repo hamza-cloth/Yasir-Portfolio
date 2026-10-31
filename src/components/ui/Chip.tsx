@@ -4,9 +4,9 @@ import { cn } from "@/lib/cn";
 
 export function chipClassName(selected: boolean, className?: string): string {
   return cn(
-    "label-mono inline-flex min-h-10 items-center gap-2 rounded-pill border px-4 transition-colors duration-300",
+    "label-mono inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 transition-colors duration-300",
     selected
-      ? "border-fg bg-fg text-bg terminal:border-c1 terminal:bg-surface-2 terminal:text-fg"
+      ? "border-fg bg-fg text-bg"
       : "border-line-2 text-muted hover:border-fg/30 hover:text-fg",
     className,
   );

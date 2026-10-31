@@ -3,16 +3,24 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { animate } from "motion";
-
 import { useReducedMotion } from "@/hooks/useMediaQuery";
 import { internalNavigationTarget } from "@/lib/internal-link";
-import { EASE_WIPE } from "@/lib/motion";
 import { routeLabel } from "@/lib/site-nav";
 
 const COVER_SECONDS = 0.24;
 const REVEAL_SECONDS = 0.3;
-const NAVIGATION_TIMEOUT_MS = 2500;
+const NAVIGATION_TIMEOUT_MS = 1200;
+// Hard ceiling: whatever fails (an animation, a slow route), the curtain is gone after this.
+const STUCK_CURTAIN_MS = 1500;
+const WIPE_EASING = "cubic-bezier(0.76, 0, 0.24, 1)";
+
+function wipe(element: HTMLElement, from: string, to: string, seconds: number) {
+  return element.animate([{ clipPath: from }, { clipPath: to }], {
+    duration: seconds * 1000,
+    easing: WIPE_EASING,
+    fill: "forwards",
+  }).finished;
+}
 
 // Total wipe time stays under 600ms: cover, navigate under the curtain, then reveal.
 // With the View Transitions API the reveal is a clip-path on the new page snapshot;
@@ -44,35 +52,39 @@ export function PageCurtain() {
     const go = () => router.push(`${url.pathname}${url.search}${url.hash}`);
 
     curtain.dataset.active = "true";
-    await animate(
-      curtain,
-      { clipPath: ["inset(100% 0 0 0)", "inset(0% 0 0 0)"] },
-      { duration: COVER_SECONDS, ease: EASE_WIPE },
-    );
+    const root = document.documentElement;
+    const release = () => {
+      delete curtain.dataset.active;
+      delete root.dataset.transition;
+      curtain.style.removeProperty("clip-path");
+      curtain.getAnimations().forEach((animation) => animation.cancel());
+      busyRef.current = false;
+    };
+    const failsafe = window.setTimeout(release, STUCK_CURTAIN_MS);
 
-    if (typeof document.startViewTransition === "function") {
-      const root = document.documentElement;
-      root.dataset.transition = "page";
-      const transition = document.startViewTransition(async () => {
-        delete curtain.dataset.active;
+    try {
+      await wipe(curtain, "inset(100% 0 0 0)", "inset(0% 0 0 0)", COVER_SECONDS);
+
+      if (typeof document.startViewTransition === "function") {
+        root.dataset.transition = "page";
+        const transition = document.startViewTransition(async () => {
+          delete curtain.dataset.active;
+          go();
+          await arrived;
+        });
+        await transition.finished.catch(() => undefined);
+      } else {
         go();
         await arrived;
-      });
-      await transition.finished.catch(() => undefined);
-      delete root.dataset.transition;
-    } else {
+        await wipe(curtain, "inset(0 0 0% 0)", "inset(0 0 100% 0)", REVEAL_SECONDS);
+      }
+    } catch {
+      // An interrupted animation must not strand the visitor: navigate anyway.
       go();
-      await arrived;
-      await animate(
-        curtain,
-        { clipPath: ["inset(0 0 0% 0)", "inset(0 0 100% 0)"] },
-        { duration: REVEAL_SECONDS, ease: EASE_WIPE },
-      );
-      delete curtain.dataset.active;
+    } finally {
+      window.clearTimeout(failsafe);
+      release();
     }
-
-    curtain.style.removeProperty("clip-path");
-    busyRef.current = false;
   });
 
   useEffect(() => {
@@ -93,7 +105,7 @@ export function PageCurtain() {
     <div
       ref={curtainRef}
       aria-hidden="true"
-      className="page-curtain fixed inset-0 z-(--z-curtain) grid place-items-center bg-curtain text-curtain-fg"
+      className="page-curtain fixed inset-y-0 left-0 z-(--z-curtain) grid h-dvh w-screen place-items-center bg-curtain text-curtain-fg"
     >
       <div className="flex w-full flex-col items-center gap-6 px-6">
         <p className="label-mono text-curtain-muted">Routing to</p>

@@ -1,0 +1,877 @@
+/* Ebooks: 3D diagrams, book covers and the chapter reader. Diagrams are server-rendered markup;
+   motion is CSS and SVG (SMIL), so a chapter ships no diagram JavaScript. */
+
+@layer components {
+  .dg {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Clip, not hidden: the scenes lean in 3D and WebKit would count the overhang as page width. */
+  .dg-frame {
+    position: relative;
+    overflow: clip;
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    background:
+      radial-gradient(120% 80% at 50% 0%, var(--glow), transparent 62%), var(--surface-solid);
+    padding: clamp(30px, 5vw, 60px) clamp(10px, 3vw, 40px) clamp(34px, 5vw, 64px);
+  }
+
+  .dg-caption {
+    max-width: 62ch;
+    margin-inline: auto;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+
+  .dg-stage {
+    perspective: 1300px;
+    perspective-origin: 50% 20%;
+  }
+
+  .dg-scene {
+    position: relative;
+    margin-inline: auto;
+    transform-style: preserve-3d;
+  }
+
+  /* ---- Shared device tile ---- */
+  .dg-node-tile {
+    display: grid;
+    width: clamp(30px, 4.6vw, 46px);
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--line));
+    border-radius: 12px;
+    background: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--tone) 24%, var(--surface-solid)),
+      var(--surface-solid)
+    );
+    color: var(--tone);
+    box-shadow:
+      0 5px 0 color-mix(in srgb, var(--tone) 32%, var(--surface-2)),
+      0 14px 22px -12px var(--tone);
+  }
+
+  .dg-node-tile svg {
+    width: 56%;
+    height: 56%;
+  }
+
+  .dg-node-label {
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--surface-solid) 84%, transparent);
+    padding: 1px 6px;
+    font-size: clamp(10px, 1.25vw, 13.5px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    white-space: nowrap;
+  }
+
+  .dg-node-sub {
+    font-size: clamp(8.5px, 1vw, 10.5px);
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .dg-packet {
+    fill: currentColor;
+  }
+
+  .dg-packet-glow {
+    fill: currentColor;
+    opacity: 0.28;
+  }
+
+  .dg-static {
+    display: none;
+  }
+
+  /* ---- Topology: a tilted floor with devices standing on it ---- */
+  .dg-scene--floor {
+    width: min(100%, 880px);
+    margin-top: 2%;
+    transform: rotateX(30deg);
+    animation: dg-rock-floor 16s ease-in-out infinite alternate;
+  }
+
+  @keyframes dg-rock-floor {
+    from {
+      transform: rotateX(30deg) rotateZ(-3deg);
+    }
+    to {
+      transform: rotateX(30deg) rotateZ(3deg);
+    }
+  }
+
+  .dg-floor {
+    position: relative;
+    aspect-ratio: 100 / 60;
+    transform-style: preserve-3d;
+    border: 1px solid var(--line-2);
+    border-radius: 22px;
+    background-color: var(--surface-2);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 5% 8.333%;
+    box-shadow: inset 0 1px 0 var(--edge-light);
+  }
+
+  .dg-floor-edge {
+    position: absolute;
+    top: 100%;
+    right: 12px;
+    left: 12px;
+    height: 16px;
+    transform: rotateX(-90deg);
+    transform-origin: top;
+    border-radius: 0 0 14px 14px;
+    background: linear-gradient(var(--line-2), transparent);
+  }
+
+  .dg-floor-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .dg-zone {
+    fill: currentColor;
+    fill-opacity: 0.07;
+    stroke: currentColor;
+    stroke-opacity: 0.55;
+    stroke-width: 1.5;
+    stroke-dasharray: 5 5;
+  }
+
+  .dg-link {
+    stroke: var(--line-2);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+
+  .dg-link[data-style="trunk"] {
+    stroke: var(--c2-text);
+    stroke-width: 4;
+    stroke-opacity: 0.7;
+  }
+
+  .dg-link[data-style="dashed"] {
+    stroke-dasharray: 5 5;
+  }
+
+  .dg-link[data-style="blocked"] {
+    stroke: var(--red);
+    stroke-dasharray: 2 6;
+    stroke-opacity: 0.75;
+  }
+
+  .dg-route {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-dasharray: 6 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .dg-drop {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 3px;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .dg-zone-label {
+    position: absolute;
+    font-size: clamp(8px, 1vw, 10.5px);
+  }
+
+  .dg-link-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-solid);
+    padding: 2px 6px;
+    font-size: clamp(8px, 1vw, 10.5px);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .dg-node {
+    position: absolute;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+  }
+
+  /* A soft pool of the device's colour on the floor beneath it. */
+  .dg-node::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: -26px;
+    width: 52px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--tone) 50%, transparent),
+      transparent
+    );
+  }
+
+  /* Stands the device upright: rotates back by the floor's tilt about its own foot. */
+  .dg-node-stand {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 6px;
+    transform: translate(-50%, -100%) rotateX(-30deg);
+    transform-origin: 50% 100%;
+    animation: dg-bob 4.5s ease-in-out infinite alternate;
+    animation-delay: calc(var(--n) * -0.8s);
+  }
+
+  @keyframes dg-bob {
+    from {
+      transform: translate(-50%, -100%) rotateX(-30deg) translateY(0);
+    }
+    to {
+      transform: translate(-50%, -100%) rotateX(-30deg) translateY(-5px);
+    }
+  }
+
+  .dg-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    margin-top: clamp(22px, 4vw, 36px);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .dg-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dg-legend li::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--tone);
+    box-shadow: 0 0 10px var(--tone);
+  }
+
+  /* ---- Sequence: actors over a tilted board, messages drawn in turn ---- */
+  .dg-scene--board {
+    width: min(100%, 820px);
+    transform: rotateX(14deg) rotateY(-9deg);
+    animation: dg-rock-board 13s ease-in-out infinite alternate;
+  }
+
+  @keyframes dg-rock-board {
+    from {
+      transform: rotateX(15deg) rotateY(-9deg);
+    }
+    to {
+      transform: rotateX(11deg) rotateY(9deg);
+    }
+  }
+
+  .dg-actors {
+    position: relative;
+    height: clamp(70px, 9vw, 88px);
+    transform-style: preserve-3d;
+  }
+
+  .dg-actors li {
+    --tone: var(--c1-text);
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transform: translateX(-50%) translateZ(28px);
+  }
+
+  .dg-actors li:nth-child(even) {
+    --tone: var(--c2-text);
+  }
+
+  .dg-seq {
+    position: relative;
+    aspect-ratio: var(--seq-ratio);
+    min-height: calc(var(--rows) * 46px);
+    transform-style: preserve-3d;
+    border: 1px solid var(--line-2);
+    border-radius: 18px;
+    background: linear-gradient(var(--surface-2), var(--surface-solid));
+    box-shadow: 0 30px 50px -36px var(--c1);
+  }
+
+  .dg-seq-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .dg-lifeline {
+    stroke: var(--line-2);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 5;
+  }
+
+  .dg-seq-track {
+    stroke: currentColor;
+    stroke-width: 2;
+    opacity: 0.22;
+  }
+
+  .dg-seq-head {
+    fill: currentColor;
+    opacity: 0.4;
+  }
+
+  /* In board units, not pixels: a non-scaling stroke would break the 0–1 dash that draws it. */
+  .dg-seq-draw {
+    stroke: currentColor;
+    stroke-width: 0.6;
+    stroke-linecap: round;
+  }
+
+  .dg-seq-label {
+    position: absolute;
+    display: flex;
+    max-width: min(76%, 34ch);
+    flex-direction: column;
+    align-items: center;
+    transform: translate(-50%, calc(-100% - 5px)) translateZ(12px);
+    text-align: center;
+  }
+
+  .dg-seq-text {
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--surface-solid) 86%, transparent);
+    padding: 1px 7px;
+    font-size: clamp(10.5px, 1.35vw, 14px);
+    font-weight: 650;
+    line-height: 1.3;
+    color: var(--fg);
+  }
+
+  .dg-seq-note {
+    font-size: clamp(8px, 0.95vw, 10.5px);
+  }
+
+  /* ---- Stack: solid slabs seen from above-right ---- */
+  .dg-scene--stack {
+    --depth: clamp(56px, 9vw, 110px);
+    --gap: clamp(12px, 1.8vw, 18px);
+    display: flex;
+    width: min(80%, 560px);
+    flex-direction: column;
+    gap: var(--gap);
+    padding-block: calc(var(--depth) * 0.45) 8px;
+    transform: rotateX(-18deg) rotateY(-24deg);
+    animation: dg-rock-stack 15s ease-in-out infinite alternate;
+  }
+
+  @keyframes dg-rock-stack {
+    from {
+      transform: rotateX(-18deg) rotateY(-26deg);
+    }
+    to {
+      transform: rotateX(-14deg) rotateY(-12deg);
+    }
+  }
+
+  .dg-slab {
+    position: relative;
+    display: flex;
+    min-height: clamp(40px, 6vw, 54px);
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transform-style: preserve-3d;
+    border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
+    background: color-mix(in srgb, var(--tone) 24%, var(--surface-solid));
+    padding: 6px clamp(10px, 2vw, 18px);
+    animation: dg-slab-spread 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes dg-slab-spread {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(var(--spread) * 9px));
+    }
+  }
+
+  /* Top face, folded back from the top edge. */
+  .dg-slab::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: calc(100% + 2px);
+    height: var(--depth);
+    transform: rotateX(-90deg);
+    transform-origin: top;
+    border: 1px solid color-mix(in srgb, var(--tone) 45%, transparent);
+    background: color-mix(in srgb, var(--tone) 34%, var(--surface-solid));
+  }
+
+  /* Right face, folded back from the right edge. */
+  .dg-slab::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 100%;
+    width: var(--depth);
+    height: calc(100% + 2px);
+    transform: rotateY(90deg);
+    transform-origin: left;
+    border: 1px solid color-mix(in srgb, var(--tone) 40%, transparent);
+    background: color-mix(in srgb, var(--tone) 14%, var(--surface-solid));
+  }
+
+  .dg-slab-glow {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--tone) 40%, transparent);
+    box-shadow: 0 0 34px var(--tone);
+    opacity: 0;
+    animation: dg-slab-lit var(--travel) linear infinite;
+    animation-delay: calc(var(--order) * var(--step));
+  }
+
+  @keyframes dg-slab-lit {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    30% {
+      opacity: 0;
+    }
+  }
+
+  .dg-slab-title {
+    position: relative;
+    font-size: clamp(12px, 1.6vw, 16px);
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+
+  .dg-slab-note {
+    position: relative;
+    font-size: clamp(8px, 1vw, 10.5px);
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .dg-stack-packet {
+    position: absolute;
+    top: calc(var(--depth) * 0.45);
+    right: calc(100% + 14px);
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--c1-text);
+    padding: 4px 10px;
+    color: var(--bg);
+    white-space: nowrap;
+    box-shadow: 0 0 22px var(--c1-text);
+    animation: dg-packet-sink var(--travel) linear infinite;
+  }
+
+  .dg-stack-packet[data-direction="up"] {
+    animation-direction: reverse;
+  }
+
+  .dg-stack-packet span {
+    font-size: clamp(8px, 1vw, 10.5px);
+  }
+
+  @keyframes dg-packet-sink {
+    from {
+      top: calc(var(--depth) * 0.45);
+    }
+    to {
+      top: calc(100% - 34px);
+    }
+  }
+
+  /* ---- Blocks: raised tiles on a tilted board ---- */
+  .dg-scene--blocks {
+    display: flex;
+    width: min(100%, 880px);
+    flex-direction: column;
+    gap: clamp(10px, 1.6vw, 16px);
+    transform: rotateX(26deg);
+    border: 1px solid var(--line-2);
+    border-radius: 20px;
+    background: linear-gradient(var(--surface-2), var(--surface-solid));
+    padding: clamp(12px, 2.4vw, 22px);
+    box-shadow: 0 36px 50px -34px var(--c1);
+    animation: dg-rock-blocks 15s ease-in-out infinite alternate;
+  }
+
+  @keyframes dg-rock-blocks {
+    from {
+      transform: rotateX(26deg) rotateZ(-1.5deg);
+    }
+    to {
+      transform: rotateX(22deg) rotateZ(1.5deg);
+    }
+  }
+
+  .dg-block-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1.4vw, 14px);
+    transform-style: preserve-3d;
+  }
+
+  .dg-block-row-label {
+    width: clamp(4.5em, 9vw, 7.5em);
+    flex: none;
+    font-size: clamp(8px, 1vw, 10.5px);
+    color: var(--muted);
+  }
+
+  .dg-block-cells {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    gap: clamp(4px, 0.8vw, 8px);
+    transform-style: preserve-3d;
+  }
+
+  .dg-block {
+    --tone: var(--faint);
+    display: flex;
+    min-width: 0;
+    min-height: clamp(44px, 7vw, 70px);
+    flex: var(--span) 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: 1px solid color-mix(in srgb, var(--tone) 50%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--tone) 20%, var(--surface-solid));
+    padding: 6px 3px;
+    text-align: center;
+    box-shadow:
+      0 6px 0 color-mix(in srgb, var(--tone) 30%, var(--surface-2)),
+      0 14px 18px -12px var(--tone);
+    animation: dg-lift var(--cycle) ease-in-out infinite;
+    animation-delay: calc(var(--k) * var(--wave));
+  }
+
+  .dg-block[data-wire] {
+    border-color: rgb(0 0 0 / 0.2);
+    background: var(--fill);
+    box-shadow:
+      0 6px 0 rgb(0 0 0 / 0.25),
+      0 14px 18px -12px rgb(0 0 0 / 0.5);
+  }
+
+  @keyframes dg-lift {
+    0%,
+    14%,
+    100% {
+      transform: translateZ(0);
+    }
+    6% {
+      transform: translateZ(18px) translateY(-5px);
+    }
+  }
+
+  .dg-block-label {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(9.5px, 1.3vw, 14px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--fg);
+  }
+
+  .dg-block-sub {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(7.5px, 0.95vw, 10.5px);
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  .dg-block[data-wire] .dg-block-label,
+  .dg-block[data-wire] .dg-block-sub {
+    border-radius: 4px;
+    background: rgb(255 255 255 / 0.88);
+    padding: 0 4px;
+    color: #14161c;
+  }
+}
+
+/* ---- Book covers ---- */
+@layer components {
+  .book3d {
+    --w: clamp(150px, 15vw, 196px);
+    --d: calc(var(--w) * 0.14);
+    position: relative;
+    width: var(--w);
+    perspective: 1100px;
+    padding-block: 6px 18px;
+  }
+
+  .book3d[data-size="hero"] {
+    --w: clamp(190px, 24vw, 300px);
+  }
+
+  /* A soft shadow on the "table" under the book. */
+  .book3d::after {
+    content: "";
+    position: absolute;
+    right: 4%;
+    bottom: 2px;
+    left: 4%;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.32), transparent);
+    filter: blur(2px);
+    transition: transform 700ms var(--easing-entrance);
+  }
+
+  .book3d-body {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    transform: rotateY(-30deg) rotateX(6deg);
+    transform-style: preserve-3d;
+    transition: transform 700ms var(--easing-entrance);
+    animation: book-float 6s ease-in-out infinite alternate;
+    animation-delay: calc(var(--layer) * -0.9s);
+  }
+
+  @keyframes book-float {
+    to {
+      translate: 0 -6px;
+    }
+  }
+
+  .group:hover .book3d-body,
+  .group:focus-within .book3d-body,
+  .book3d[data-size="hero"] .book3d-body {
+    transform: rotateY(-12deg) rotateX(3deg);
+  }
+
+  .group:hover .book3d::after {
+    transform: scaleX(0.9);
+  }
+
+  .book3d-front,
+  .book3d-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 3px 12px 12px 3px;
+  }
+
+  .book3d-front {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    transform: translateZ(calc(var(--d) / 2));
+    padding: 11% 10%;
+    color: var(--on-fill);
+    text-align: left;
+    background: var(--feature-bg);
+    box-shadow:
+      inset 5px 0 10px -4px rgb(0 0 0 / 0.45),
+      inset 0 1px 0 rgb(255 255 255 / 0.25);
+  }
+
+  /* A sheen that slides across the cover on hover. */
+  .book3d-front::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgb(255 255 255 / 0.22) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%);
+    transition: transform 900ms var(--easing-entrance);
+  }
+
+  .group:hover .book3d-front::after {
+    transform: translateX(120%);
+  }
+
+  .book3d-back {
+    transform: translateZ(calc(var(--d) / -2));
+    background: color-mix(in srgb, var(--fill-1) 70%, #000);
+  }
+
+  .book3d-spine {
+    position: absolute;
+    top: 0;
+    left: calc(var(--d) / -2);
+    display: grid;
+    width: var(--d);
+    height: 100%;
+    place-items: center;
+    transform: rotateY(-90deg);
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--fill-1) 60%, #000), var(--fill-1));
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .book3d-spine span {
+    font-size: 0.55rem;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+  }
+
+  .book3d-pages {
+    position: absolute;
+    top: 2.5%;
+    left: calc(100% - var(--d) / 2 - 3px);
+    width: var(--d);
+    height: 95%;
+    transform: rotateY(90deg);
+    background: repeating-linear-gradient(90deg, #f4f1e8 0 2px, #d9d4c6 2px 3px);
+  }
+
+  .book3d-numeral {
+    font-family: var(--ff-display);
+    font-size: calc(var(--w) * 0.26);
+    font-weight: 800;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    color: color-mix(in srgb, var(--on-fill) 92%, transparent);
+  }
+
+  .book3d-title {
+    font-family: var(--ff-display);
+    font-size: calc(var(--w) * 0.105);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .book3d-meter {
+    display: flex;
+    gap: 3px;
+  }
+
+  .book3d-meter li {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--on-fill) 25%, transparent);
+  }
+
+  .book3d-meter li[data-on] {
+    background: var(--on-fill);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--on-fill) 60%, transparent);
+  }
+
+  /* ---- Chapter reader ---- */
+  .reader-toc a[aria-current="page"] {
+    border-color: var(--c1-text);
+    color: var(--fg);
+  }
+
+  .ebook-print-chapter {
+    break-before: page;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book3d-body {
+    animation: none;
+  }
+}
+
+@media print {
+  .dg-frame {
+    break-inside: avoid;
+  }
+}
+
+/* Reduced motion and still copies (print, PDF): no movement, every route and arrow in full. */
+@media (prefers-reduced-motion: reduce) {
+  .dg-motion {
+    display: none;
+  }
+
+  .dg-static {
+    display: inline;
+  }
+
+  .dg-seq-track,
+  .dg-seq-head {
+    opacity: 1;
+  }
+
+  .dg-scene,
+  .dg-node-stand,
+  .dg-slab,
+  .dg-block,
+  .dg-stack-packet,
+  .dg-slab-glow {
+    animation: none !important;
+  }
+}
+
+[data-dg-still] .dg-motion {
+  display: none;
+}
+
+[data-dg-still] .dg-static {
+  display: inline;
+}
+
+[data-dg-still] :is(.dg-seq-track, .dg-seq-head) {
+  opacity: 1;
+}
+
+[data-dg-still]
+  :is(.dg-scene, .dg-node-stand, .dg-slab, .dg-block, .dg-stack-packet, .dg-slab-glow) {
+  animation: none !important;
+}
+
+[data-dg-still] .dg-stack-packet {
+  display: none;
+}

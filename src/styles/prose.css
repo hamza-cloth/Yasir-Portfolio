@@ -130,7 +130,7 @@
     overflow-x: auto;
     padding: 16px 18px;
     font-family: var(--ff-mono);
-    font-size: 0.86rem;
+    font-size: max(0.875rem, 0.86em);
     line-height: 1.7;
     text-shadow: none;
   }

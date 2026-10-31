@@ -1,28 +1,35 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { INLINE_NAV_QUERY } from "@/lib/site-nav";
 
 import { CommandButton } from "./CommandButton";
 import { Logo } from "./Logo";
+import { LookButton } from "./LookButton";
 import { MenuButton } from "./MenuButton";
 import { MobileMenu } from "./MobileMenu";
 import { NavPills } from "./NavPills";
-import { SkinButton } from "./SkinButton";
 
 const MOBILE_MENU_ID = "mobile-menu";
 
-export function Header() {
+// announcement: the admin's announcement bar, rendered on the server and shown above the nav.
+export function Header({ announcement }: { announcement?: ReactNode }) {
   const pathname = usePathname();
   const { hidden, scrolled } = useHideOnScroll();
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  // Widening the window to the inline-nav breakpoint closes the menu (and releases its scroll
+  // lock); adjusted during render, as derived state.
+  const inlineNav = useMediaQuery(INLINE_NAV_QUERY);
+  if (inlineNav && menuOpen) setMenuOpen(false);
 
   return (
     <>
@@ -33,23 +40,27 @@ export function Header() {
         data-menu-open={menuOpen}
         className="site-header fixed inset-x-0 top-0 z-(--z-header) pt-[env(safe-area-inset-top)]"
       >
-        <Container className="flex h-(--header-h) items-center gap-3">
-          <Logo />
-          <NavPills pathname={pathname} className="mx-auto hidden lg:block" />
-          <div className="ml-auto flex min-w-0 items-center gap-2 lg:ml-0">
-            <CommandButton />
-            <SkinButton />
-            <Button href="/contact" variant="primary" size="sm" className="max-lg:hidden">
-              Let’s talk
-              <Icon name="arrow-up-right" size={15} />
-            </Button>
-            <MenuButton
-              ref={menuButtonRef}
-              open={menuOpen}
-              onToggle={() => setMenuOpen((open) => !open)}
-              controls={MOBILE_MENU_ID}
-              className="lg:hidden"
-            />
+        {announcement}
+        <Container className="flex h-[calc(var(--header-h)-var(--announce-h))] items-center">
+          <div className="flex h-16 w-full items-center gap-3">
+            {/* Full logo where there is room: from 640px, except beside the inline nav until 1320px. */}
+            <Logo wordmarkClassName="max-[40rem]:hidden laptop:max-xl:hidden" />
+            <NavPills pathname={pathname} className="mx-auto hidden laptop:block" />
+            <div className="ml-auto flex min-w-0 items-center gap-1.5 laptop:ml-0">
+              <CommandButton className="max-sm:hidden" />
+              <LookButton />
+              <Button href="/hire" variant="accent" size="sm" className="max-laptop:hidden">
+                Hire me
+                <Icon name="arrow-up-right" size={15} />
+              </Button>
+              <MenuButton
+                ref={menuButtonRef}
+                open={menuOpen}
+                onToggle={() => setMenuOpen((open) => !open)}
+                controls={MOBILE_MENU_ID}
+                className="laptop:hidden"
+              />
+            </div>
           </div>
         </Container>
       </header>

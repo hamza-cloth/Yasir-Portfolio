@@ -13,6 +13,7 @@ export type SiteSettingsData = {
   principles: Principle[];
   nowItems: string[];
   nowUpdatedAt: Date | null;
+  openToWork: boolean;
 };
 
 // Used until the database has a SiteSettings row, and by the seed script.
@@ -55,4 +56,5 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
     "BCA at Maharishi University of Information Technology",
   ],
   nowUpdatedAt: new Date("2026-10-25T00:00:00+05:30"),
+  openToWork: true,
 };

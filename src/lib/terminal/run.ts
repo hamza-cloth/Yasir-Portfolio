@@ -1,6 +1,4 @@
-import { SKINS } from "@/lib/skin";
-
-import { COMMANDS, PAGE_NAMES } from "./commands";
+import { COMMANDS, PAGE_NAMES, THEME_NAMES } from "./commands";
 import type { TerminalCommand, TerminalContext, TerminalResult } from "./types";
 
 export function normalizeInput(input: string): string {
@@ -47,7 +45,7 @@ export function runCommand(input: string, context: TerminalContext): TerminalRes
 
 const ARGUMENTS: Record<string, readonly string[]> = {
   cd: PAGE_NAMES,
-  theme: SKINS,
+  theme: THEME_NAMES,
 };
 
 // Returns the completed input, or null when there is nothing unambiguous to complete.

@@ -1,0 +1,281 @@
+/* Hire me: the build diagram, service cards, process timeline, FAQ and the WhatsApp button. */
+
+@layer components {
+  /* ---- Build diagram ---- */
+  .build {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+
+  /* The box keeps its shape before and after the 3D scene arrives, so nothing shifts. */
+  .build-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-height: 560px;
+  }
+
+  @media (max-width: 63.99rem) {
+    .build-box {
+      aspect-ratio: auto;
+      height: 340px;
+    }
+  }
+
+  .build-glow {
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--glow), transparent 72%);
+  }
+
+  .build-ring {
+    stroke: var(--c1);
+    stroke-opacity: 0.22;
+    stroke-width: 0.35;
+    stroke-dasharray: 1.2 1.6;
+  }
+
+  .build-spoke {
+    stroke: var(--c1);
+    stroke-opacity: 0.45;
+    stroke-width: 0.3;
+  }
+
+  .build-core polygon,
+  .build-core path {
+    fill: none;
+    stroke: var(--c1);
+    stroke-width: 0.45;
+    stroke-linejoin: round;
+  }
+
+  .build-core polygon {
+    fill: var(--surface-solid);
+  }
+
+  .build-node {
+    fill: var(--surface-2);
+    stroke: var(--c1);
+    stroke-width: 0.45;
+  }
+
+  .build-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Each label sits just below its node; the 3D scene moves it every frame. */
+  .build-label {
+    position: absolute;
+    transform: translate(-50%, 14px);
+    pointer-events: auto;
+  }
+
+  .build-label button {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface-solid) 88%, transparent);
+    padding: 4px 11px;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: var(--fg);
+    transition:
+      border-color 200ms var(--easing-entrance),
+      color 200ms var(--easing-entrance);
+  }
+
+  .build-label[data-active] button {
+    border-color: var(--c1);
+    color: var(--c1-text);
+  }
+
+  .build-tooltip {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    z-index: 3;
+    width: max-content;
+    max-width: 220px;
+    transform: translate(-50%, -4px);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    background: var(--surface-solid);
+    padding: 8px 11px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--fg);
+    box-shadow: var(--shadow-lift);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 200ms var(--easing-entrance),
+      transform 200ms var(--easing-entrance),
+      visibility 0s linear 200ms;
+  }
+
+  .build-label[data-active] .build-tooltip {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 200ms var(--easing-entrance),
+      transform 200ms var(--easing-entrance);
+  }
+
+  @media (max-width: 44.99rem) {
+    .build-label button {
+      min-height: 28px;
+      padding: 3px 8px;
+      font-size: 0.66rem;
+    }
+  }
+
+  /* ---- Service cards: lift, gold edge, a slight 3D tilt on the icon ---- */
+  .hire-card {
+    transition:
+      transform 250ms var(--easing-entrance),
+      border-color 250ms var(--easing-entrance),
+      box-shadow 250ms var(--easing-entrance);
+  }
+
+  .hire-card:hover,
+  .hire-card:focus-within {
+    transform: translateY(-4px);
+    border-color: var(--line-hover);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .hire-icon {
+    transition: transform 250ms var(--easing-entrance);
+  }
+
+  .hire-card:hover .hire-icon {
+    transform: perspective(300px) rotateX(8deg) rotateY(-8deg);
+  }
+
+  /* ---- Process: a connector that draws in gold ---- */
+  .hire-steps {
+    position: relative;
+    display: grid;
+    gap: 28px;
+    padding-left: 28px;
+  }
+
+  .hire-steps::before,
+  .hire-steps::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 6px;
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  .hire-steps::before {
+    background: var(--line);
+  }
+
+  .hire-steps::after {
+    background: var(--c1);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 1400ms var(--easing-reveal) 200ms;
+  }
+
+  .reveal[data-reveal="shown"] .hire-steps::after,
+  :not(.reveal) > .hire-steps::after {
+    transform: none;
+  }
+
+  .hire-step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hire-step-dot {
+    position: absolute;
+    top: 12px;
+    left: -27px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--c1);
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  @media (min-width: 60rem) {
+    .hire-steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding-top: 30px;
+      padding-left: 0;
+    }
+
+    .hire-steps::before,
+    .hire-steps::after {
+      top: 5px;
+      right: 0;
+      bottom: auto;
+      left: 0;
+      width: auto;
+      height: 2px;
+    }
+
+    .hire-steps::after {
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    .hire-step-dot {
+      top: -31px;
+      left: 0;
+    }
+  }
+
+  /* ---- FAQ: the panel opens by animating a grid row from 0fr to 1fr ---- */
+  .faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms var(--easing-entrance);
+  }
+
+  .faq-panel[data-open="true"] {
+    grid-template-rows: 1fr;
+  }
+
+  /* ---- WhatsApp: above the back-to-top button, clear of browser bars ---- */
+  .whatsapp-float {
+    position: fixed;
+    right: max(20px, env(safe-area-inset-right));
+    bottom: calc(max(20px, env(safe-area-inset-bottom)) + 44px + 12px);
+    z-index: var(--z-header);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hire-steps::after {
+    transition: none;
+    transform: none !important;
+  }
+
+  .faq-panel,
+  .hire-card,
+  .hire-icon {
+    transition: none;
+  }
+
+  .hire-card:hover .hire-icon {
+    transform: none;
+  }
+}

@@ -5,4 +5,7 @@ export const CACHE_TAGS = {
   skills: "skills",
   experience: "experience",
   credentials: "credentials",
+  config: "site-config",
+  testimonials: "testimonials",
+  redirects: "redirects",
 } as const;

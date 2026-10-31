@@ -1,5 +1,5 @@
+import type { Look } from "@/lib/look";
 import type { OsiLayerGroup } from "@/lib/osi";
-import type { Skin } from "@/lib/skin";
 
 export type TerminalLineKind = "input" | "output" | "accent" | "error";
 
@@ -11,7 +11,7 @@ export type TerminalLine = {
 export type TerminalEffect =
   | { type: "clear" }
   | { type: "navigate"; href: string }
-  | { type: "theme"; skin: Skin }
+  | { type: "theme"; look: Look }
   | { type: "exit" };
 
 export type TerminalResult = {

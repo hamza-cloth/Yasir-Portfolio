@@ -9,11 +9,9 @@ import type { OsiLayerGroup } from "@/lib/osi";
 import { AboutTile } from "./tiles/AboutTile";
 import { BuildingTile } from "./tiles/BuildingTile";
 import { CcnaTile } from "./tiles/CcnaTile";
-import { ContactTile } from "./tiles/ContactTile";
-import { GlobeTile } from "./tiles/GlobeTile";
+import { ClockTile } from "./tiles/ClockTile";
 import { LayersTile } from "./tiles/LayersTile";
 import { ShortcutsTile } from "./tiles/ShortcutsTile";
-import { SupportTile } from "./tiles/SupportTile";
 
 type GlanceGridProps = {
   settings: SiteSettingsData;
@@ -23,15 +21,30 @@ type GlanceGridProps = {
   layers: OsiLayerGroup[];
 };
 
-// 12 columns from 1120px, 6 from 720px (globe and contact full width), 12 below.
+// 12 columns from 1120px: About fills the left of the first two rows; then skills and shortcuts.
 const SPAN = {
-  globe: "col-span-12 lg:col-span-7 lg:row-span-2",
-  half: "col-span-12 sm:col-span-6 lg:col-span-5",
-  third: "col-span-12 sm:col-span-6 lg:col-span-4",
-  contact: "col-span-12 lg:col-span-8",
+  about: "col-span-12 lg:col-span-5 lg:row-span-2",
+  ccna: "col-span-12 sm:col-span-6 lg:col-span-4",
+  clock: "col-span-12 sm:col-span-6 lg:col-span-3",
+  building: "col-span-12 lg:col-span-7",
+  layers: "col-span-12 lg:col-span-8",
+  shortcuts: "col-span-12 lg:col-span-4",
 };
 
 const CCNA_TOPICS = new Set(["VLANs", "802.1Q trunking", "STP", "OSPF", "ACLs", "NAT/PAT"]);
+// The everyday toolbox shown on the About tile, in this order, where the skills list has them.
+const TOOLBOX = [
+  "React",
+  "Next.js",
+  "NestJS",
+  "Node.js",
+  "DNS",
+  "DHCP",
+  "Subnetting / VLSM",
+  "OSPF",
+  "VLANs",
+  "Hardware troubleshooting",
+];
 
 export function GlanceGrid({
   settings,
@@ -47,11 +60,13 @@ export function GlanceGrid({
     ...experience.map((item) => `${item.role} at ${item.company}`),
     ...(degree ? [`${degree.title}, ${degree.startYear}–${degree.endYear}`] : []),
   ];
-  const topics = layers.flatMap((group) => group.skills).filter((skill) => CCNA_TOPICS.has(skill));
+  const skills = new Set(layers.flatMap((group) => group.skills));
+  const topics = [...skills].filter((skill) => CCNA_TOPICS.has(skill));
+  const toolbox = TOOLBOX.filter((skill) => skills.has(skill));
 
   return (
-    <section aria-labelledby="glance-title" className="py-24">
-      <Container className="flex flex-col gap-12">
+    <section aria-labelledby="glance-title" className="section-y">
+      <Container className="flex flex-col gap-10">
         <SectionHead
           eyebrow="At a glance"
           titleId="glance-title"
@@ -61,28 +76,24 @@ export function GlanceGrid({
             </>
           }
         />
-        <Reveal>
-          <div className="grid grid-cols-12 gap-4">
-            <GlobeTile className={SPAN.globe} />
+        <Reveal className="reveal-group">
+          <div className="stagger grid grid-cols-12 gap-4">
             <AboutTile
               headline={headline}
               location={settings.location}
               facts={facts}
-              className={SPAN.half}
+              toolbox={toolbox}
+              className={SPAN.about}
             />
-            <BuildingTile projects={projects} className={SPAN.half} />
-            {ccna ? <CcnaTile issuer={ccna.issuer} topics={topics} className={SPAN.third} /> : null}
-            <LayersTile layers={layers} className={SPAN.third} />
-            <ShortcutsTile className={SPAN.third} />
-            <SupportTile
-              companies={experience.map((item) => item.company)}
-              className={SPAN.third}
-            />
-            <ContactTile
-              email={settings.email}
+            {ccna ? <CcnaTile issuer={ccna.issuer} topics={topics} className={SPAN.ccna} /> : null}
+            <ClockTile
+              location={settings.location}
               availability={settings.availability}
-              className={SPAN.contact}
+              className={SPAN.clock}
             />
+            <BuildingTile projects={projects} className={SPAN.building} />
+            <LayersTile layers={layers} className={SPAN.layers} />
+            <ShortcutsTile className={SPAN.shortcuts} />
           </div>
         </Reveal>
       </Container>

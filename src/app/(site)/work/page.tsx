@@ -4,33 +4,15 @@ import { ProjectMockup } from "@/components/mockups/ProjectMockup";
 import { PageHero } from "@/components/page/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Highlight } from "@/components/ui/Highlight";
-import { Steps, type Step } from "@/components/ui/Steps";
+import { Steps } from "@/components/ui/Steps";
 import { WorkResults } from "@/components/work/WorkResults";
+import { PROCESS } from "@/lib/content/process";
 import type { ProjectSummary } from "@/lib/content/types";
 import { getProjectSummaries } from "@/lib/data/projects";
 import { pageMetadata } from "@/lib/seo";
 import { parseWorkFilter } from "@/lib/work-filters";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-const PROCESS: Step[] = [
-  {
-    title: "Reproduce the problem",
-    body: "Start from what people actually do: the desk, the ticket, the shift. Nothing gets designed before the problem is clear.",
-  },
-  {
-    title: "Model it",
-    body: "Tenants, shifts, payments, subnets: get the shape of the data and the network right before the screens.",
-  },
-  {
-    title: "Build and verify",
-    body: "Ship in small pieces and check each one, the way a config change ends with a show command.",
-  },
-  {
-    title: "Hand over",
-    body: "Write down how it works and keep supporting it. Support is where the next version starts.",
-  },
-];
 
 export async function generateMetadata() {
   return pageMetadata({

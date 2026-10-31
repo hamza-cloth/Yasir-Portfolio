@@ -1,196 +1,413 @@
+/* Design tokens. Structure (type scale, spacing, z-index) lives on :root; each of the four
+   looks is a colour set on [data-look]. Selectors are not tied to :root, so the
+   admin can preview any look inside a container that carries data-look. */
+
+/* Type and shape shared by every look. */
 :root {
-  color-scheme: dark;
+  --ff-display: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-body: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-serif: var(--ff-display);
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+  --display-leading: 1.05;
+  /* The hero name. Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
+  --fs-hero-split: clamp(3rem, min(5.8vw, 10.5svh), 5.6rem);
+  --fs-hero-stack: clamp(2.5rem, 9vw, 4rem);
+  --r-pill: 999px;
+  --r-field: 12px;
+  --r-chip: 10px;
+}
 
-  --bg: #07080b;
-  --bg-2: #0b0c10;
-  --surface: rgba(18, 19, 25, 0.66);
-  --surface-solid: #0f1015;
-  --surface-2: #16171e;
-  --fg: #f3f2ee;
-  --muted: #9c9da6;
-  --faint: #62636c;
-  --line: rgba(255, 255, 255, 0.07);
-  --line-2: rgba(255, 255, 255, 0.14);
-  --c1: #a5a6ff;
-  --c1-ink: #0b0b1d;
-  /* Accent for small text; only Paper needs a darker value to reach 4.5:1. */
-  --c1-text: var(--c1);
-  --amber: #e7c38d;
-  --amber-ink: #1c1206;
-  --highlight: rgba(165, 166, 255, 0.22);
-  --ok: #5ee0a0;
-  --red: #ff7a85;
-  --glow: rgba(140, 142, 255, 0.16);
-  --curtain: #07080b;
-  --curtain-fg: #f3f2ee;
-  --curtain-muted: #9c9da6;
-  --text-glow: none;
+:root {
+  --ff-mono: var(--font-jetbrains-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --fs-h1: clamp(2.25rem, 5vw + 1rem, 5rem);
+  --fs-h2: clamp(2rem, 3.5vw, 3rem);
+  --fs-body: 1.0625rem;
+  --fs-label: 0.75rem;
 
-  /* Depth: a hairline top highlight plus a long soft drop. */
-  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 60px -24px rgba(0, 0, 0, 0.6);
-  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 40px 80px -30px rgba(0, 0, 0, 0.75);
-  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%);
-  --accent-gradient: linear-gradient(100deg, #c9c4ff 0%, #a5a6ff 45%, #e7c38d 100%);
-  --page-wash:
-    radial-gradient(60rem 36rem at 78% -8%, rgba(120, 118, 255, 0.11), transparent 70%),
-    radial-gradient(44rem 28rem at 8% 2%, rgba(231, 195, 141, 0.05), transparent 70%);
+  /* 20px on phones, growing to 48px; the content column tops out at 1200px. */
+  --gutter: clamp(20px, 5vw, 48px);
+  --container: 1200px;
+  /* Vertical rhythm between major sections. */
+  --section-y: clamp(72px, 10vw, 128px);
+  /* The header's full height; the admin's announcement bar (40px) adds to it when shown. */
+  --announce-h: 0px;
+  --header-h: calc(88px + var(--announce-h));
+
+  --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-reveal: cubic-bezier(0.22, 1, 0.36, 1);
+  --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* One stacking scale for the whole site: header < dropdowns < mobile menu < dialogs
+     (command menu, terminal, confirms) < page curtain < toasts < cursor. */
+  --z-base: 0;
+  --z-header: 50;
+  --z-dropdown: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-curtain: 350;
+  --z-toast: 400;
+  --z-cursor: 500;
+
+  /* The résumé sheet is always white paper, whatever the look. */
+  --sheet-bg: #ffffff;
+  --sheet-fg: #0e1220;
+  --sheet-muted: #50566a;
+  --sheet-line: #e2e5ec;
+  --sheet-accent: #2b59ff;
 
   --shiki-foreground: var(--fg);
   --shiki-background: var(--bg-2);
-  --shiki-token-keyword: var(--c1);
-  --shiki-token-parameter: #f0cf9c;
-  --shiki-token-function: #b9d4ff;
-  --shiki-token-constant: var(--ok);
-  --shiki-token-string: #f0cf9c;
-  --shiki-token-string-expression: #f0cf9c;
   --shiki-token-comment: var(--muted);
   --shiki-token-punctuation: var(--muted);
   --shiki-token-link: var(--c1);
+}
 
-  /* The résumé sheet is always white paper, whatever the skin. */
-  --sheet-bg: #ffffff;
-  --sheet-fg: #0d0e13;
-  --sheet-muted: #50525c;
-  --sheet-line: #e2e2e8;
-  --sheet-accent: #4b45c6;
+/* The admin's announcement bar is on the page: make room for it everywhere. */
+:root:has(.announce-bar) {
+  --announce-h: 40px;
+}
 
-  --ff-display: var(--font-geist), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-body: var(--font-geist), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ff-mono: var(--font-geist-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --ff-serif: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
-  --display-weight: 500;
-  --display-tracking: -0.04em;
-  --display-leading: 0.92;
-
-  --fs-hero-split: clamp(3rem, 8.4vw, 8.5rem);
-  --fs-hero-stack: clamp(3rem, 15vw, 6.5rem);
-  --fs-h1: clamp(2.6rem, 6.4vw, 5.75rem);
-  --fs-h2: clamp(2rem, 4.2vw, 3.5rem);
-  --fs-body: 1.0625rem;
-  --fs-label: 0.72rem;
-
-  --r-pill: 999px;
+/* One design for every look: the same corners, button fill, feature cards, card sheen and page
+   wash. A look only supplies colours (above and below); these recipes turn them into surfaces. */
+:root,
+[data-look] {
   --r-panel: 28px;
-  --r-tile: 22px;
-  --r-card: 18px;
-  --r-field: 12px;
-  --r-chip: 10px;
-
-  --gutter: clamp(20px, 4vw, 48px);
-  --header-h: 76px;
-
-  --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
-  --easing-wipe: cubic-bezier(0.76, 0, 0.24, 1);
-
-  --z-preview: 60;
-  --z-mobile-menu: 75;
-  --z-header: 80;
-  --z-terminal: 115;
-  --z-command: 120;
-  --z-cursor: 140;
-  --z-scanlines: 145;
-  --z-curtain: 150;
-}
-
-:root[data-skin="paper"] {
-  color-scheme: light;
-
-  --bg: #f6f5f1;
-  --bg-2: #efede7;
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-solid: #ffffff;
-  --surface-2: #f3f2ed;
-  --fg: #111216;
-  --muted: #5b5d66;
-  --faint: #8a8c95;
-  --line: rgba(17, 18, 22, 0.08);
-  --line-2: rgba(17, 18, 22, 0.16);
-  --c1: #4f49d6;
-  --c1-ink: #ffffff;
-  --c1-text: #463fc4;
-  --amber: #b07a2a;
-  --amber-ink: #ffffff;
-  --highlight: rgba(79, 73, 214, 0.16);
-  --ok: #138a52;
-  --red: #c93545;
-  --glow: rgba(79, 73, 214, 0.1);
-  --curtain: #111216;
-  --curtain-fg: #f6f5f1;
-  --curtain-muted: #a3a4ab;
-
-  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --shadow-soft: 0 1px 2px rgba(17, 18, 22, 0.05), 0 24px 50px -28px rgba(17, 18, 22, 0.18);
-  --shadow-lift: 0 2px 4px rgba(17, 18, 22, 0.06), 0 40px 70px -34px rgba(17, 18, 22, 0.28);
-  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 42%);
-  --accent-gradient: linear-gradient(100deg, #2b2795 0%, #4f49d6 50%, #b07a2a 100%);
+  --r-tile: 24px;
+  --r-card: 24px;
+  --r-button: 12px;
+  --accent-fill: linear-gradient(110deg, var(--fill-1), var(--fill-2));
+  --feature-bg: linear-gradient(125deg, var(--fill-1), var(--fill-2));
+  --accent-gradient: linear-gradient(100deg, var(--c1-text), var(--c2-text));
+  /* Card borders on hover: the accent at half strength (gold on Midnight Ink). */
+  --line-hover: color-mix(in srgb, var(--c1) 50%, transparent);
+  --card-sheen: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--c1) 5%, transparent),
+    transparent 40%
+  );
   --page-wash:
-    radial-gradient(60rem 36rem at 78% -8%, rgba(79, 73, 214, 0.08), transparent 70%),
-    radial-gradient(44rem 28rem at 8% 2%, rgba(176, 122, 42, 0.07), transparent 70%);
-
-  --shiki-token-keyword: #463fc4;
-  --shiki-token-parameter: #8a5200;
-  --shiki-token-function: #1d4ed8;
-  --shiki-token-constant: #138a52;
-  --shiki-token-string: #8a5200;
-  --shiki-token-string-expression: #8a5200;
+    radial-gradient(56rem 34rem at 88% 0%, var(--wash-1), transparent 70%),
+    radial-gradient(40rem 28rem at 0% 12%, var(--wash-2), transparent 70%);
 }
 
-:root[data-skin="terminal"] {
+/* ---- Midnight Ink: the brand. Ink surfaces, ivory text, Signature Gold used sparingly. The
+   default look, and what the page shows before any script runs. ---- */
+:root,
+[data-look="midnight-ink"] {
   color-scheme: dark;
 
-  --bg: #010401;
-  --bg-2: #021006;
-  --surface: rgba(3, 16, 6, 0.82);
-  --surface-solid: #020b04;
-  --surface-2: #041508;
-  --fg: #39ff7a;
-  --muted: #22b456;
-  --faint: #187a3c;
-  --line: rgba(57, 255, 122, 0.18);
-  --line-2: rgba(57, 255, 122, 0.34);
-  --c1: #39ff7a;
-  --c1-ink: #010401;
-  --c1-text: #39ff7a;
-  --amber: #ffb000;
-  --amber-ink: #170d00;
-  --highlight: rgba(255, 176, 0, 0.3);
-  --ok: #39ff7a;
-  --red: #ff5c6c;
-  --glow: rgba(57, 255, 122, 0.26);
-  --curtain: #010401;
-  --curtain-fg: #39ff7a;
-  --curtain-muted: #22b456;
-  --text-glow: 0 0 6px rgba(57, 255, 122, 0.45);
+  /* Brand palette, named once; the look's roles below are drawn from it. */
+  --ink: #0b0d12;
+  --ink-2: #12151c;
+  --ink-3: #1a1e27;
+  --ivory: #f4f1ea;
+  --gold: #c9a45c;
+  --gold-soft: #e3c687;
+  --gold-deep: #7a5c24;
 
-  --edge-light: none;
-  --shadow-soft: none;
-  --shadow-lift: none;
-  --card-sheen: none;
-  --accent-gradient: linear-gradient(90deg, #39ff7a, #39ff7a);
-  --page-wash: none;
+  --bg: #0b0d12;
+  --bg-2: #0e1016;
+  --surface: rgba(18, 21, 28, 0.8);
+  --surface-solid: #12151c;
+  --surface-2: #1a1e27;
+  --fg: #f4f1ea;
+  --muted: #8b93a7;
+  --faint: #8a8fa0;
+  --line: #2a2f3b;
+  --line-2: #3a4050;
+  --c1: #c9a45c;
+  --c1-ink: #0b0d12;
+  --c1-text: #c9a45c;
+  --c1-soft: #2a2416;
+  --amber: #e3c687;
+  --amber-ink: #1a1408;
+  --highlight: rgba(201, 164, 92, 0.18);
+  --ok: #5fcf9a;
+  --red: #f07a7a;
+  --glow: rgba(201, 164, 92, 0.16);
+  --curtain: #0b0d12;
+  --curtain-fg: #f4f1ea;
+  --curtain-muted: #8b93a7;
+  --c2: #e3c687;
+  --c2-text: #e3c687;
+  --glow-2: rgba(227, 198, 135, 0.1);
+  /* Buttons and feature cards: solid gold with ink text. */
+  --on-fill: #0b0d12;
+  --fill-1: #c9a45c;
+  --fill-2: #d8b673;
+  --wash-1: rgba(201, 164, 92, 0.08);
+  --wash-2: rgba(244, 241, 234, 0.03);
 
-  --shiki-token-keyword: #39ff7a;
-  --shiki-token-parameter: #ffb000;
-  --shiki-token-function: #b6ffcc;
-  --shiki-token-constant: #ffb000;
-  --shiki-token-string: #ffb000;
-  --shiki-token-string-expression: #ffb000;
+  --tint-blue: #161b26;
+  --tint-blue-ink: #b9c4dc;
+  --tint-mint: #13201b;
+  --tint-mint-ink: #8fdcb8;
+  --tint-peach: #241b12;
+  --tint-peach-ink: #e9b98a;
+  --tint-lilac: #1c1a26;
+  --tint-lilac-ink: #c7bde6;
+  --tint-butter: #242014;
+  --tint-butter-ink: #e3c687;
 
-  --ff-display: var(--font-vt323), ui-monospace, monospace;
-  --ff-body: var(--font-geist-mono), ui-monospace, monospace;
-  --ff-serif: var(--font-vt323), ui-monospace, monospace;
-  --display-weight: 400;
-  --display-tracking: 0;
-  --display-leading: 0.85;
+  --edge-light: inset 0 1px 0 rgba(244, 241, 234, 0.05);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5), 0 20px 50px -24px rgba(0, 0, 0, 0.8);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.5), 0 36px 70px -30px rgba(0, 0, 0, 0.85);
+  --dot-grid: rgba(244, 241, 234, 0.035);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%23c9a45c' stroke-width='3.2' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E");
 
-  --fs-hero-split: clamp(3.6rem, 13vw, 13rem);
-  --fs-hero-stack: clamp(3.4rem, 22vw, 10rem);
+  --shiki-token-keyword: #e3c687;
+  --shiki-token-parameter: #e9b98a;
+  --shiki-token-function: #c7bde6;
+  --shiki-token-constant: #8fdcb8;
+  --shiki-token-string: #e9b98a;
+  --shiki-token-string-expression: #e9b98a;
+}
 
-  --r-pill: 0;
-  --r-panel: 0;
-  --r-tile: 0;
-  --r-card: 0;
-  --r-field: 0;
-  --r-chip: 0;
+/* ---- Porcelain: light, white cards, royal blue. ---- */
+[data-look="porcelain"] {
+  color-scheme: light;
+
+  --bg: #f5f6f8;
+  --bg-2: #eceef2;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-solid: #ffffff;
+  --surface-2: #f3f4f7;
+  --fg: #0e1220;
+  --muted: #5d6475;
+  --faint: #6b7180;
+  --line: rgba(14, 18, 32, 0.07);
+  --line-2: rgba(14, 18, 32, 0.13);
+  --c1: #2b59ff;
+  --c1-ink: #ffffff;
+  --c1-text: #2450f0;
+  --c1-soft: #e8eeff;
+  --amber: #ff8a3d;
+  --amber-ink: #1c1206;
+  --highlight: rgba(43, 89, 255, 0.14);
+  --ok: #0b7a43;
+  --red: #c62f35;
+  --glow: rgba(43, 89, 255, 0.16);
+  --curtain: #0e1220;
+  --curtain-fg: #f5f6f8;
+  --curtain-muted: #a3a8b5;
+  --c2: #7c4dff;
+  --c2-text: #6a3fd1;
+  --glow-2: rgba(124, 77, 255, 0.14);
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
+  --fill-1: #2b59ff;
+  --fill-2: #6d3cf5;
+  --wash-1: rgba(43, 89, 255, 0.1);
+  --wash-2: rgba(124, 77, 255, 0.07);
+
+  --tint-blue: #e7edff;
+  --tint-blue-ink: #1d3fbf;
+  --tint-mint: #dff6ec;
+  --tint-mint-ink: #0e7a4a;
+  --tint-peach: #ffe9de;
+  --tint-peach-ink: #b4501d;
+  --tint-lilac: #efe8ff;
+  --tint-lilac-ink: #6a3fd1;
+  --tint-butter: #fff4c7;
+  --tint-butter-ink: #8a6a00;
+
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-soft: 0 1px 2px rgba(14, 18, 32, 0.04), 0 12px 32px -14px rgba(14, 18, 32, 0.12);
+  --shadow-lift: 0 2px 6px rgba(14, 18, 32, 0.05), 0 30px 60px -28px rgba(14, 18, 32, 0.22);
+  --dot-grid: rgba(14, 18, 32, 0.07);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232b59ff' stroke-width='3.2' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #2450f0;
+  --shiki-token-parameter: #a04b12;
+  --shiki-token-function: #6a3fd1;
+  --shiki-token-constant: #0e7a4a;
+  --shiki-token-string: #a04b12;
+  --shiki-token-string-expression: #a04b12;
+}
+
+/* ---- Midnight Ops: dark navy, cyan, glowing fibre lines. ---- */
+[data-look="midnight-ops"] {
+  color-scheme: dark;
+
+  --bg: #0a0f1e;
+  --bg-2: #0d1426;
+  --surface: rgba(17, 26, 48, 0.72);
+  --surface-solid: #111a30;
+  --surface-2: #16213b;
+  --fg: #e6edf7;
+  --muted: #93a3bf;
+  --faint: #8494b5;
+  --line: rgba(148, 180, 255, 0.1);
+  --line-2: rgba(148, 180, 255, 0.2);
+  --c1: #22d3ee;
+  --c1-ink: #031418;
+  --c1-text: #67e8f9;
+  --c1-soft: #0b2a36;
+  --amber: #fbbf24;
+  --amber-ink: #1a1203;
+  --highlight: rgba(34, 211, 238, 0.2);
+  --ok: #34d399;
+  --red: #fb7185;
+  --glow: rgba(34, 211, 238, 0.22);
+  --curtain: #0a0f1e;
+  --curtain-fg: #e6edf7;
+  --curtain-muted: #93a3bf;
+  --c2: #3b82f6;
+  --c2-text: #93c5fd;
+  --glow-2: rgba(59, 130, 246, 0.22);
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
+  --fill-1: #0e7490;
+  --fill-2: #1d4ed8;
+  --wash-1: rgba(34, 211, 238, 0.13);
+  --wash-2: rgba(59, 130, 246, 0.1);
+
+  --tint-blue: #12243f;
+  --tint-blue-ink: #8fd8ff;
+  --tint-mint: #0e2a2a;
+  --tint-mint-ink: #6ee7c8;
+  --tint-peach: #2c1d16;
+  --tint-peach-ink: #fdba8c;
+  --tint-lilac: #1f1d3d;
+  --tint-lilac-ink: #c4b5fd;
+  --tint-butter: #2a2614;
+  --tint-butter-ink: #fde68a;
+
+  --edge-light: inset 0 1px 0 rgba(148, 180, 255, 0.08);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(0, 0, 0, 0.8);
+  --dot-grid: rgba(148, 180, 255, 0.07);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%2322d3ee' stroke-width='3.2' stroke-linecap='round' opacity='.7'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #67e8f9;
+  --shiki-token-parameter: #fdba8c;
+  --shiki-token-function: #c4b5fd;
+  --shiki-token-constant: #6ee7c8;
+  --shiki-token-string: #fdba8c;
+  --shiki-token-string-expression: #fdba8c;
+}
+
+/* ---- Sunset Fibre: warm cream, orange with a plum accent. ---- */
+[data-look="sunset-fibre"] {
+  color-scheme: light;
+
+  --bg: #fbf5ec;
+  --bg-2: #f4eadc;
+  --surface: rgba(255, 253, 249, 0.75);
+  --surface-solid: #fffdf9;
+  --surface-2: #f7efe4;
+  --fg: #2a1a1f;
+  --muted: #6e5a55;
+  --faint: #84706a;
+  --line: rgba(42, 26, 31, 0.08);
+  --line-2: rgba(42, 26, 31, 0.15);
+  --c1: #f97316;
+  --c1-ink: #ffffff;
+  --c1-text: #c2410c;
+  --c1-soft: #ffedd5;
+  --amber: #7c2d5b;
+  --amber-ink: #ffffff;
+  --highlight: rgba(249, 115, 22, 0.16);
+  --ok: #13743a;
+  --red: #be123c;
+  --glow: rgba(249, 115, 22, 0.18);
+  --curtain: #2a1a1f;
+  --curtain-fg: #fbf5ec;
+  --curtain-muted: #c9b6ad;
+  --c2: #db2777;
+  --c2-text: #9d174d;
+  --glow-2: rgba(219, 39, 119, 0.14);
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
+  --fill-1: #c2410c;
+  --fill-2: #9d174d;
+  --wash-1: rgba(249, 115, 22, 0.15);
+  --wash-2: rgba(219, 39, 119, 0.07);
+
+  --tint-blue: #f3e3ee;
+  --tint-blue-ink: #7c2d5b;
+  --tint-mint: #e6f2e4;
+  --tint-mint-ink: #3f6b3a;
+  --tint-peach: #ffe4cf;
+  --tint-peach-ink: #b4501d;
+  --tint-lilac: #efe2f3;
+  --tint-lilac-ink: #7a3e8e;
+  --tint-butter: #fbefc9;
+  --tint-butter-ink: #8a6100;
+
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-soft: 0 1px 2px rgba(42, 26, 31, 0.05), 0 14px 34px -16px rgba(124, 45, 91, 0.16);
+  --shadow-lift: 0 2px 6px rgba(42, 26, 31, 0.06), 0 30px 60px -28px rgba(124, 45, 91, 0.28);
+  --dot-grid: rgba(42, 26, 31, 0.07);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%23f97316' stroke-width='3.2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #b23c0b;
+  --shiki-token-parameter: #7c2d5b;
+  --shiki-token-function: #7a3e8e;
+  --shiki-token-constant: #3f6b3a;
+  --shiki-token-string: #7c2d5b;
+  --shiki-token-string-expression: #7c2d5b;
+}
+
+/* ---- Aurora: deep indigo with a soft violet and teal gradient mesh. ---- */
+[data-look="aurora"] {
+  color-scheme: dark;
+
+  --bg: #0d0b26;
+  --bg-2: #120f33;
+  --surface: rgba(23, 20, 66, 0.66);
+  --surface-solid: #171442;
+  --surface-2: #1d1a52;
+  --fg: #eeeafe;
+  --muted: #a9a3d6;
+  --faint: #9590cc;
+  --line: rgba(196, 181, 253, 0.12);
+  --line-2: rgba(196, 181, 253, 0.22);
+  --c1: #a78bfa;
+  --c1-ink: #ffffff;
+  --c1-text: #c4b5fd;
+  --c1-soft: #2a2366;
+  --amber: #2dd4bf;
+  --amber-ink: #04201c;
+  --highlight: rgba(167, 139, 250, 0.22);
+  --ok: #34d399;
+  --red: #fb7185;
+  --glow: rgba(167, 139, 250, 0.26);
+  --curtain: #0d0b26;
+  --curtain-fg: #eeeafe;
+  --curtain-muted: #a9a3d6;
+  --c2: #2dd4bf;
+  --c2-text: #5eead4;
+  --glow-2: rgba(45, 212, 191, 0.18);
+  /* Buttons and feature cards: text on this pair is --on-fill. */
+  --on-fill: #ffffff;
+  --fill-1: #6d28d9;
+  --fill-2: #0f766e;
+  --wash-1: rgba(139, 92, 246, 0.26);
+  --wash-2: rgba(45, 212, 191, 0.12);
+
+  --tint-blue: #1e2457;
+  --tint-blue-ink: #a5b4fc;
+  --tint-mint: #10313a;
+  --tint-mint-ink: #5eead4;
+  --tint-peach: #33203f;
+  --tint-peach-ink: #f9a8d4;
+  --tint-lilac: #2a1f5c;
+  --tint-lilac-ink: #c4b5fd;
+  --tint-butter: #2b2a44;
+  --tint-butter-ink: #fde68a;
+
+  --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 50px -24px rgba(5, 3, 30, 0.8);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 36px 70px -30px rgba(5, 3, 30, 0.9);
+  --dot-grid: rgba(196, 181, 253, 0.06);
+  --underline-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C40 3.5 90 2.5 198 6.5' fill='none' stroke='%232dd4bf' stroke-width='3.2' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E");
+
+  --shiki-token-keyword: #c4b5fd;
+  --shiki-token-parameter: #5eead4;
+  --shiki-token-function: #f9a8d4;
+  --shiki-token-constant: #5eead4;
+  --shiki-token-string: #fde68a;
+  --shiki-token-string-expression: #fde68a;
 }

@@ -36,9 +36,9 @@ export function OsiBand({ group, open, onToggle }: OsiBandProps) {
             </span>
             <span
               aria-hidden="true"
-              className="osi-chevron grid size-11 place-items-center rounded-pill border border-line-2 text-xl"
+              className="grid size-11 place-items-center rounded-pill border border-line-2 text-xl"
             >
-              +
+              <span className="osi-chevron">+</span>
             </span>
           </span>
         </button>

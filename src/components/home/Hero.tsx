@@ -1,22 +1,15 @@
-import { Aurora } from "@/components/canvas/Aurora";
-import { GridSpotlight } from "@/components/canvas/GridSpotlight";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { CountUp } from "@/components/ui/CountUp";
-import { Highlight } from "@/components/ui/Highlight";
-import { Icon } from "@/components/ui/Icon";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { cssVars } from "@/lib/css-vars";
+import type { ProfilePhoto } from "@/lib/profile-photo";
 
-import { DecodingName } from "./DecodingName";
-import { RoleTyper } from "./RoleTyper";
-import { StatusPanel, type StatusRow } from "./StatusPanel";
-
-const ROLES = [
-  "Software & Network Engineer",
-  "Technical Support Engineer",
-  "CCNA-trained Network Engineer",
-  "Full-Stack Developer",
-] as const;
+import { HeroArt } from "./HeroArt";
+import { HeroHeadline } from "./HeroHeadline";
+import { HeroPortrait, type PortraitBadge } from "./HeroPortrait";
+import { LookPicker } from "./LookPicker";
 
 export type HeroStat = {
   value: number | string;
@@ -25,75 +18,161 @@ export type HeroStat = {
 
 type HeroProps = {
   name: string;
+  roleLine: string;
   location: string;
-  statusRows: StatusRow[];
+  photo: ProfilePhoto | null;
+  openToWork: boolean;
   stats: HeroStat[];
+  email: string;
+  linkedinUrl: string | null;
+  githubUrl: string | null;
+  badges: PortraitBadge[];
+  globeOpacity: number | null;
 };
 
-export function Hero({ name, location, statusRows, stats }: HeroProps) {
+// One icon per stat, in the order the home page passes them.
+const STAT_ICONS: IconName[] = ["phone", "sparkle", "list", "shield"];
+
+export function Hero({
+  name,
+  roleLine,
+  location,
+  photo,
+  openToWork,
+  stats,
+  email,
+  linkedinUrl,
+  githubUrl,
+  badges,
+  globeOpacity,
+}: HeroProps) {
+  const role = roleLine.split(" · ")[0] ?? roleLine;
+  // The surname carries the accent.
+  const parts = name.trim().split(/\s+/);
+  const lastName = parts.length > 1 ? parts.pop() : undefined;
+  const firstNames = parts.join(" ");
+
+  const socials = [
+    { label: "LinkedIn", href: linkedinUrl, icon: "linkedin" },
+    { label: "GitHub", href: githubUrl, icon: "github" },
+    { label: "Email", href: `mailto:${email}`, icon: "mail" },
+  ].filter((link): link is { label: string; href: string; icon: IconName } => Boolean(link.href));
+
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden pt-[calc(var(--header-h)+56px)] pb-16 md:flex md:min-h-svh md:flex-col md:justify-center md:pb-20"
+      className="hero spotlight relative isolate overflow-clip pt-[calc(var(--header-h)+36px)] pb-14 laptop:flex laptop:min-h-[92svh] laptop:flex-col laptop:justify-center laptop:pt-[calc(var(--header-h)+28px)] laptop:pb-12"
     >
-      <Aurora className="-z-10" />
-      <GridSpotlight className="-z-10" />
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-b from-transparent to-bg"
-      />
-
-      <Container className="flex flex-col gap-16">
-        <div className="grid gap-12 md:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)] md:items-end">
-          <div className="flex min-w-0 flex-col items-start gap-7">
-            <p className="glass label-mono inline-flex items-center gap-3 rounded-pill py-1.5 pr-4 pl-1.5 text-muted">
-              <span className="inline-flex items-center gap-2 rounded-pill bg-ok/12 px-2.5 py-1 text-ok">
-                <span aria-hidden="true" className="status-dot" />
-                Open to work
-              </span>
-              <span className="inline-flex items-center gap-1.5">
+      <HeroArt />
+      <Container className="flex flex-col gap-12 laptop:gap-14">
+        <div className="grid items-center gap-x-14 gap-y-12 laptop:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <div className="flex min-w-0 flex-col items-center gap-6 text-center laptop:items-start laptop:text-left">
+            <p className="intro hero-pill" style={cssVars({ "--i": 0 })}>
+              {openToWork ? <span aria-hidden="true" className="status-dot" /> : null}
+              <span>{openToWork ? "Available for new projects" : "Hello, I’m"}</span>
+              <span aria-hidden="true" className="hero-pill-sep" />
+              <span className="inline-flex items-center gap-1.5 text-muted">
                 <Icon name="map-pin" size={13} />
                 {location}
               </span>
             </p>
-            <DecodingName id="hero-title" name={name} className="hero-name--split" />
-            <RoleTyper roles={ROLES} />
-            <p className="max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-              Technical support for cloud business software and hosting, CCNA-trained on routing and
-              switching, and three products in development. I work{" "}
-              <Highlight>from the cable to the app</Highlight>.
+
+            <div className="flex flex-col items-center gap-4 laptop:items-start">
+              <h1
+                id="hero-title"
+                className="intro-lcp hero-name hero-name--split text-fg"
+                style={cssVars({ "--i": 1 })}
+              >
+                {firstNames} {lastName ? <span className="hero-surname">{lastName}</span> : null}
+              </h1>
+              <p
+                className="intro hero-role flex flex-wrap items-center justify-center gap-x-3 gap-y-1 laptop:justify-start"
+                style={cssVars({ "--i": 2 })}
+              >
+                <span className="hero-role-line" aria-hidden="true" />
+                {role}
+              </p>
+            </div>
+
+            <HeroHeadline />
+
+            <p
+              className="intro max-w-xl text-lg leading-relaxed text-muted"
+              style={cssVars({ "--i": 4 })}
+            >
+              A CCNA-trained Software &amp; Network Engineer from India. Technical support for cloud
+              business software and hosting, and three products in development.
             </p>
-            <div className="flex flex-wrap gap-3 pt-1">
+
+            <div
+              className="intro flex flex-wrap items-center justify-center gap-3 pt-1 laptop:justify-start"
+              style={cssVars({ "--i": 5 })}
+            >
               <Magnetic>
-                <Button href="/work" variant="primary" size="lg">
-                  View selected work
+                <Button href="/work" variant="accent" size="lg" className="hero-cta">
+                  See my work
                   <Icon name="arrow-right" />
                 </Button>
               </Magnetic>
-              <Button href="/contact" variant="line" size="lg">
-                Get in touch
+              <Button href="#hire" variant="line" size="lg" className="hero-cta-ghost">
+                Start a Project
+                <Icon name="arrow-up-right" size={16} />
               </Button>
             </div>
+
+            <div
+              className="intro flex flex-wrap items-center justify-center gap-x-6 gap-y-4 laptop:justify-start"
+              style={cssVars({ "--i": 6 })}
+            >
+              {socials.length > 0 ? (
+                <ul className="flex items-center gap-2" aria-label="Elsewhere">
+                  {socials.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        rel={link.icon === "mail" ? undefined : "me noopener"}
+                        aria-label={link.label}
+                        className="hero-social"
+                      >
+                        <Icon name={link.icon} size={18} />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <LookPicker />
+            </div>
           </div>
-          <StatusPanel rows={statusRows} />
+
+          <div className="min-w-0 self-center">
+            <HeroPortrait
+              photo={photo}
+              name={name}
+              location={location}
+              openToWork={openToWork}
+              badges={badges}
+              globeOpacity={globeOpacity}
+            />
+          </div>
         </div>
 
         {stats.length > 0 ? (
-          <dl className="grid grid-cols-2 border-t border-line md:grid-cols-4">
+          <dl className="intro hero-stats" style={cssVars({ "--i": 7 })}>
             {stats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={
-                  "flex flex-col gap-1.5 border-line pt-6 pr-4 " +
-                  (index % 2 === 1 ? "pl-6 max-md:border-l " : "") +
-                  (index > 0 ? "md:border-l md:pl-6 " : "") +
-                  (index > 1 ? "max-md:mt-6 max-md:border-t" : "")
-                }
-              >
-                <dd className="order-1 font-display text-[clamp(1.9rem,3.4vw,2.75rem)] leading-none font-medium tracking-[-0.04em] text-fg">
-                  {typeof stat.value === "number" ? <CountUp value={stat.value} /> : stat.value}
-                </dd>
-                <dt className="order-2 text-sm text-muted">{stat.label}</dt>
+              <div key={stat.label} className="hero-stat">
+                <span aria-hidden="true" className="hero-stat-icon">
+                  <Icon name={STAT_ICONS[index] ?? "sparkle"} size={18} />
+                </span>
+                <div className="flex min-w-0 flex-col">
+                  <dd className="order-1 font-display text-[clamp(1.5rem,2.3vw,2rem)] leading-none font-semibold text-fg">
+                    {typeof stat.value === "number" ? (
+                      <CountUp value={stat.value} immediateDelayMs={700} />
+                    ) : (
+                      stat.value
+                    )}
+                  </dd>
+                  <dt className="order-2 mt-1.5 text-sm text-muted">{stat.label}</dt>
+                </div>
               </div>
             ))}
           </dl>

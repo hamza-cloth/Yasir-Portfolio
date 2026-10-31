@@ -20,10 +20,7 @@ function SeatGrid({ shift }: { shift: number }) {
       {SEATS.map((seat) => (
         <span
           key={seat}
-          className={cn(
-            "rounded-[4px] terminal:rounded-none",
-            isBooked(seat, shift) ? "bg-c1" : "border border-line-2",
-          )}
+          className={cn("rounded-[4px]", isBooked(seat, shift) ? "bg-c1" : "border border-line-2")}
         />
       ))}
     </div>
@@ -33,7 +30,7 @@ function SeatGrid({ shift }: { shift: number }) {
 export function SeatMap() {
   return (
     <MockupFrame
-      title="the people’s library · seats"
+      title="peoples-library / seats"
       label="Mockup of The People’s Library seat map cycling through three shifts of a 24×7 self-study centre."
     >
       <div className="flex h-full flex-col gap-3 p-4">

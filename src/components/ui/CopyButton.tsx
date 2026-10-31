@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
-import { buttonClassName } from "./Button";
+import { buttonClassName, type ButtonVariant } from "./Button";
 import { Icon } from "./Icon";
 
 type CopyState = "idle" | "copied" | "failed";
@@ -12,6 +12,7 @@ type CopyState = "idle" | "copied" | "failed";
 type CopyButtonProps = {
   value: string;
   children: ReactNode;
+  variant?: ButtonVariant;
   className?: string;
 };
 
@@ -21,7 +22,7 @@ const STATUS: Record<CopyState, string> = {
   failed: "Copy failed. Select the text and copy it instead.",
 };
 
-export function CopyButton({ value, children, className }: CopyButtonProps) {
+export function CopyButton({ value, children, variant = "line", className }: CopyButtonProps) {
   const [state, setState] = useState<CopyState>("idle");
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export function CopyButton({ value, children, className }: CopyButtonProps) {
       <button
         type="button"
         onClick={handleClick}
-        className={cn(buttonClassName("line", "md"), className)}
+        className={cn(buttonClassName(variant, "md"), className)}
       >
         <Icon name="copy" />
         {state === "copied" ? "Copied" : children}

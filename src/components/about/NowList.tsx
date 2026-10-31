@@ -17,7 +17,7 @@ export function NowList({ items, updatedAt }: NowListProps) {
   if (items.length === 0) return null;
 
   return (
-    <section aria-labelledby="now-title" className="py-20">
+    <section aria-labelledby="now-title" className="section-y">
       <Container className="grid gap-10 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
         <div className="flex flex-col gap-4">
           <SectionHead eyebrow="Now" titleId="now-title" title="What I’m on right now" />

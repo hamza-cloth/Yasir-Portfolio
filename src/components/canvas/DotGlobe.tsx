@@ -3,8 +3,8 @@
 import { useMemo, useRef, type PointerEvent } from "react";
 
 import { useCanvasLoop } from "@/hooks/useCanvasLoop";
+import { useLook } from "@/hooks/useLook";
 import { useReducedMotion } from "@/hooks/useMediaQuery";
-import { useSkin } from "@/hooks/useSkin";
 import { fibonacciSphere, latLonToVector } from "@/lib/canvas/globe";
 import { drawGlobeFrame, type GlobeColors, type GlobeScene } from "@/lib/canvas/globe-draw";
 import { cn } from "@/lib/cn";
@@ -13,6 +13,14 @@ import { DESTINATIONS, HUB } from "@/lib/globe-cities";
 
 const DEG = Math.PI / 180;
 const POINT_COUNT = 1300;
+// Fewer dots on small screens and low-core devices, where every frame costs more.
+const LIGHT_POINT_COUNT = 700;
+
+function pointCount(): number {
+  const small = window.matchMedia("(max-width: 767px)").matches;
+  const lowEnd = (navigator.hardwareConcurrency ?? 8) <= 4;
+  return small || lowEnd ? LIGHT_POINT_COUNT : POINT_COUNT;
+}
 const AUTO_SPIN = 0.12;
 const DRAG_YAW = 0.006;
 const DRAG_PITCH = 0.004;
@@ -41,11 +49,11 @@ export function DotGlobe({ className }: { className?: string }) {
     lastTime: 0,
   });
   const reducedMotion = useReducedMotion();
-  const skin = useSkin();
+  const look = useLook();
 
   const scene = useMemo<GlobeScene>(
     () => ({
-      points: fibonacciSphere(POINT_COUNT),
+      points: fibonacciSphere(pointCount()),
       hub: latLonToVector(HUB.lat, HUB.lon),
       hubLabel: HUB.name,
       destinations: DESTINATIONS.map((city) => latLonToVector(city.lat, city.lon)),
@@ -76,13 +84,18 @@ export function DotGlobe({ className }: { className?: string }) {
     },
     {
       animate: !reducedMotion,
-      redrawKey: skin,
+      redrawKey: look,
       onSetup: () => {
         colorsRef.current = {
           dot: readCssVar("--c1"),
-          arc: readCssVar("--amber"),
-          pulse: readCssVar("--fg"),
-          hub: readCssVar("--amber"),
+          // Arcs alternate the look's two accents, so the globe matches the rest of the page.
+          arcs: [
+            readCssVar("--c1"),
+            readCssVar("--c2"),
+            readCssVar("--c1-text"),
+            readCssVar("--c2"),
+          ],
+          hub: readCssVar("--c2"),
           label: readCssVar("--fg"),
           labelFont: `500 12px ${readCssVar("--ff-mono")}`,
         };

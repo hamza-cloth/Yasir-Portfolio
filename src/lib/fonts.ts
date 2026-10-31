@@ -1,37 +1,19 @@
-import { Geist, Geist_Mono, Instrument_Serif, VT323 } from "next/font/google";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 
-const geist = Geist({
+// Brand type: Space Grotesk for headings, wordmark and body; JetBrains Mono for labels, tags
+// and code. Self-hosted by next/font, so there is no request to Google and no layout shift.
+const grotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-geist",
+  variable: "--font-grotesk",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-geist-mono",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
-// The serif is only used for italic accent words inside headings.
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
-  display: "swap",
-});
-
-// Only the Terminal skin uses VT323, so it is not preloaded for everyone.
-const vt323 = VT323({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-vt323",
-  display: "swap",
-  preload: false,
-});
-
-export const fontVariables = [geist, geistMono, instrumentSerif, vt323]
-  .map((font) => font.variable)
-  .join(" ");
+export const fontVariables = [grotesk, jetbrainsMono].map((font) => font.variable).join(" ");

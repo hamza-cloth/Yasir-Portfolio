@@ -1,6 +1,8 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /* Reserve the scrollbar's space, so locking scroll under an overlay never shifts the page. */
+    scrollbar-gutter: stable;
     background-color: var(--bg);
     scroll-padding-top: calc(var(--header-h) + 16px);
   }
@@ -8,13 +10,18 @@
   body {
     min-height: 100svh;
     background-color: var(--bg);
-    background-image: var(--page-wash);
-    background-repeat: no-repeat;
+    /* A faint dot grid over a soft wash of colour at the top of the page. The wash is two
+       gradients, so it takes two size and repeat entries. */
+    background-image: radial-gradient(var(--dot-grid) 1px, transparent 1.4px), var(--page-wash);
+    background-size:
+      22px 22px,
+      100% 1100px,
+      100% 1100px;
+    background-repeat: repeat, no-repeat, no-repeat;
     color: var(--fg);
     font-family: var(--ff-body);
     font-size: var(--fs-body);
-    line-height: 1.65;
-    text-shadow: var(--text-glow);
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -76,8 +83,8 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  [data-skin="terminal"] body::after,
-  [data-skin="paper"] body::after {
+  /* Grain only on the dark looks, where it stops large dark areas from banding. */
+  :root:not([data-theme="dark"]) body::after {
     display: none;
   }
 
@@ -103,5 +110,15 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Phones: nothing reads smaller than 14px. */
+@media (max-width: 44.99rem) {
+  /* Matches the look selectors' specificity, so it wins on every look. */
+  :root,
+  :root[data-look] {
+    --fs-label: 0.875rem;
+    --text-xs: 0.875rem;
   }
 }
