@@ -3,41 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 
+import { afterFirstInteraction } from "@/lib/after-interaction";
+
 // The globe's code loads only once its box is near the screen; until then the CSS sphere
 // behind it stands in, in the same space, so nothing shifts when it arrives.
 const DotGlobe = dynamic(() => import("./DotGlobe").then((module) => module.DotGlobe), {
   ssr: false,
 });
 
-// The globe is decoration, so it waits until the page has loaded and the main thread is idle:
-// its animation loop must not compete with hydration or delay the first paint of real content.
-function whenPageIsIdle(callback: () => void): () => void {
-  let idleId = 0;
-  let timeoutId = 0;
-  const schedule = () => {
-    if (typeof window.requestIdleCallback === "function") {
-      idleId = window.requestIdleCallback(callback, { timeout: 2500 });
-    } else {
-      timeoutId = window.setTimeout(callback, 1200);
-    }
-  };
-
-  if (document.readyState === "complete") schedule();
-  else window.addEventListener("load", schedule, { once: true });
-
-  return () => {
-    window.removeEventListener("load", schedule);
-    if (idleId) window.cancelIdleCallback(idleId);
-    if (timeoutId) window.clearTimeout(timeoutId);
-  };
-}
-
 export function LazyGlobe() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [idle, setIdle] = useState(false);
 
-  useEffect(() => whenPageIsIdle(() => setIdle(true)), []);
+  // Decoration: it waits for the visitor's first interaction, so its animation loop never
+  // competes with hydration or the first paint of real content.
+  useEffect(() => afterFirstInteraction(() => setIdle(true)), []);
 
   useEffect(() => {
     const element = ref.current;

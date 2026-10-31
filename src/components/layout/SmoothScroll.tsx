@@ -3,15 +3,18 @@
 import { useEffect } from "react";
 
 import { useReducedMotion } from "@/hooks/useMediaQuery";
+import { afterFirstInteraction } from "@/lib/after-interaction";
 import { setActiveLenis } from "@/lib/smooth-scroll";
 
 export function SmoothScroll() {
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (reducedMotion) return;
+    // Touch screens keep native scrolling (Lenis does not smooth touch anyway), so phones never
+    // pay for its animation loop.
+    if (reducedMotion || window.matchMedia("(pointer: coarse)").matches) return;
 
-    // Smooth scrolling is a nicety: its code loads once the page is idle, off the first load.
+    // Smooth scrolling is a nicety: its code loads after the first interaction, off the first load.
     let lenis: { destroy: () => void } | null = null;
     let cancelled = false;
     const start = () =>
@@ -26,13 +29,11 @@ export function SmoothScroll() {
         lenis = instance;
         setActiveLenis(instance);
       });
-    const idle =
-      window.requestIdleCallback?.(start, { timeout: 2500 }) ?? window.setTimeout(start, 1200);
+    const stopWaiting = afterFirstInteraction(start);
 
     return () => {
       cancelled = true;
-      if (window.cancelIdleCallback) window.cancelIdleCallback(idle);
-      window.clearTimeout(idle);
+      stopWaiting();
       setActiveLenis(null);
       lenis?.destroy();
     };

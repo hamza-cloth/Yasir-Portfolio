@@ -94,7 +94,7 @@ export function MobileMenu({
           </ul>
         </nav>
         <div className="mt-auto flex flex-wrap gap-3">
-          <Button href="/contact" variant="accent" onClick={onClose}>
+          <Button href="/hire" variant="accent" onClick={onClose}>
             Hire me
           </Button>
         </div>

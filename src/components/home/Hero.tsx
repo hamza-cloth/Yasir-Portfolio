@@ -107,8 +107,8 @@ export function Hero({
                   <Icon name="arrow-right" />
                 </Button>
               </Magnetic>
-              <Button href="/contact" variant="line" size="lg">
-                Get in touch
+              <Button href="#hire" variant="line" size="lg">
+                Start a Project
               </Button>
             </div>
 

@@ -48,7 +48,7 @@ export async function Footer({ settings }: FooterProps) {
               {settings.availability}
             </p>
             <div className="mt-1 flex flex-wrap items-center gap-4">
-              <Button href="/contact" variant="accent" size="sm">
+              <Button href="/hire" variant="accent" size="sm">
                 Hire me
                 <Icon name="arrow-up-right" size={15} />
               </Button>
@@ -95,7 +95,7 @@ export async function Footer({ settings }: FooterProps) {
 
         <FooterName name={settings.name} />
 
-        <div className="-mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-faint">
+        <div className="-mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 pr-16 text-sm text-faint">
           <p>
             © {year} {settings.name}. All rights reserved.
           </p>

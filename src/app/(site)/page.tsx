@@ -1,3 +1,4 @@
+import { HireIntro } from "@/components/hire/HireIntro";
 import { CareerTimeline } from "@/components/home/CareerTimeline";
 import { CtaBand } from "@/components/home/CtaBand";
 import { GlanceGrid } from "@/components/home/GlanceGrid";
@@ -90,6 +91,13 @@ export default async function HomePage() {
       />
       <CareerTimeline entries={buildTimeline(experience, credentials)} />
       <LatestNotes notes={notes} />
+      <HireIntro
+        id="hire"
+        headingLevel="h2"
+        projectHref="/hire#inquiry"
+        email={settings.email}
+        className="section-y scroll-mt-20"
+      />
       <CtaBand email={settings.email} availability={settings.availability} />
     </>
   );

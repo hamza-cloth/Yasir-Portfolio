@@ -1,8 +1,6 @@
 "use server";
 
-import { getDb } from "@/lib/db";
-import { sendContactEmail } from "@/lib/email";
-import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
+import { deliverMessage } from "@/lib/deliver-message";
 import { messageSchema, type MessageInput } from "@/lib/validation/message";
 
 export type ContactState = {
@@ -11,8 +9,6 @@ export type ContactState = {
   fieldErrors?: Partial<Record<keyof MessageInput, string>>;
   values?: Partial<Record<keyof MessageInput, string>>;
 };
-
-const MESSAGES_PER_HOUR = 5;
 
 export async function sendMessage(
   _previous: ContactState,
@@ -43,24 +39,15 @@ export async function sendMessage(
     };
   }
 
-  const db = getDb();
-  const ipHash = await requestIpHash();
-  if (!(await takeRateLimit(`contact:${ipHash}`, MESSAGES_PER_HOUR, 3_600_000))) {
+  const result = await deliverMessage(parsed.data);
+  if (result === "rate-limited") {
     return {
       status: "error",
       message: "Too many messages from this connection. Please try again in an hour, or email me.",
       values,
     };
   }
-
-  try {
-    const record = db ? await db.message.create({ data: { ...parsed.data, ipHash } }) : null;
-    const emailed = await sendContactEmail(parsed.data).catch(() => false);
-    if (record && emailed) {
-      await db?.message.update({ where: { id: record.id }, data: { emailSent: true } });
-    }
-    if (!record && !emailed) throw new Error("Nowhere to deliver the message.");
-  } catch {
+  if (result === "failed" || result === "not-configured") {
     return {
       status: "error",
       message: "The message could not be sent right now. Please email me directly instead.",

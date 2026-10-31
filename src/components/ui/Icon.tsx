@@ -2,6 +2,13 @@ import type { SVGProps } from "react";
 
 const PATHS = {
   "arrow-right": "M5 12h14M13 6l6 6-6 6",
+  check: "M5 12.5l4.5 4.5L19 7.5",
+  "chevron-down": "M6 9l6 6 6-6",
+  phone:
+    "M5 4h3l1.5 4.5-2 1.2a11 11 0 0 0 6.8 6.8l1.2-2L20 16v3a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z",
+  // WhatsApp, drawn as an outline: a round speech bubble with its tail, and the handset inside.
+  whatsapp:
+    "M4.5 19.5l1.1-3.9A8.3 8.3 0 1 1 8.6 18.6zM9.2 8.3c.2-.5.6-.5.9-.5h.5l.9 2.1-.6.8c.5 1 1.3 1.8 2.3 2.3l.8-.6 2.1.9v.5c0 .3-.1.7-.5.9-.6.4-1.5.5-2.6 0a8 8 0 0 1-3.6-3.6c-.5-1.1-.4-2 0-2.8z",
   "arrow-up": "M12 19V5M6 11l6-6 6 6",
   "arrow-up-right": "M7 17 17 7M9 7h8v8",
   mail: "M4 6h16v12H4zM4 7l8 6 8-6",

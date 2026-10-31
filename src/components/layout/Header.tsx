@@ -47,7 +47,7 @@ export function Header() {
             <div className="ml-auto flex min-w-0 items-center gap-1.5 laptop:ml-0">
               <CommandButton className="max-sm:hidden" />
               <LookButton />
-              <Button href="/contact" variant="accent" size="sm" className="max-laptop:hidden">
+              <Button href="/hire" variant="accent" size="sm" className="max-laptop:hidden">
                 Hire me
                 <Icon name="arrow-up-right" size={15} />
               </Button>

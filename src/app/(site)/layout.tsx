@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { WhatsAppFloat } from "@/components/hire/WhatsAppFloat";
 import { BackToTop } from "@/components/layout/BackToTop";
 import { CustomCursor } from "@/components/layout/CustomCursor";
 import { Footer } from "@/components/layout/Footer";
@@ -36,6 +37,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       </main>
       <Footer settings={settings} />
       <BackToTop />
+      <WhatsAppFloat />
       <PageCurtain />
       <CustomCursor />
       <SmoothScroll />
