@@ -9,6 +9,7 @@
 @import "../styles/ebooks.css";
 @import "../styles/hire.css";
 @import "../styles/estimate.css";
+@import "../styles/resume.css";
 @import "../styles/motion.css";
 
 @custom-variant paper (&:where([data-look="porcelain"], [data-look="porcelain"] *));

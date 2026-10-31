@@ -702,12 +702,13 @@
     }
   }
 
+  /* --z (home.css, 3D section) lifts each badge off the card. */
   @keyframes badge-float {
     from {
-      translate: 0 -6px;
+      translate: 0 -6px var(--z, 0px);
     }
     to {
-      translate: 0 6px;
+      translate: 0 6px var(--z, 0px);
     }
   }
 
@@ -988,6 +989,133 @@
     .service-ghost,
     .service-bar,
     .service-arrow {
+      transition: none;
+    }
+  }
+}
+
+/* ---- Hero portrait in 3D: one turning stage, layers at different depths ---- */
+@property --rx {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --ry {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@layer components {
+  .portrait {
+    perspective: 1200px;
+  }
+
+  /* Sways on its own; follows the pointer (set by PortraitStage) while a mouse is over it. */
+  .portrait-3d {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    animation: portrait-sway 9s ease-in-out infinite alternate;
+    transition:
+      --rx 220ms ease-out,
+      --ry 220ms ease-out;
+  }
+
+  .portrait-3d[data-active] {
+    animation: none;
+  }
+
+  @keyframes portrait-sway {
+    from {
+      --rx: 5deg;
+      --ry: -14deg;
+    }
+    to {
+      --rx: -4deg;
+      --ry: 14deg;
+    }
+  }
+
+  /* Depth, back to front: globe, glow, orbits, plates, card, caption, badges. */
+  .portrait-globe {
+    translate: 0 0 -170px;
+  }
+
+  .portrait-glow {
+    translate: 0 0 -130px;
+  }
+
+  .portrait-orbit {
+    translate: 0 0 -90px;
+  }
+
+  .portrait-frame {
+    transform-style: preserve-3d;
+  }
+
+  .portrait-caption {
+    translate: 0 0 46px;
+  }
+
+  .portrait-badge {
+    --z: 90px;
+  }
+
+  .portrait-badge[data-slot="1"] {
+    --z: 120px;
+  }
+
+  .portrait-badge[data-slot="2"] {
+    --z: 70px;
+  }
+
+  /* Two cards stacked behind the photo, offset down and right, so the depth shows at rest too. */
+  .portrait-plate {
+    position: absolute;
+    inset: 0;
+    border: 1px solid color-mix(in srgb, var(--c1) 35%, var(--line-2));
+    border-radius: 34px;
+    background:
+      linear-gradient(
+        150deg,
+        color-mix(in srgb, var(--c1) 26%, transparent),
+        color-mix(in srgb, var(--c2, var(--c1)) 10%, transparent)
+      ),
+      var(--surface-solid);
+    translate: 16px 18px -45px;
+    opacity: 0.85;
+  }
+
+  .portrait-plate--back {
+    translate: 32px 36px -90px;
+    opacity: 0.45;
+  }
+
+  /* A soft light on the photo that follows the pointer. */
+  .portrait-glare {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at var(--gx, 28%) var(--gy, 18%),
+      rgb(255 255 255 / 0.32),
+      transparent 48%
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0.55;
+    transition: opacity 400ms;
+    pointer-events: none;
+  }
+
+  .portrait-3d[data-active] .portrait-glare {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portrait-3d {
+      animation: none;
       transition: none;
     }
   }

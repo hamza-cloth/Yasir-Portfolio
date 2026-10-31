@@ -20,6 +20,17 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 8 — résumé redesign and a 3D profile (2026-11-01)
+
+- **Résumé (/resume):** a new professional sheet: an ink header band with a gold rule, the photo,
+  name, role, tags and every contact (email, phone, location, LinkedIn, GitHub, website); a main
+  column with profile, an experience rail, projects with status and stack, and education; a
+  tinted side column with key numbers and skills as chips. It prints edge to edge on one A4
+  page and tips into place on screen.
+- **3D profile (home):** the portrait is a 3D stage. With a mouse it turns towards the pointer
+  with a moving glare; on phones it sways on its own. Two plates stack behind the photo, the
+  caption and badges float in front, and the orbits and globe sit further back.
+
 ### Phase 7 — home page redesign (2026-11-01)
 
 - **Hero:** a status pill (open to work, location), a larger name with a sheen on the surname, the
