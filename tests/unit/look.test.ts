@@ -3,6 +3,7 @@ import { runInNewContext } from "node:vm";
 import { describe, expect, it } from "vitest";
 
 import {
+  CHOICE_KEY,
   CURRENT_LOOK_KEY,
   DEFAULT_LOOK,
   LAST_LOOK_KEY,
@@ -40,12 +41,20 @@ type Run = {
   local?: ReturnType<typeof memoryStorage> | typeof blocked;
   session?: ReturnType<typeof memoryStorage> | typeof blocked;
   random?: number;
+  cookie?: string;
 };
 
-function runScript({ config = ALL, path = "/", local, session, random = 0.5 }: Run = {}) {
+function runScript({
+  config = ALL,
+  path = "/",
+  local,
+  session,
+  random = 0.5,
+  cookie = "",
+}: Run = {}) {
   const root = { dataset: {} as Record<string, string> };
   runInNewContext(buildLookScript(config), {
-    document: { documentElement: root },
+    document: { documentElement: root, cookie },
     location: { pathname: path },
     localStorage: local ?? memoryStorage(),
     sessionStorage: session ?? memoryStorage(),
@@ -151,5 +160,41 @@ describe("pre-paint look script", () => {
 
   it("still picks a valid look when storage is blocked", () => {
     expect(LOOKS).toContain(runScript({ local: blocked, session: blocked }).look);
+  });
+});
+
+describe("a visitor's own pick", () => {
+  const fixedInk: LookConfig = { enabled: [...LOOKS], mode: "fixed", fixed: "midnight-ink" };
+
+  it("beats the admin's fixed rule on the home page, refresh after refresh", () => {
+    const local = memoryStorage({ [CHOICE_KEY]: "porcelain" });
+    for (let load = 0; load < 3; load++) {
+      expect(runScript({ config: fixedInk, path: "/", local }).look).toBe("porcelain");
+    }
+  });
+
+  it("survives a browser restart (empty session) on inner pages", () => {
+    const local = memoryStorage({ [CHOICE_KEY]: "aurora" });
+    expect(
+      runScript({ config: fixedInk, path: "/work", local, session: memoryStorage() }).look,
+    ).toBe("aurora");
+  });
+
+  it("falls back to the cookie when storage is blocked", () => {
+    const data = runScript({
+      config: fixedInk,
+      local: blocked,
+      session: blocked,
+      cookie: `x=1; ${CHOICE_KEY}=sunset-fibre`,
+    });
+    expect(data.look).toBe("sunset-fibre");
+    expect(data.theme).toBe("light");
+  });
+
+  it("ignores an unknown stored value and still never touches the admin", () => {
+    const local = memoryStorage({ [CHOICE_KEY]: "neon" });
+    expect(runScript({ config: fixedInk, local }).look).toBe("midnight-ink");
+    const picked = memoryStorage({ [CHOICE_KEY]: "porcelain" });
+    expect(runScript({ path: "/admin", local: picked }).look).toBe(DEFAULT_LOOK);
   });
 });

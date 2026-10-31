@@ -57,6 +57,10 @@ export const DEFAULT_LOOK_CONFIG: LookConfig = {
 // localStorage remembers the last look shown on the home page; sessionStorage the one in use.
 export const LAST_LOOK_KEY = "ya-look-last";
 export const CURRENT_LOOK_KEY = "ya-look";
+// The look a visitor picked themselves: kept in localStorage and a cookie, it beats the admin's
+// rule on every page and survives refreshes, navigation and browser restarts.
+export const CHOICE_KEY = "ya-theme";
+const CHOICE_MAX_AGE = 60 * 60 * 24 * 365;
 
 // Looks that were removed, mapped to the closest one still offered, so a value already stored in
 // a browser or the database keeps resolving.
@@ -121,9 +125,22 @@ export function getEnabledLooks(): Look[] {
 function remember(look: Look): void {
   try {
     window.sessionStorage.setItem(CURRENT_LOOK_KEY, look);
+    window.localStorage.setItem(CHOICE_KEY, look);
   } catch {
-    // Storage can be blocked; the look still applies for this page view.
+    // Storage can be blocked; the cookie below still carries the choice.
   }
+  document.cookie = `${CHOICE_KEY}=${look}; Max-Age=${CHOICE_MAX_AGE}; Path=/; SameSite=Lax`;
+}
+
+// Another tab picked a look: follow it here too, without the transition.
+export function followLookFromOtherTabs(): () => void {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === CHOICE_KEY && isLook(event.newValue)) {
+      applyLook(document.documentElement, event.newValue);
+    }
+  };
+  window.addEventListener("storage", onStorage);
+  return () => window.removeEventListener("storage", onStorage);
 }
 
 export function setLook(look: Look): void {

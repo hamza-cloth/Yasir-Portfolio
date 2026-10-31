@@ -22,7 +22,11 @@ export function LookPicker() {
   if (enabled.length < 2) return null;
 
   return (
-    <div role="group" aria-label="Colour look" className="flex items-center gap-3">
+    <div
+      role="group"
+      aria-label="Colour look"
+      className="flex flex-wrap items-center justify-center gap-3 laptop:justify-start"
+    >
       <span className="label-mono text-faint">Look</span>
       <ul className="flex items-center gap-1.5 rounded-pill border border-line bg-surface/70 p-1 backdrop-blur-md">
         {enabled.map((look) => {

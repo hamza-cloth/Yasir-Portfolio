@@ -1,10 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { cn } from "@/lib/cn";
-import { cycleLook, LOOK_LABELS, LOOKS } from "@/lib/look";
+import { cycleLook, followLookFromOtherTabs, LOOK_LABELS, LOOKS } from "@/lib/look";
 
 // The visible label is chosen by CSS from <html data-look>, so it is right before hydration too.
 export function LookButton({ className }: { className?: string }) {
+  // The header is on every page, so this is where a look picked in another tab is followed.
+  useEffect(() => followLookFromOtherTabs(), []);
+
   return (
     <button
       type="button"

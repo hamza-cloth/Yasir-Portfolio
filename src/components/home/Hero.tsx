@@ -59,8 +59,11 @@ export function Hero({
     >
       <HeroArt />
       <Container>
-        <div className="grid items-center gap-14 laptop:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] laptop:gap-12">
-          <div className="flex min-w-0 flex-col items-center gap-6 text-center laptop:items-start laptop:text-left">
+        {/* Two text blocks: the pitch (eyebrow to CTAs) and the extras (links, stats, look).
+            The photo shares a row with the pitch only, so it centres on the name, not on the
+            whole column. */}
+        <div className="grid gap-x-12 gap-y-8 laptop:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] laptop:grid-rows-[auto_auto]">
+          <div className="flex min-w-0 flex-col items-center gap-6 text-center laptop:col-start-1 laptop:row-start-1 laptop:items-start laptop:text-left">
             <div className="intro" style={cssVars({ "--i": 0 })}>
               <Eyebrow>Hello, I’m</Eyebrow>
             </div>
@@ -111,7 +114,9 @@ export function Hero({
                 Start a Project
               </Button>
             </div>
+          </div>
 
+          <div className="flex min-w-0 flex-col items-center gap-6 text-center laptop:col-start-1 laptop:row-start-2 laptop:items-start laptop:text-left">
             {socials.length > 0 ? (
               <ul
                 className="intro flex items-center gap-2"
@@ -158,7 +163,7 @@ export function Hero({
             </div>
           </div>
 
-          <div className="max-laptop:order-first max-laptop:py-6">
+          <div className="self-center max-laptop:order-first max-laptop:py-6 laptop:col-start-2 laptop:row-start-1">
             <HeroPortrait photo={photo} name={name} badges={badges} />
           </div>
         </div>
