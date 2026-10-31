@@ -1012,13 +1012,17 @@
     perspective: 1200px;
   }
 
-  /* Sways on its own; follows the pointer (set by PortraitStage) while a mouse is over it. */
+  /* Sways on its own once the card has landed; follows the pointer (set by PortraitStage) while
+     a mouse is over it. The sway starts and ends level, so it never jumps. */
   .portrait-3d {
+    --sway-x: 4deg;
+    --sway-y: 12deg;
+
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
     transform: rotateX(var(--rx)) rotateY(var(--ry));
-    animation: portrait-sway 9s ease-in-out infinite alternate;
+    animation: portrait-sway 12s ease-in-out 1.6s infinite;
     transition:
       --rx 220ms ease-out,
       --ry 220ms ease-out;
@@ -1029,13 +1033,18 @@
   }
 
   @keyframes portrait-sway {
-    from {
-      --rx: 5deg;
-      --ry: -14deg;
+    0%,
+    100% {
+      --rx: 0deg;
+      --ry: 0deg;
     }
-    to {
-      --rx: -4deg;
-      --ry: 14deg;
+    25% {
+      --rx: var(--sway-x);
+      --ry: calc(var(--sway-y) * -1);
+    }
+    75% {
+      --rx: calc(var(--sway-x) * -0.8);
+      --ry: var(--sway-y);
     }
   }
 
@@ -1111,6 +1120,38 @@
 
   .portrait-3d[data-active] .portrait-glare {
     opacity: 1;
+  }
+
+  /* Phones: a gentler sway and shallower depth, so nothing swings off the screen. */
+  @media (max-width: 47.99rem) {
+    .portrait {
+      perspective: 900px;
+    }
+
+    .portrait-3d {
+      --sway-x: 3deg;
+      --sway-y: 8deg;
+    }
+
+    .portrait-badge {
+      --z: 40px;
+    }
+
+    .portrait-badge[data-slot="1"] {
+      --z: 55px;
+    }
+
+    .portrait-caption {
+      translate: 0 0 24px;
+    }
+
+    .portrait-plate {
+      translate: 10px 12px -30px;
+    }
+
+    .portrait-plate--back {
+      translate: 20px 24px -60px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

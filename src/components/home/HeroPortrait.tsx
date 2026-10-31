@@ -30,7 +30,7 @@ export function HeroPortrait({
   globeOpacity,
 }: HeroPortraitProps) {
   return (
-    <div className="portrait relative mx-auto w-[clamp(250px,72vw,330px)] laptop:w-[clamp(320px,30vw,420px)]">
+    <div className="portrait relative mx-auto w-[clamp(220px,62vw,300px)] laptop:w-[clamp(320px,30vw,420px)]">
       <PortraitStage>
         <div aria-hidden="true" className="portrait-glow" />
         {globeOpacity !== null ? (

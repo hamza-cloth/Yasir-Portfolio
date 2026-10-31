@@ -65,7 +65,7 @@ export function Hero({
     >
       <HeroArt />
       <Container className="flex flex-col gap-12 laptop:gap-14">
-        <div className="grid items-center gap-x-14 gap-y-12 laptop:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <div className="grid items-center gap-x-14 gap-y-9 sm:gap-y-12 laptop:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
           <div className="flex min-w-0 flex-col items-center gap-6 text-center laptop:items-start laptop:text-left">
             <p className="intro hero-pill" style={cssVars({ "--i": 0 })}>
               {openToWork ? <span aria-hidden="true" className="status-dot" /> : null}
@@ -149,7 +149,8 @@ export function Hero({
             </div>
           </div>
 
-          <div className="min-w-0 self-center">
+          {/* Phones and tablets: the photo comes first, above the name. */}
+          <div className="min-w-0 self-center max-laptop:order-first">
             <HeroPortrait
               photo={photo}
               name={name}

@@ -29,8 +29,11 @@
   actions (Hire me, Estimate, WhatsApp); a new **Admin panel** section linking to the admin
   sign-in; the look picker; and a large "Close menu" button within thumb reach. Blocks rise in
   one after another. Esc, the header button and the bottom button all close it.
-- **Phones:** the hero buttons span the width, the email link and look picker share one line,
+- **Phones:** the profile photo is back at the top of the hero (tablets too), a little smaller so
+  the name still shows on the first screen; the hero buttons span the width, the email link and look picker share one line,
   and look swatches are 44px tap targets.
+- **3D profile motion:** the sway now starts level after the card has landed (no jump) and loops
+  smoothly; on phones it is gentler, with shallower depth so badges stay on screen.
 
 ### Phase 9 — a new look on every refresh (2026-11-01)
 
