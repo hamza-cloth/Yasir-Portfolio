@@ -27,7 +27,7 @@
 - **Mobile menu:** opens as a circle from the button over a drifting backdrop; each page has a
   number, a one-line description and an arrow, with "You’re here" on the current one; quick
   actions (Hire me, Estimate, WhatsApp); a new **Admin panel** section linking to the admin
-  sign-in; the look picker; and a large "Close menu" button within thumb reach. Blocks rise in
+  sign-in in a new tab; the look picker; and a large "Close menu" button within thumb reach. Blocks rise in
   one after another. Esc, the header button and the bottom button all close it.
 - **Phones:** the profile photo is back at the top of the hero (tablets too), a little smaller so
   the name still shows on the first screen; the hero buttons span the width, the email link and look picker share one line,

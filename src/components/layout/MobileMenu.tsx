@@ -191,10 +191,18 @@ export function MobileMenu({
             </h2>
             <p className="text-sm text-muted">Projects, messages, leads and settings.</p>
           </div>
-          <Link href="/admin" onClick={onClose} className="mm-admin-link">
+          {/* A new tab, so the site stays open behind the admin. */}
+          <a
+            href="/admin"
+            target="_blank"
+            rel="noopener"
+            onClick={onClose}
+            className="mm-admin-link"
+          >
             Open
-            <Icon name="arrow-right" size={15} />
-          </Link>
+            <Icon name="arrow-up-right" size={15} />
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
         </section>
 
         <div className="mm-item mm-look" style={cssVars({ "--i": after + 4 })}>
