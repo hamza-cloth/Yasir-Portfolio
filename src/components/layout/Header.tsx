@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
@@ -19,7 +19,8 @@ import { NavPills } from "./NavPills";
 
 const MOBILE_MENU_ID = "mobile-menu";
 
-export function Header() {
+// announcement: the admin's announcement bar, rendered on the server and shown above the nav.
+export function Header({ announcement }: { announcement?: ReactNode }) {
   const pathname = usePathname();
   const { hidden, scrolled } = useHideOnScroll();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +40,8 @@ export function Header() {
         data-menu-open={menuOpen}
         className="site-header fixed inset-x-0 top-0 z-(--z-header) pt-[env(safe-area-inset-top)]"
       >
-        <Container className="flex h-(--header-h) items-center">
+        {announcement}
+        <Container className="flex h-[calc(var(--header-h)-var(--announce-h))] items-center">
           <div className="flex h-16 w-full items-center gap-3">
             {/* Full logo where there is room: from 640px, except beside the inline nav until 1320px. */}
             <Logo wordmarkClassName="max-[40rem]:hidden laptop:max-xl:hidden" />

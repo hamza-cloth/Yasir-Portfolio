@@ -9,18 +9,22 @@ type HeroPortraitProps = {
   photo: ProfilePhoto | null;
   name: string;
   badges: PortraitBadge[];
+  // Opacity of the globe from 0 to 1 (admin → Appearance); null hides it.
+  globeOpacity: number | null;
 };
 
 // The hero's right column: the profile photo in a gold ring, a thin outer ring with a slowly
 // turning gold arc, a soft glow, and the dot globe turning behind it all. The badges repeat
 // facts shown elsewhere on the page, so they are hidden from screen readers.
-export function HeroPortrait({ photo, name, badges }: HeroPortraitProps) {
+export function HeroPortrait({ photo, name, badges, globeOpacity }: HeroPortraitProps) {
   return (
     <div className="portrait relative mx-auto aspect-square w-[clamp(260px,32vw,440px)]">
       <div aria-hidden="true" className="portrait-glow" />
-      <div aria-hidden="true" className="portrait-globe">
-        <LazyGlobe />
-      </div>
+      {globeOpacity !== null ? (
+        <div aria-hidden="true" className="portrait-globe" style={{ opacity: globeOpacity }}>
+          <LazyGlobe />
+        </div>
+      ) : null}
       <div aria-hidden="true" className="portrait-ring" />
       <div aria-hidden="true" className="portrait-arc" />
 

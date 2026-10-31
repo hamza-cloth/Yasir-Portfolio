@@ -35,3 +35,38 @@ export async function sendContactEmail(message: MessageInput): Promise<boolean> 
     reportError(error, { where: "contact-email", name: error.name, message: error.message });
   return !error;
 }
+
+export function isAdminEmailConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY);
+}
+
+// Replies, invitations and password resets from the admin. Returns whether Resend accepted it.
+export async function sendAdminEmail({
+  to,
+  subject,
+  text,
+  replyTo,
+}: {
+  to: string;
+  subject: string;
+  text: string;
+  replyTo?: string;
+}): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return false;
+  try {
+    const { error } = await new Resend(apiKey).emails.send({
+      from: process.env.EMAIL_FROM || FALLBACK_FROM,
+      to,
+      replyTo,
+      subject,
+      text,
+    });
+    if (error)
+      reportError(error, { where: "admin-email", name: error.name, message: error.message });
+    return !error;
+  } catch (error) {
+    reportError(error, { where: "admin-email" });
+    return false;
+  }
+}

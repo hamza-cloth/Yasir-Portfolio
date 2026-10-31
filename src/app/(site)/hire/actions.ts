@@ -3,6 +3,8 @@
 import { deliverMessage } from "@/lib/deliver-message";
 import { inquirySchema, type InquiryField, type InquiryInput } from "@/lib/validation/inquiry";
 
+import { recordLead } from "./lead";
+
 export type InquiryState = {
   status: "idle" | "sent" | "error";
   message?: string;
@@ -87,5 +89,6 @@ export async function sendProjectInquiry(
       values,
     };
   }
+  await recordLead(parsed.data, String(formData.get("estimate") ?? "").slice(0, 600));
   return { status: "sent" };
 }

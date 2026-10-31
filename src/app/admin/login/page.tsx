@@ -20,8 +20,8 @@ export const metadata = { title: "Sign in" };
 const FEATURES: { icon: IconName; title: string; body: string }[] = [
   {
     icon: "shield",
-    title: "One private account",
-    body: "Only the admin can sign in, and the password is stored as an argon2id hash.",
+    title: "Invited accounts only",
+    body: "Owners invite editors and viewers. Passwords are stored as argon2id hashes, with optional two-factor codes.",
   },
   {
     icon: "lock",
@@ -99,7 +99,13 @@ function CardSkeleton() {
 
 // Reads the session, so it streams in behind the page's Suspense boundary (Cache Components
 // keeps request data out of the static shell).
-async function SignInCard({ photoUrl }: { photoUrl: string | null }) {
+async function SignInCard({
+  photoUrl,
+  searchParams,
+}: {
+  photoUrl: string | null;
+  searchParams: Promise<{ welcome?: string; reset?: string }>;
+}) {
   // Wait for the request before the checks below, so their catch never swallows the prerender
   // signal and bakes a signed-out card into the shell.
   await connection();
@@ -108,6 +114,12 @@ async function SignInCard({ photoUrl }: { photoUrl: string | null }) {
   // thrown mid-stream would cut the response). A database hiccup just shows the form.
   const admin = configured ? await getAdmin().catch(() => null) : null;
   const photo = await getProfilePhoto(photoUrl).catch(() => null);
+  const { welcome, reset } = await searchParams;
+  const notice = welcome
+    ? "Your account is ready. Sign in with your new password."
+    : reset
+      ? "Password changed. Sign in with the new one."
+      : null;
 
   return (
     <div className="animate-rise rounded-panel border border-line bg-surface-solid p-6 shadow-(--shadow-lift) sm:p-9">
@@ -132,14 +144,41 @@ async function SignInCard({ photoUrl }: { photoUrl: string | null }) {
               ? "Sign in to manage projects, notes, messages and the home-page looks."
               : "The admin area needs a database before anyone can sign in. Four steps:"}
           </p>
-          {configured ? <LoginForm action={login} /> : <SetupSteps />}
+          {notice && configured ? (
+            <p
+              role="status"
+              className="mb-5 flex items-start gap-3 rounded-field border border-ok/25 bg-ok/8 px-4 py-3 text-sm leading-relaxed text-ok"
+            >
+              <Icon name="shield" size={18} className="mt-0.5 flex-none" />
+              {notice}
+            </p>
+          ) : null}
+          {configured ? (
+            <>
+              <LoginForm action={login} />
+              <p className="mt-5 text-center text-sm">
+                <Link
+                  href="/admin/login/forgot"
+                  className="inline-flex min-h-11 items-center font-medium text-c1-text hover:underline"
+                >
+                  Forgot your password?
+                </Link>
+              </p>
+            </>
+          ) : (
+            <SetupSteps />
+          )}
         </>
       )}
     </div>
   );
 }
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string; reset?: string }>;
+}) {
   const settings = await getSiteSettings().catch(() => DEFAULT_SITE_SETTINGS);
 
   return (
@@ -158,7 +197,7 @@ export default async function LoginPage() {
           </Link>
 
           <Suspense fallback={<CardSkeleton />}>
-            <SignInCard photoUrl={settings.photoUrl} />
+            <SignInCard photoUrl={settings.photoUrl} searchParams={searchParams} />
           </Suspense>
 
           <p className="mt-6 flex items-center justify-center gap-2 text-center text-sm text-muted">

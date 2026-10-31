@@ -20,6 +20,27 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 3 — admin upgrade (2026-10-31)
+
+- **Sign-in and security:** password reset by email (30-minute link), TOTP two-factor with a
+  QR code and 8 one-time backup codes (secrets encrypted with `ADMIN_ENCRYPTION_KEY`), active
+  sessions with sign-out per device or everywhere else, and a sign-in history.
+- **Users and roles:** Owner / Editor / Viewer, checked on the server for every page and action;
+  owners invite people by email (or a copyable link when email is off).
+- **Business:** leads pipeline board (every inquiry becomes a lead, calculator inquiries keep their
+  estimate), estimates, clients and invoices with GST and print.
+- **Content:** testimonials with approval, shown on the home page once approved; deletes go to a
+  30-day trash with restore; a full activity log with before/after changes.
+- **Inbox:** labels with a filter, replies by email with three templates.
+- **Site switches (Appearance):** announcement bar above the header, maintenance page, home
+  section order and visibility, globe strength, calm motion.
+- **Growth:** cookie-less analytics with unique visitors, sources, devices and countries; redirects
+  for addresses that no longer exist (real 308/307 from the proxy, visits counted); newsletter
+  sign-up in the footer with double opt-in, subscriber list and CSV.
+- **System:** health page (configuration checks, database latency, stored counts), CSV exports and
+  a full JSON backup; in-app notification bell and ⌘K command palette; email alerts can be
+  switched off per type.
+
 ## Already shipped before this upgrade
 
 - Cost calculator at `/estimate` (prices in `src/config/pricing.ts`).

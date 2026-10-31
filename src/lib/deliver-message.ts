@@ -1,7 +1,9 @@
 import "server-only";
 
+import { getSiteConfig } from "@/lib/data/site-config";
 import { getDb } from "@/lib/db";
 import { isEmailConfigured, sendContactEmail } from "@/lib/email";
+import { notify } from "@/lib/notify";
 import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 import type { MessageInput } from "@/lib/validation/message";
 
@@ -27,7 +29,20 @@ export async function deliverMessage(message: MessageInput): Promise<DeliveryRes
 
   try {
     const record = db ? await db.message.create({ data: { ...message, ipHash } }) : null;
-    const emailed = await sendContactEmail(message).catch(() => false);
+    if (record) {
+      await notify(
+        "message",
+        `New message from ${message.name}`,
+        message.body.slice(0, 140),
+        "/admin/messages",
+      );
+    }
+    // The admin can switch the email alerts off (Users & security); without a database the
+    // email is the only copy, so it always goes.
+    const prefs = record ? await getSiteConfig("notifications").catch(() => null) : null;
+    const wantsEmail =
+      !prefs || (message.topic === "PROJECT" ? prefs.emailOnLead : prefs.emailOnMessage);
+    const emailed = wantsEmail ? await sendContactEmail(message).catch(() => false) : false;
     if (record && emailed) {
       await db?.message.update({ where: { id: record.id }, data: { emailSent: true } });
     }

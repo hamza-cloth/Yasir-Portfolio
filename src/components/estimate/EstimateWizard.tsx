@@ -6,12 +6,8 @@ import { buttonClassName } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import {
   DEFAULTS,
-  DELIVERY,
-  DESIGN_LEVELS,
-  FEATURES,
   PLATFORMS,
   PRICING,
-  SCALES,
   type DeliveryId,
   type DesignId,
   type FeatureId,
@@ -22,6 +18,8 @@ import {
 import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
 import {
   calculateEstimate,
+  estimateInputFromParams,
+  estimateInputToParams,
   findProjectType,
   formatInr,
   validateEstimateInput,
@@ -55,41 +53,12 @@ const INITIAL: State = {
   delivery: DEFAULTS.delivery,
 };
 
-const oneOf = <T extends string>(ids: readonly T[], value: string | null, fallback: T): T =>
-  value && (ids as readonly string[]).includes(value) ? (value as T) : fallback;
-
 // Reads a selection from query params (a shared link wins) or, failing that, from storage.
 function readSaved(): State | null {
   const fromParams = (params: URLSearchParams): State | null => {
-    const type = params.get("type");
-    if (!type || !findProjectType(type)) return null;
-    const list = (key: string) => (params.get(key) ?? "").split(",").filter(Boolean);
-    const platforms = list("devices").filter((id): id is PlatformId =>
-      PLATFORMS.some((platform) => platform.id === id),
-    );
-    return {
-      step: Math.min(5, Math.max(1, Number(params.get("step")) || 1)),
-      type,
-      platforms: platforms.length > 0 ? platforms : DEFAULTS.platforms,
-      features: list("features").filter((id): id is FeatureId =>
-        FEATURES.some((feature) => feature.id === id),
-      ),
-      design: oneOf(
-        DESIGN_LEVELS.map((item) => item.id),
-        params.get("design"),
-        DEFAULTS.design,
-      ),
-      scale: oneOf(
-        SCALES.map((item) => item.id),
-        params.get("users"),
-        DEFAULTS.scale,
-      ),
-      delivery: oneOf(
-        DELIVERY.map((item) => item.id),
-        params.get("delivery"),
-        DEFAULTS.delivery,
-      ),
-    };
+    const input = estimateInputFromParams(params);
+    if (!input) return null;
+    return { ...input, step: Math.min(5, Math.max(1, Number(params.get("step")) || 1)) };
   };
 
   const shared = fromParams(new URLSearchParams(window.location.search));
@@ -104,15 +73,9 @@ function readSaved(): State | null {
 
 function toParams(state: State): string {
   if (!state.type) return "";
-  return new URLSearchParams({
-    type: state.type,
-    devices: state.platforms.join(","),
-    features: state.features.join(","),
-    design: state.design,
-    users: state.scale,
-    delivery: state.delivery,
-    step: String(state.step),
-  }).toString();
+  const params = estimateInputToParams({ ...state, type: state.type });
+  params.set("step", String(state.step));
+  return params.toString();
 }
 
 type EstimateWizardProps = { email: string; location: string; site: string };

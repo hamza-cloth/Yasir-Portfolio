@@ -18,7 +18,13 @@ import {
   SUPPORT_INCLUDED,
   type ProjectType,
 } from "@/config/pricing";
-import { budgetRangeFor, formatInr, type Estimate, type EstimateInput } from "@/lib/estimate";
+import {
+  budgetRangeFor,
+  estimateInputToParams,
+  formatInr,
+  type Estimate,
+  type EstimateInput,
+} from "@/lib/estimate";
 import { whatsappUrl } from "@/lib/hire";
 
 // The GST note, unless it is still an unconfirmed placeholder in a production build.
@@ -48,11 +54,13 @@ function labelsFor(input: EstimateInput) {
   };
 }
 
-export function quoteHref(estimate: Estimate, type: ProjectType): string {
+// The selection travels too (as "estimate"), so the inquiry is saved with a matching estimate.
+export function quoteHref(estimate: Estimate, type: ProjectType, input: EstimateInput): string {
   const params = new URLSearchParams({
     projectType: type.inquiryType,
     budget: budgetRangeFor(estimate.low, estimate.high),
     details: `From the cost calculator:\n${estimate.summaryText}`,
+    estimate: estimateInputToParams(input).toString(),
   });
   return `/hire?${params.toString()}#inquiry`;
 }
@@ -123,7 +131,7 @@ export function ResultCard({ estimate, input, type, onEdit, onPrint }: ResultCar
         </details>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href={quoteHref(estimate, type)} className={buttonClassName("accent", "lg")}>
+          <a href={quoteHref(estimate, type, input)} className={buttonClassName("accent", "lg")}>
             Get Exact Quote
             <Icon name="arrow-right" />
           </a>

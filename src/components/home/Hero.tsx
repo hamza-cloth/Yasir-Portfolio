@@ -27,6 +27,7 @@ type HeroProps = {
   linkedinUrl: string | null;
   githubUrl: string | null;
   badges: PortraitBadge[];
+  globeOpacity: number | null;
 };
 
 export function Hero({
@@ -39,6 +40,7 @@ export function Hero({
   linkedinUrl,
   githubUrl,
   badges,
+  globeOpacity,
 }: HeroProps) {
   const role = roleLine.split(" · ")[0] ?? roleLine;
   // The surname carries the gold.
@@ -164,7 +166,7 @@ export function Hero({
           </div>
 
           <div className="self-center max-laptop:order-first max-laptop:py-6 laptop:col-start-2 laptop:row-start-1">
-            <HeroPortrait photo={photo} name={name} badges={badges} />
+            <HeroPortrait photo={photo} name={name} badges={badges} globeOpacity={globeOpacity} />
           </div>
         </div>
       </Container>

@@ -15,18 +15,24 @@ import {
   text,
 } from "@/lib/admin/form-data";
 import { adminContext } from "@/lib/admin/guard";
+import { moveToTrash } from "@/lib/admin/trash";
 import { audit } from "@/lib/audit";
 import {
+  clearTwoFactor,
   createSession,
   destroySession,
   isAdminConfigured,
   normaliseEmail,
+  pendingTwoFactorUser,
+  requestUserAgent,
   requireAdmin,
+  startTwoFactor,
   verifyAdminLogin,
 } from "@/lib/auth/session";
+import { decryptSecret, hashBackupCode, verifyTotp } from "@/lib/auth/totp";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { getDb } from "@/lib/db";
 import { isLook, isLookMode, LOOKS, type Look } from "@/lib/look";
-import { deleteUnusedMedia } from "@/lib/media";
 import { reportError } from "@/lib/monitoring";
 import { clearRateLimit, requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 import {
@@ -56,6 +62,7 @@ export async function login(_previous: FormResult, form: FormData): Promise<Form
   const email = normaliseEmail(text(form, "email"));
   const password = String(form.get("password") ?? "");
   if (!email || !password) return { error: "Enter your email and password." };
+  let needsCode = false;
 
   // A database failure stays on the form as a message instead of the admin error page.
   try {
@@ -67,19 +74,99 @@ export async function login(_previous: FormResult, form: FormData): Promise<Form
     const accountOk = await takeRateLimit(accountKey, 5, window);
     if (!ipOk || !accountOk) return { error: "Too many attempts. Wait 15 minutes and try again." };
 
-    const adminId = await verifyAdminLogin(email, password);
+    const user = await verifyAdminLogin(email, password);
     // One message for a wrong email and a wrong password, so neither is confirmed.
-    if (!adminId) return { error: "Wrong email or password." };
+    if (!user) {
+      await recordLogin(email, false, "Wrong email or password");
+      return { error: "Wrong email or password." };
+    }
 
     // A successful sign-in clears both counters, so signing in often never locks the admin out.
     await clearRateLimit(ipKey, accountKey);
-    await createSession(adminId);
-    await audit(email, "login", "session", "Signed in");
+    if (user.totpEnabled) {
+      await startTwoFactor(user.id);
+      needsCode = true;
+    } else {
+      await createSession(user.id);
+      await recordLogin(email, true);
+      await audit(email, "login", "session", "Signed in");
+    }
   } catch (error) {
     reportError(error, { action: "login" });
     return { error: "The sign-in service is not reachable right now. Try again in a minute." };
   }
   // Outside the try: redirect() works by throwing, and must not be caught above.
+  redirect(needsCode ? "/admin/login/verify" : "/admin");
+}
+
+// Every sign-in attempt, for the login history on the security page.
+async function recordLogin(email: string, success: boolean, reason?: string): Promise<void> {
+  try {
+    await getDb()?.loginEvent.create({
+      data: {
+        email,
+        success,
+        reason,
+        ipHash: await requestIpHash(),
+        userAgent: await requestUserAgent(),
+      },
+    });
+  } catch {
+    // History is best effort.
+  }
+}
+
+// Second step of a two-factor sign-in: a 6-digit authenticator code or one backup code.
+export async function verifyTwoFactor(_previous: FormResult, form: FormData): Promise<FormResult> {
+  const code = text(form, "code").replace(/\s/g, "");
+  if (!code) return { error: "Enter the 6-digit code from your authenticator app." };
+
+  let email = "";
+  try {
+    const db = getDb();
+    const userId = await pendingTwoFactorUser();
+    if (!db || !userId) return { error: "This sign-in expired. Start again with your password." };
+
+    const ipKey = `2fa:${await requestIpHash()}`;
+    if (!(await takeRateLimit(ipKey, 5, 15 * 60_000))) {
+      return { error: "Too many codes tried. Wait 15 minutes and try again." };
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { email: true, totpSecret: true, backupCodes: true },
+    });
+    const secret = user?.totpSecret ? decryptSecret(user.totpSecret) : null;
+    if (!user?.email || !secret) return { error: "Two-factor is not set up for this account." };
+    email = user.email;
+
+    let ok = verifyTotp(secret, code);
+    if (!ok) {
+      const hashed = hashBackupCode(code);
+      if (user.backupCodes.includes(hashed)) {
+        ok = true;
+        // A backup code works once.
+        await db.user.update({
+          where: { id: userId },
+          data: { backupCodes: user.backupCodes.filter((stored) => stored !== hashed) },
+        });
+        await audit(email, "security", "user", "Signed in with a backup code", userId);
+      }
+    }
+    if (!ok) {
+      await recordLogin(email, false, "Wrong two-factor code");
+      return { error: "That code is not right. Check the time on your phone and try again." };
+    }
+
+    await clearRateLimit(ipKey);
+    await clearTwoFactor();
+    await createSession(userId);
+    await recordLogin(email, true);
+    await audit(email, "login", "session", "Signed in (two-factor)");
+  } catch (error) {
+    reportError(error, { action: "verify-2fa" });
+    return { error: "The sign-in service is not reachable right now. Try again in a minute." };
+  }
   redirect("/admin");
 }
 
@@ -171,9 +258,13 @@ export async function saveProject(
 
 export async function deleteProject(form: FormData): Promise<void> {
   const { db, admin } = await adminContext();
-  const removed = await db.project.delete({ where: { id: text(form, "id") } });
-  await audit(admin.email, "delete", "project", removed.title, removed.id);
-  await deleteUnusedMedia([removed.coverImageUrl]);
+  // Kept in the trash for 30 days (with its cover image), so it can be restored.
+  const removed = await db.$transaction(async (tx) => {
+    const row = await tx.project.delete({ where: { id: text(form, "id") } });
+    await moveToTrash(tx, "project", row.id, row.title, row, admin.email);
+    return row;
+  });
+  await audit(admin.email, "delete", "project", removed.title, removed.id, { before: removed });
   updateTag(CACHE_TAGS.projects);
   redirect("/admin/projects");
 }
@@ -226,8 +317,12 @@ export async function saveNote(
 
 export async function deleteNote(form: FormData): Promise<void> {
   const { db, admin } = await adminContext();
-  const removed = await db.note.delete({ where: { id: text(form, "id") } });
-  await audit(admin.email, "delete", "note", removed.title, removed.id);
+  const removed = await db.$transaction(async (tx) => {
+    const row = await tx.note.delete({ where: { id: text(form, "id") } });
+    await moveToTrash(tx, "note", row.id, row.title, row, admin.email);
+    return row;
+  });
+  await audit(admin.email, "delete", "note", removed.title, removed.id, { before: removed });
   updateTag(CACHE_TAGS.notes);
   redirect("/admin/notes");
 }
@@ -277,8 +372,19 @@ export async function saveExperience(
 
 export async function deleteExperience(form: FormData): Promise<void> {
   const { db, admin } = await adminContext();
-  const removed = await db.experience.delete({ where: { id: text(form, "id") } });
-  await audit(admin.email, "delete", "experience", `${removed.role} at ${removed.company}`);
+  const removed = await db.$transaction(async (tx) => {
+    const row = await tx.experience.delete({ where: { id: text(form, "id") } });
+    await moveToTrash(tx, "experience", row.id, `${row.role} at ${row.company}`, row, admin.email);
+    return row;
+  });
+  await audit(
+    admin.email,
+    "delete",
+    "experience",
+    `${removed.role} at ${removed.company}`,
+    removed.id,
+    { before: removed },
+  );
   updateTag(CACHE_TAGS.experience);
   redirect("/admin/experience");
 }
@@ -328,8 +434,12 @@ export async function saveCredential(
 
 export async function deleteCredential(form: FormData): Promise<void> {
   const { db, admin } = await adminContext();
-  const removed = await db.certification.delete({ where: { id: text(form, "id") } });
-  await audit(admin.email, "delete", "credential", removed.title);
+  const removed = await db.$transaction(async (tx) => {
+    const row = await tx.certification.delete({ where: { id: text(form, "id") } });
+    await moveToTrash(tx, "credential", row.id, row.title, row, admin.email);
+    return row;
+  });
+  await audit(admin.email, "delete", "credential", removed.title, removed.id, { before: removed });
   updateTag(CACHE_TAGS.credentials);
   redirect("/admin/credentials");
 }
@@ -376,8 +486,12 @@ export async function updateSkill(
 
 export async function deleteSkill(form: FormData): Promise<void> {
   const { db, admin } = await adminContext();
-  const removed = await db.skill.delete({ where: { id: text(form, "id") } });
-  await audit(admin.email, "delete", "skill", removed.name);
+  const removed = await db.$transaction(async (tx) => {
+    const row = await tx.skill.delete({ where: { id: text(form, "id") } });
+    await moveToTrash(tx, "skill", row.id, row.name, row, admin.email);
+    return row;
+  });
+  await audit(admin.email, "delete", "skill", removed.name, removed.id, { before: removed });
   updateTag(CACHE_TAGS.skills);
   refresh();
 }
@@ -408,8 +522,12 @@ export async function setMessageFlag(form: FormData): Promise<void> {
 
 export async function deleteMessage(form: FormData): Promise<void> {
   const { db, admin } = await adminContext();
-  const removed = await db.message.delete({ where: { id: text(form, "id") } });
-  await audit(admin.email, "delete", "message", `From ${removed.name}`);
+  const removed = await db.$transaction(async (tx) => {
+    const row = await tx.message.delete({ where: { id: text(form, "id") } });
+    await moveToTrash(tx, "message", row.id, `From ${row.name}`, row, admin.email);
+    return row;
+  });
+  await audit(admin.email, "delete", "message", `From ${removed.name}`, removed.id);
   refresh();
 }
 

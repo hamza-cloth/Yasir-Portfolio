@@ -1,11 +1,17 @@
 import Link from "next/link";
 
+import { replyToMessage, setMessageLabels } from "@/app/admin/system-actions";
 import { InlineAction } from "@/components/admin/AdminForm";
 import { AdminHeader, NoDatabase } from "@/components/admin/AdminUi";
+import { inputClass } from "@/components/admin/fields";
+import { ReplyForm } from "@/components/admin/ReplyForm";
 import type { Prisma } from "@/generated/prisma/client";
-import { requireAdmin } from "@/lib/auth/session";
+import { dateTime } from "@/lib/admin/format";
+import { pageAdmin } from "@/lib/admin/guard";
+import { can } from "@/lib/admin/roles";
 import { cn } from "@/lib/cn";
 import { getDb } from "@/lib/db";
+import { isEmailConfigured } from "@/lib/email";
 import { MESSAGE_TOPICS } from "@/lib/validation/message";
 
 import { deleteMessage, setMessageFlag } from "../../actions";
@@ -13,12 +19,6 @@ import { deleteMessage, setMessageFlag } from "../../actions";
 export const metadata = { title: "Messages" };
 // Checks the session on every request, so navigating here may block (see admin/layout.tsx).
 export const instant = false;
-
-const dateFormat = new Intl.DateTimeFormat("en-IN", {
-  dateStyle: "medium",
-  timeStyle: "short",
-  timeZone: "Asia/Kolkata",
-});
 
 const TABS = {
   inbox: { label: "Inbox", where: { archived: false, spam: false } },
@@ -36,29 +36,36 @@ function isTab(value: unknown): value is Tab {
 export default async function MessagesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; label?: string }>;
 }) {
-  await requireAdmin();
+  const admin = await pageAdmin();
   const db = getDb();
   if (!db) return <NoDatabase />;
 
-  const requested = (await searchParams).tab;
+  const { tab: requested, label } = await searchParams;
   const tab: Tab = isTab(requested) ? requested : "inbox";
-  const [messages, counts] = await Promise.all([
-    db.message.findMany({ where: TABS[tab].where, orderBy: { createdAt: "desc" }, take: 200 }),
+  const editable = can(admin.role, "edit");
+  const canEmail = isEmailConfigured();
+  const where: Prisma.MessageWhereInput = label
+    ? { ...TABS[tab].where, labels: { has: label } }
+    : TABS[tab].where;
+  const [messages, counts, labelled] = await Promise.all([
+    db.message.findMany({ where, orderBy: { createdAt: "desc" }, take: 200 }),
     Promise.all(
       (Object.keys(TABS) as Tab[]).map(
         async (key) => [key, await db.message.count({ where: TABS[key].where })] as const,
       ),
     ),
+    db.message.findMany({ where: { labels: { isEmpty: false } }, select: { labels: true } }),
   ]);
+  const allLabels = [...new Set(labelled.flatMap((row) => row.labels))].sort();
   const unread = await db.message.count({ where: { read: false, archived: false, spam: false } });
 
   return (
     <>
       <AdminHeader
         title="Messages"
-        description={`${unread} unread in the inbox. Spam is caught by a hidden honeypot field and a rate limit on the form.`}
+        description={`${unread} unread in the inbox. Spam is caught by a hidden honeypot field and a rate limit on the form. Deleted messages stay in the trash for 30 days.`}
       />
 
       <nav aria-label="Message folders" className="mb-6 flex flex-wrap gap-2">
@@ -80,9 +87,39 @@ export default async function MessagesPage({
         ))}
       </nav>
 
+      {allLabels.length > 0 ? (
+        <nav aria-label="Labels" className="-mt-2 mb-6 flex flex-wrap items-center gap-2 text-sm">
+          <span className="label-mono text-faint">Labels</span>
+          {allLabels.map((name) => {
+            const active = name === label;
+            const params = new URLSearchParams({
+              ...(tab === "inbox" ? {} : { tab }),
+              ...(active ? {} : { label: name }),
+            });
+            const query = params.toString();
+            return (
+              <Link
+                key={name}
+                href={query ? `/admin/messages?${query}` : "/admin/messages"}
+                aria-current={active ? "true" : undefined}
+                className={cn(
+                  "inline-flex min-h-9 items-center rounded-pill border px-3",
+                  active
+                    ? "border-c1 bg-c1-soft text-c1-text"
+                    : "border-line-2 text-muted hover:text-fg",
+                )}
+              >
+                {name}
+              </Link>
+            );
+          })}
+        </nav>
+      ) : null}
+
       {messages.length === 0 ? (
         <p className="surface rounded-card border border-dashed border-line-2 p-8 text-center text-muted">
-          Nothing in {TABS[tab].label.toLowerCase()}.
+          Nothing in {TABS[tab].label.toLowerCase()}
+          {label ? ` with the label “${label}”` : ""}.
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -124,30 +161,77 @@ export default async function MessagesPage({
                   </div>
                   <div className="flex flex-col items-end gap-1 text-right">
                     <span className="label-mono text-muted">{MESSAGE_TOPICS[message.topic]}</span>
-                    <span className="text-xs text-faint">
-                      {dateFormat.format(message.createdAt)}
-                    </span>
+                    <span className="text-xs text-faint">{dateTime.format(message.createdAt)}</span>
                   </div>
                 </div>
                 <p className="whitespace-pre-wrap text-fg/90">{message.body}</p>
+                {message.labels.length > 0 ? (
+                  <ul className="flex flex-wrap gap-1.5" aria-label="Labels">
+                    {message.labels.map((name) => (
+                      <li
+                        key={name}
+                        className="label-mono rounded-pill bg-c1-soft px-2.5 py-1 text-c1-text"
+                      >
+                        {name}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {editable ? (
+                  <details className="rounded-field border border-line">
+                    <summary className="flex min-h-11 cursor-pointer items-center px-4 text-sm font-medium text-fg">
+                      {canEmail ? "Reply by email · labels" : "Labels"}
+                    </summary>
+                    <div className="flex flex-col gap-5 border-t border-line p-4">
+                      {canEmail ? (
+                        <ReplyForm
+                          action={replyToMessage.bind(null, message.id)}
+                          name={message.name}
+                        />
+                      ) : null}
+                      <form action={setMessageLabels} className="flex flex-wrap items-end gap-2">
+                        <input type="hidden" name="id" value={message.id} />
+                        <label className="flex min-w-0 flex-1 flex-col gap-1.5">
+                          <span className="label-mono text-faint">Labels, comma-separated</span>
+                          <input
+                            name="labels"
+                            defaultValue={message.labels.join(", ")}
+                            placeholder="client, follow-up"
+                            className={inputClass}
+                          />
+                        </label>
+                        <button
+                          type="submit"
+                          className="inline-flex min-h-11 items-center rounded-pill border border-line-2 px-4 text-sm text-muted hover:text-fg"
+                        >
+                          Save labels
+                        </button>
+                      </form>
+                    </div>
+                  </details>
+                ) : null}
                 <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
                   <a
                     href={`mailto:${message.email}?subject=${encodeURIComponent("Re: your message")}`}
-                    className="inline-flex min-h-11 items-center rounded-pill bg-fg px-4 text-sm font-medium text-bg"
+                    className="inline-flex min-h-11 items-center rounded-pill border border-line-2 px-4 text-sm font-medium text-muted hover:text-fg"
                   >
-                    Reply
+                    Open in mail app
                   </a>
-                  {flag("read", "Mark read", "Mark unread")}
-                  {flag("starred", "Star", "Unstar")}
-                  {flag("archived", "Archive", "Unarchive")}
-                  {flag("spam", "Spam", "Not spam")}
-                  <InlineAction
-                    action={deleteMessage}
-                    label="Delete"
-                    tone="danger"
-                    confirm="Delete this message for good?"
-                    hidden={{ id: message.id }}
-                  />
+                  {editable ? (
+                    <>
+                      {flag("read", "Mark read", "Mark unread")}
+                      {flag("starred", "Star", "Unstar")}
+                      {flag("archived", "Archive", "Unarchive")}
+                      {flag("spam", "Spam", "Not spam")}
+                      <InlineAction
+                        action={deleteMessage}
+                        label="Delete"
+                        tone="danger"
+                        confirm="Move this message to the trash?"
+                        hidden={{ id: message.id }}
+                      />
+                    </>
+                  ) : null}
                 </div>
               </li>
             );

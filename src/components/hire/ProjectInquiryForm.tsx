@@ -91,6 +91,7 @@ export function ProjectInquiryForm({ email }: { email: string }) {
     fill("projectType", PROJECT_TYPES);
     fill("budget", BUDGET_RANGES);
     fill("details");
+    fill("estimate");
     const details = form.elements.namedItem("details");
     if (details instanceof HTMLTextAreaElement && details.value) {
       const length = details.value.trim().length;
@@ -297,6 +298,8 @@ export function ProjectInquiryForm({ email }: { email: string }) {
           <input name="company" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
+      {/* The calculator's selection, when the visitor came from "Get Exact Quote". */}
+      <input type="hidden" name="estimate" defaultValue="" />
 
       {state.status === "error" && state.message ? (
         <div role="alert" className="flex flex-col gap-3 rounded-field border border-red/40 p-4">

@@ -10,6 +10,7 @@ import { ALL_PAGES } from "@/lib/site-nav";
 import { FooterName } from "./FooterName";
 import { IstClock } from "./IstClock";
 import { Logo } from "./Logo";
+import { NewsletterForm } from "./NewsletterForm";
 
 type FooterProps = {
   settings: SiteSettingsData;
@@ -53,6 +54,9 @@ export async function Footer({ settings }: FooterProps) {
                 <Icon name="arrow-up-right" size={15} />
               </Button>
               <IstClock />
+            </div>
+            <div className="mt-4 w-full">
+              <NewsletterForm />
             </div>
           </div>
 

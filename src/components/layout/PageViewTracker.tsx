@@ -10,7 +10,9 @@ export function PageViewTracker() {
   useEffect(() => {
     if (navigator.doNotTrack === "1") return;
     try {
-      const body = new Blob([JSON.stringify({ path: pathname })], { type: "application/json" });
+      const body = new Blob([JSON.stringify({ path: pathname, referrer: document.referrer })], {
+        type: "application/json",
+      });
       if (!navigator.sendBeacon?.("/api/views", body)) {
         void fetch("/api/views", { method: "POST", body, keepalive: true }).catch(() => undefined);
       }

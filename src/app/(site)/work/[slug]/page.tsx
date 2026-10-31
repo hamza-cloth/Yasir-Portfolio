@@ -11,6 +11,7 @@ import { CaseMeta } from "@/components/work/CaseMeta";
 import { DecisionsGrid } from "@/components/work/DecisionsGrid";
 import { NextCase } from "@/components/work/NextCase";
 import { getProject, getProjectSlugs, getProjectSummaries } from "@/lib/data/projects";
+import { redirectIfMoved } from "@/lib/redirects";
 import { pageMetadata } from "@/lib/seo";
 
 type Params = Promise<{ slug: string }>;
@@ -33,7 +34,10 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function CaseStudyPage({ params }: { params: Params }) {
   const { slug } = await params;
   const [project, all] = await Promise.all([getProject(slug), getProjectSummaries()]);
-  if (!project) notFound();
+  if (!project) {
+    await redirectIfMoved(`/work/${slug}`);
+    notFound();
+  }
 
   const index = all.findIndex((item) => item.slug === project.slug);
   const next = all.length > 1 ? all[(index + 1) % all.length] : undefined;

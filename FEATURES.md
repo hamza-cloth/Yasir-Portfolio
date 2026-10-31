@@ -1,56 +1,49 @@
 # Admin feature matrix
 
-Status from reading the admin pages (`src/app/admin`), server actions
-(`src/app/admin/actions.ts`, `media-actions.ts`), the Prisma schema and the public forms.
-EXISTS = works end to end · PARTIAL = some of it · BROKEN = present but failing ·
-MISSING = not built.
+Status after phase 3 (2026-10-31). The phase 0 audit (13 partial, 17 missing) is in git history.
+EXISTS = works end to end · PARTIAL = some of it · MISSING = not built.
 
 ## P0
 
-| #   | Feature            | Status  | What exists                                                                                                                                                                        | What is missing                                                                                                            |
-| --- | ------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Auth & security    | PARTIAL | argon2id password login, httpOnly DB sessions, server-side check on every action, 5 tries / 15 min per IP and per account, login/logout in the audit log, CSP and security headers | Password reset by email, TOTP 2FA + backup codes, active sessions list + sign out everywhere, login history with IP/device |
-| 2   | Roles & users      | MISSING | One admin user                                                                                                                                                                     | Owner / Editor / Viewer, invites, per-role checks                                                                          |
-| 3   | Dashboard          | PARTIAL | Counts, unread messages, 7-day views chart, latest messages, quick links, recent audit entries                                                                                     | KPI sparklines + % change, date ranges, referrers/devices/countries, leads, health widget, open-to-work toggle             |
-| 4   | Profile            | PARTIAL | Name, role line, story, location, availability, open to work, socials, photo upload with 1:1 crop, file-signature check                                                            | Explicit 2 MB limit message, AVIF variant                                                                                  |
-| 5   | Projects           | PARTIAL | CRUD, drag-to-reorder, status label, categories, stack tags, cover upload, overview + decisions, draft/publish                                                                     | Featured toggle, gallery, case-study blocks, live/GitHub links field, per-project SEO                                      |
-| 6   | Blog / Notes       | PARTIAL | CRUD, tags, featured, draft/publish, Markdown with preview, reading time                                                                                                           | Rich-text (Tiptap) editor, scheduled publishing, revision history                                                          |
-| 7   | Messages inbox     | PARTIAL | List, read/unread, star, archive, spam, delete; hire inquiries arrive here                                                                                                         | Labels, reply by email, saved templates, thread view                                                                       |
-| 8   | Leads              | MISSING | Hire Me inquiries are stored as messages                                                                                                                                           | Lead model, pipeline board, stages, value, follow-ups, convert to client, CSV                                              |
-| 9   | Calculator manager | MISSING | Prices in `src/config/pricing.ts` (code)                                                                                                                                           | Admin editing, USD, GST rate, discounts, min/max, preview                                                                  |
-| 10  | Media library      | PARTIAL | Blob uploads tracked in `MediaAsset`, list, usage-safe delete                                                                                                                      | Folders, bulk upload, required alt text, crop, AVIF/responsive sizes, storage usage                                        |
-| 11  | SEO & settings     | PARTIAL | Per-page title/description, OG image upload, indexable + sitemap toggles, site name/contact/socials; Person JSON-LD on `/hire`                                                     | Auto-generated OG, site-wide Person JSON-LD                                                                                |
-| 12  | Appearance         | PARTIAL | Looks: enable/disable, fixed/random/sequential                                                                                                                                     | Accent picker + contrast check, watermark on/off/intensity, animation intensity, live preview                              |
-| 13  | Activity log       | PARTIAL | `AuditLog` written on every mutation; latest shown on the dashboard                                                                                                                | Full log page, filters, before/after diff                                                                                  |
-| 14  | Trash              | MISSING | Deletes are permanent                                                                                                                                                              | Soft delete, restore, 30-day purge                                                                                         |
+| #   | Feature            | Status  | What exists                                                                                                                                           | What is missing                                                    |
+| --- | ------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 1   | Auth & security    | EXISTS  | argon2id login, rate limits, password reset by email, TOTP two-factor with QR code and 8 backup codes, active sessions with sign-out, sign-in history | —                                                                  |
+| 2   | Roles & users      | EXISTS  | Owner / Editor / Viewer, checked on every page and action; invitations by email or link; change role, remove user                                     | —                                                                  |
+| 3   | Dashboard          | PARTIAL | Counts, 7-day views, latest messages, activity; full analytics on its own page                                                                        | KPI sparklines, leads widget, open-to-work toggle on the dashboard |
+| 4   | Profile            | PARTIAL | Name, story, socials, photo with 1:1 crop                                                                                                             | Explicit 2 MB message, AVIF variant                                |
+| 5   | Projects           | PARTIAL | CRUD, reorder, covers, draft/publish; database fields for links, gallery and SEO                                                                      | Editing links, gallery, featured toggle and per-project SEO        |
+| 6   | Blog / Notes       | PARTIAL | CRUD, tags, Markdown preview; revision table in the database                                                                                          | Rich-text editor, scheduled publishing, revision history UI        |
+| 7   | Messages inbox     | EXISTS  | Folders, labels with filter, reply by email with three templates, trash on delete                                                                     | Thread view                                                        |
+| 8   | Leads              | EXISTS  | Pipeline board, stages, value, follow-ups, convert to client, CSV; every inquiry becomes a lead                                                       | —                                                                  |
+| 9   | Calculator manager | MISSING | Prices in `src/config/pricing.ts`                                                                                                                     | Admin editing                                                      |
+| 10  | Media library      | PARTIAL | Blob uploads, list, usage-safe delete                                                                                                                 | Folders, bulk upload, alt text, crop                               |
+| 11  | SEO & settings     | PARTIAL | Per-page title/description, OG image, robots/sitemap toggles                                                                                          | Auto-generated OG, site-wide Person JSON-LD                        |
+| 12  | Appearance         | PARTIAL | Globe on/off and strength, calm motion, announcement bar, home section order and visibility                                                           | Accent picker, live preview                                        |
+| 13  | Activity log       | EXISTS  | Full log with filters and before/after diff                                                                                                           | —                                                                  |
+| 14  | Trash              | EXISTS  | Snapshot soft delete for 9 content types, restore, 30-day purge                                                                                       | —                                                                  |
 
 ## P1
 
-| #   | Feature                                     | Status  | What exists                                                                       | What is missing                                                         |
-| --- | ------------------------------------------- | ------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 15  | Pages & sections                            | MISSING | —                                                                                 | Section visibility/order, hero text, role lines, CTAs, announcement bar |
-| 16  | Navigation & footer                         | MISSING | Nav in `src/lib/site-nav.ts` (code)                                               | Editor                                                                  |
-| 17  | Skills / Experience / Certifications & Labs | PARTIAL | CRUD for all three, draft/publish; projects reorder                               | Drag-reorder for these, certificate file upload, skill level            |
-| 18  | Testimonials                                | MISSING | —                                                                                 | Everything, incl. public submit queue                                   |
-| 19  | Services & pricing                          | MISSING | Services in `src/lib/hire.ts` (code)                                              | Editor, package tiers                                                   |
-| 20  | Résumé                                      | PARTIAL | PDF upload, versions, set active, delete                                          | Download counter                                                        |
-| 21  | Estimates                                   | MISSING | Calculator is client-only; "Get Exact Quote" pre-fills the inquiry                | Estimate model, list, PDF quote, email, status                          |
-| 22  | Analytics                                   | PARTIAL | Cookie-less daily page views per path                                             | Unique visitors, referrers, devices, countries, ranges                  |
-| 23  | Notifications                               | PARTIAL | Email per message (Resend)                                                        | In-app bell, Telegram                                                   |
-| 24  | Global search                               | PARTIAL | Admin search page (projects, notes, experience, skills, messages); public ⌘K menu | Admin ⌘K palette with actions, media/settings results                   |
+| #   | Feature                                     | Status  | Notes                                                                       |
+| --- | ------------------------------------------- | ------- | --------------------------------------------------------------------------- |
+| 15  | Pages & sections                            | PARTIAL | Section order/visibility and announcement bar; no hero text or CTA editor   |
+| 16  | Navigation & footer                         | MISSING | Nav still in `src/lib/site-nav.ts`                                          |
+| 17  | Skills / Experience / Certifications & Labs | PARTIAL | CRUD; no drag-reorder, certificate upload or skill level UI                 |
+| 18  | Testimonials                                | PARTIAL | Admin CRUD and approval; approved ones on the home page; no public submit   |
+| 19  | Services & pricing                          | MISSING | Services in `src/lib/hire.ts`                                               |
+| 20  | Résumé                                      | PARTIAL | Versions; the download counter column is not incremented yet                |
+| 21  | Estimates                                   | PARTIAL | Saved from the calculator with each inquiry, list and status; no PDF/email  |
+| 22  | Analytics                                   | EXISTS  | Views, unique visitors, sources, devices, countries, 7/30/90 days, % change |
+| 23  | Notifications                               | PARTIAL | In-app bell and per-type email switches; no Telegram                        |
+| 24  | Global search                               | EXISTS  | ⌘K command palette with pages and actions                                   |
 
 ## P2
 
-| #   | Feature                  | Status                                                                 |
-| --- | ------------------------ | ---------------------------------------------------------------------- |
-| 25  | Clients & invoices       | MISSING                                                                |
-| 26  | Subscribers              | MISSING                                                                |
-| 27  | Redirects + broken links | MISSING                                                                |
-| 28  | Backups                  | MISSING                                                                |
-| 29  | Maintenance mode         | MISSING                                                                |
-| 30  | System health            | PARTIAL — the dashboard warns when email or uploads are not configured |
-
-## Nothing found BROKEN
-
-Every existing admin action re-checks the session server-side, validates with zod and
-writes an audit entry.
+| #   | Feature                  | Status  | Notes                                                                       |
+| --- | ------------------------ | ------- | --------------------------------------------------------------------------- |
+| 25  | Clients & invoices       | EXISTS  | Clients, invoices with GST and print                                        |
+| 26  | Subscribers              | PARTIAL | Footer sign-up, double opt-in, list, CSV; sending a newsletter is not built |
+| 27  | Redirects + broken links | PARTIAL | Redirects with visit counts; no broken-link checker                         |
+| 28  | Backups                  | PARTIAL | Full JSON backup download; no restore                                       |
+| 29  | Maintenance mode         | EXISTS  | Visitors see a maintenance page; the admin keeps working                    |
+| 30  | System health            | EXISTS  | Configuration checks, database latency, exports, stored counts              |

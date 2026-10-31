@@ -30,7 +30,9 @@
   --container: 1200px;
   /* Vertical rhythm between major sections. */
   --section-y: clamp(72px, 10vw, 128px);
-  --header-h: 88px;
+  /* The header's full height; the admin's announcement bar (40px) adds to it when shown. */
+  --announce-h: 0px;
+  --header-h: calc(88px + var(--announce-h));
 
   --easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --easing-reveal: cubic-bezier(0.22, 1, 0.36, 1);
@@ -59,6 +61,11 @@
   --shiki-token-comment: var(--muted);
   --shiki-token-punctuation: var(--muted);
   --shiki-token-link: var(--c1);
+}
+
+/* The admin's announcement bar is on the page: make room for it everywhere. */
+:root:has(.announce-bar) {
+  --announce-h: 40px;
 }
 
 /* One design for every look: the same corners, button fill, feature cards, card sheen and page

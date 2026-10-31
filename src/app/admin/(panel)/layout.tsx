@@ -13,7 +13,7 @@ export default async function PanelLayout({ children }: { children: ReactNode })
   const photo = await getProfilePhoto(settings.photoUrl);
 
   return (
-    <AdminShell photo={photo}>
+    <AdminShell photo={photo} name={settings.name} logout={logout}>
       {children}
       <form action={logout} className="mt-12 border-t border-line pt-6">
         <button type="submit" className="min-h-11 text-sm text-muted hover:text-red">

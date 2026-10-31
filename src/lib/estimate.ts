@@ -1,5 +1,6 @@
 // The cost calculator's arithmetic: pure, no UI, every number read from src/config/pricing.ts.
 import {
+  DEFAULTS,
   DELIVERY,
   DESIGN_LEVELS,
   FEATURES,
@@ -156,4 +157,51 @@ export function budgetRangeFor(low: number, high: number): string {
   if (mid < 25_000) return "₹10,000–₹25,000";
   if (mid < 50_000) return "₹25,000–₹50,000";
   return "₹50,000+";
+}
+
+const pick = <T extends string>(ids: readonly T[], value: string | null, fallback: T): T =>
+  value && (ids as readonly string[]).includes(value) ? (value as T) : fallback;
+
+// A selection as query params (the calculator's shareable link, and the quote hand-off to /hire).
+export function estimateInputToParams(input: EstimateInput): URLSearchParams {
+  return new URLSearchParams({
+    type: input.type,
+    devices: input.platforms.join(","),
+    features: input.features.join(","),
+    design: input.design,
+    users: input.scale,
+    delivery: input.delivery,
+  });
+}
+
+// Reads a selection back, keeping only ids the config knows; null without a valid project type.
+export function estimateInputFromParams(params: URLSearchParams): EstimateInput | null {
+  const type = params.get("type");
+  if (!type || !findProjectType(type)) return null;
+  const list = (key: string) => (params.get(key) ?? "").split(",").filter(Boolean);
+  const platforms = list("devices").filter((id): id is PlatformId =>
+    PLATFORMS.some((platform) => platform.id === id),
+  );
+  return {
+    type,
+    platforms: platforms.length > 0 ? platforms : DEFAULTS.platforms,
+    features: list("features").filter((id): id is FeatureId =>
+      FEATURES.some((feature) => feature.id === id),
+    ),
+    design: pick(
+      DESIGN_LEVELS.map((item) => item.id),
+      params.get("design"),
+      DEFAULTS.design,
+    ),
+    scale: pick(
+      SCALES.map((item) => item.id),
+      params.get("users"),
+      DEFAULTS.scale,
+    ),
+    delivery: pick(
+      DELIVERY.map((item) => item.id),
+      params.get("delivery"),
+      DEFAULTS.delivery,
+    ),
+  };
 }
