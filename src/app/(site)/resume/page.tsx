@@ -60,7 +60,7 @@ export default async function ResumePage() {
         >
           <div className="flex flex-wrap gap-3">
             {pdf ? (
-              <Button href={pdf.url} variant="accent" size="lg" download>
+              <Button href="/api/resume" variant="accent" size="lg">
                 <Icon name="download" size={17} />
                 Download PDF
               </Button>

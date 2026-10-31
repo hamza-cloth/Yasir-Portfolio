@@ -33,7 +33,7 @@ export default async function TestimonialsPage() {
     <>
       <AdminHeader
         title="Testimonials"
-        description={`What clients say. Approved ones (${approved}) appear on the home page; with none approved, the section stays hidden.`}
+        description={`What clients say. Approved ones (${approved}) appear on the home page; with none approved, the section stays hidden. Send clients to /testimonial to write one themselves; theirs arrive here as pending.`}
         action={
           editable ? { href: "/admin/testimonials/new", label: "+ Add testimonial" } : undefined
         }

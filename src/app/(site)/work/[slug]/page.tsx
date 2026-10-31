@@ -1,10 +1,13 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { ArchitectureDiagram } from "@/components/diagrams/ArchitectureDiagram";
 import { Markdown } from "@/components/markdown/Markdown";
 import { ProjectMockup } from "@/components/mockups/ProjectMockup";
 import { PageHero } from "@/components/page/PageHero";
+import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { Icon } from "@/components/ui/Icon";
 import { PlayWhenVisible } from "@/components/ui/PlayWhenVisible";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { CaseMeta } from "@/components/work/CaseMeta";
@@ -25,8 +28,8 @@ export async function generateMetadata({ params }: { params: Params }) {
   const project = await getProject(slug);
   if (!project) return { title: "Case study not found" };
   return pageMetadata({
-    title: project.title,
-    description: project.tagline,
+    title: project.seoTitle || project.title,
+    description: project.seoDescription || project.tagline,
     path: `/work/${slug}`,
   });
 }
@@ -51,6 +54,34 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
         breadcrumb={[{ label: "Work", href: "/work" }, { label: project.title }]}
       >
         <CaseMeta project={project} />
+        {project.liveUrl || project.githubUrl ? (
+          <div className="mt-2 flex flex-wrap gap-3">
+            {project.liveUrl ? (
+              <Button
+                href={project.liveUrl}
+                variant="accent"
+                size="md"
+                target="_blank"
+                rel="noopener"
+              >
+                Visit the live site
+                <Icon name="arrow-up-right" size={16} />
+              </Button>
+            ) : null}
+            {project.githubUrl ? (
+              <Button
+                href={project.githubUrl}
+                variant="line"
+                size="md"
+                target="_blank"
+                rel="noopener"
+              >
+                <Icon name="github" size={16} />
+                Source code
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
       </PageHero>
 
       <Container className="pb-8">
@@ -65,6 +96,30 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
           <Markdown source={project.overview} className="text-lg" />
         </Container>
       </section>
+
+      {project.gallery && project.gallery.length > 0 ? (
+        <section aria-labelledby="gallery-title" className="section-y">
+          <Container className="flex flex-col gap-10">
+            <SectionHead eyebrow="Gallery" titleId="gallery-title" title="Screens from the build" />
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {project.gallery.map((src, index) => (
+                <li
+                  key={src}
+                  className="relative aspect-[16/10] overflow-hidden rounded-card border border-line"
+                >
+                  <Image
+                    src={src}
+                    alt={`${project.title}, screen ${index + 1}`}
+                    fill
+                    sizes="(min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      ) : null}
 
       {project.decisions.length > 0 ? (
         <section aria-labelledby="decisions-title" className="section-y">

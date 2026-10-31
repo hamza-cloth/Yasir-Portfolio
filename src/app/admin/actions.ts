@@ -204,6 +204,16 @@ export async function saveSettings(_previous: FormResult, form: FormData): Promi
   return { ok: "Settings saved. The site is updated." };
 }
 
+// The dashboard's one-click switch for the "open to work" badge.
+export async function toggleOpenToWork(form: FormData): Promise<void> {
+  const { db, admin } = await adminContext();
+  const openToWork = text(form, "value") === "true";
+  await db.siteSettings.update({ where: { id: 1 }, data: { openToWork } });
+  await audit(admin.email, "update", "settings", `Open to work: ${openToWork ? "on" : "off"}`);
+  updateTag(CACHE_TAGS.settings);
+  refresh();
+}
+
 // ---- Projects ------------------------------------------------------------------------------
 
 export async function saveProject(
@@ -227,6 +237,12 @@ export async function saveProject(
     decisions: pairs(form, "decisions"),
     published: bool(form, "published"),
     order: optionalInt(form, "order") ?? 0,
+    featured: bool(form, "featured"),
+    liveUrl: optionalText(form, "liveUrl"),
+    githubUrl: optionalText(form, "githubUrl"),
+    seoTitle: optionalText(form, "seoTitle"),
+    seoDescription: optionalText(form, "seoDescription"),
+    gallery: list(form, "gallery"),
   });
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
@@ -291,7 +307,36 @@ export async function saveNote(
 
   try {
     if (id) {
-      const current = await db.note.findUnique({ where: { id }, select: { publishedAt: true } });
+      const current = await db.note.findUnique({
+        where: { id },
+        select: { publishedAt: true, title: true, excerpt: true, body: true },
+      });
+      // The version being replaced is kept, so an edit can be undone (the last 20 per note).
+      if (
+        current &&
+        (current.title !== parsed.data.title ||
+          current.excerpt !== parsed.data.excerpt ||
+          current.body !== parsed.data.body)
+      ) {
+        await db.noteRevision.create({
+          data: {
+            noteId: id,
+            title: current.title,
+            excerpt: current.excerpt,
+            body: current.body,
+            actor: admin.email,
+          },
+        });
+        const old = await db.noteRevision.findMany({
+          where: { noteId: id },
+          orderBy: { createdAt: "desc" },
+          skip: 20,
+          select: { id: true },
+        });
+        if (old.length > 0) {
+          await db.noteRevision.deleteMany({ where: { id: { in: old.map((row) => row.id) } } });
+        }
+      }
       await db.note.update({
         where: { id },
         data: {
@@ -313,6 +358,34 @@ export async function saveNote(
   if (!id) redirect("/admin/notes");
   refresh();
   return { ok: "Note saved." };
+}
+
+// Puts a saved revision back; the current text becomes a revision itself, so nothing is lost.
+export async function restoreNoteRevision(form: FormData): Promise<void> {
+  const { db, admin } = await adminContext();
+  const revision = await db.noteRevision.findUnique({ where: { id: text(form, "id") } });
+  if (!revision) return;
+  const current = await db.note.findUnique({
+    where: { id: revision.noteId },
+    select: { title: true, excerpt: true, body: true },
+  });
+  if (!current) return;
+  await db.$transaction([
+    db.noteRevision.create({ data: { noteId: revision.noteId, ...current, actor: admin.email } }),
+    db.note.update({
+      where: { id: revision.noteId },
+      data: { title: revision.title, excerpt: revision.excerpt, body: revision.body },
+    }),
+  ]);
+  await audit(
+    admin.email,
+    "restore",
+    "note",
+    `Restored a version of ${revision.title}`,
+    revision.noteId,
+  );
+  updateTag(CACHE_TAGS.notes);
+  refresh();
 }
 
 export async function deleteNote(form: FormData): Promise<void> {

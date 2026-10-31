@@ -67,7 +67,8 @@ export default async function ResumeAdminPage() {
                   {version.label}
                 </a>
                 <span className="text-sm text-muted">
-                  {dateFormat.format(version.createdAt)} · {(version.size / 1024).toFixed(0)} KB
+                  {dateFormat.format(version.createdAt)} · {(version.size / 1024).toFixed(0)} KB ·{" "}
+                  {version.downloads} {version.downloads === 1 ? "download" : "downloads"}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-2">

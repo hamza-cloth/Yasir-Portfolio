@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Highlight } from "@/components/ui/Highlight";
 import { Reveal } from "@/components/ui/Reveal";
@@ -11,15 +12,20 @@ export function Testimonials({ testimonials }: { testimonials: PublicTestimonial
   return (
     <section aria-labelledby="testimonials-title" className="section-y">
       <Container className="flex flex-col gap-10">
-        <SectionHead
-          eyebrow="Testimonials"
-          titleId="testimonials-title"
-          title={
-            <>
-              In their <Highlight>own words</Highlight>
-            </>
-          }
-        />
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <SectionHead
+            eyebrow="Testimonials"
+            titleId="testimonials-title"
+            title={
+              <>
+                In their <Highlight>own words</Highlight>
+              </>
+            }
+          />
+          <Button href="/testimonial" variant="line">
+            Leave a testimonial
+          </Button>
+        </div>
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))] gap-4">
           {testimonials.map((item, index) => (
             <li key={item.id} className="min-w-0">

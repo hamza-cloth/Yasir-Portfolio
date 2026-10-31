@@ -1,6 +1,7 @@
-import { deleteSubscriber } from "@/app/admin/system-actions";
-import { InlineAction } from "@/components/admin/AdminForm";
+import { deleteSubscriber, sendNewsletter } from "@/app/admin/system-actions";
+import { AdminForm, InlineAction } from "@/components/admin/AdminForm";
 import { AdminHeader, NoDatabase } from "@/components/admin/AdminUi";
+import { FormSection, SelectField, TextArea, TextField } from "@/components/admin/fields";
 import { dateOnly } from "@/lib/admin/format";
 import { pageAdmin } from "@/lib/admin/guard";
 import { can } from "@/lib/admin/roles";
@@ -32,6 +33,39 @@ export default async function SubscribersPage() {
         title="Subscribers"
         description={`${confirmed} confirmed of ${subscribers.length}. People sign up in the site footer and confirm from an email, so only confirmed addresses should get the newsletter.`}
       />
+      {can(admin.role, "manage") ? (
+        <div className="mb-8">
+          <AdminForm action={sendNewsletter} submitLabel="Send">
+            <FormSection title="Write a newsletter">
+              <TextField
+                label="Subject"
+                name="subject"
+                maxLength={160}
+                placeholder="New: a guide to VLANs"
+                className="md:col-span-2"
+                required
+              />
+              <TextArea
+                label="Message (plain text)"
+                name="body"
+                rows={8}
+                className="md:col-span-2"
+                hint="Each email gets its own unsubscribe link at the bottom."
+                required
+              />
+              <SelectField
+                label="Send to"
+                name="mode"
+                defaultValue="test"
+                options={[
+                  ["test", "Only me (a test copy)"],
+                  ["all", `Every confirmed subscriber (${confirmed})`],
+                ]}
+              />
+            </FormSection>
+          </AdminForm>
+        </div>
+      ) : null}
       <div className="mb-4 flex justify-end">
         <a
           href="/api/admin/export?type=subscribers"

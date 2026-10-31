@@ -1,10 +1,16 @@
 import Link from "next/link";
 
+import { InlineAction } from "@/components/admin/AdminForm";
 import { AdminHeader, NoDatabase } from "@/components/admin/AdminUi";
+import { inr, relativeDays } from "@/lib/admin/format";
+import { can } from "@/lib/admin/roles";
 import { requireAdmin } from "@/lib/auth/session";
+import { getSiteSettings } from "@/lib/data/settings";
 import { getDb } from "@/lib/db";
 import { isEmailConfigured } from "@/lib/email";
 import { isBlobConfigured } from "@/lib/media";
+
+import { toggleOpenToWork } from "../actions";
 
 export const metadata = { title: "Dashboard" };
 // Checks the session on every request, so navigating here may block (see admin/layout.tsx).
@@ -17,12 +23,19 @@ const dateFormat = new Intl.DateTimeFormat("en-IN", {
 });
 
 const QUICK_ACTIONS = [
+  { href: "/admin/leads/new", label: "New lead" },
+  { href: "/admin/invoices/new", label: "New invoice" },
   { href: "/admin/projects/new", label: "New project" },
   { href: "/admin/notes/new", label: "New note" },
-  { href: "/admin/settings", label: "Change photo" },
-  { href: "/admin/looks", label: "Home looks" },
+  { href: "/admin/pricing", label: "Planner prices" },
   { href: "/admin/resume", label: "Upload résumé" },
 ];
+
+function change(now: number, before: number): string | null {
+  if (before === 0) return null;
+  const percent = Math.round(((now - before) / before) * 100);
+  return `${percent > 0 ? "+" : ""}${percent}%`;
+}
 
 export default async function DashboardPage() {
   const admin = await requireAdmin();
@@ -33,7 +46,26 @@ export default async function DashboardPage() {
   since.setUTCDate(since.getUTCDate() - 6);
   since.setUTCHours(0, 0, 0, 0);
 
-  const [unread, total, recent, activity, views] = await Promise.all([
+  const previous = new Date(since);
+  previous.setUTCDate(previous.getUTCDate() - 7);
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
+  const [
+    unread,
+    total,
+    recent,
+    activity,
+    views,
+    settings,
+    newLeads,
+    pipeline,
+    followUps,
+    visitors,
+    previousVisitors,
+    previousViews,
+    unpaid,
+  ] = await Promise.all([
     db.message.count({ where: { read: false, archived: false, spam: false } }),
     db.message.count({ where: { spam: false } }),
     db.message.findMany({
@@ -46,7 +78,32 @@ export default async function DashboardPage() {
       where: { day: { gte: since } },
       select: { day: true, path: true, count: true },
     }),
+    getSiteSettings(),
+    db.lead.count({ where: { stage: "NEW" } }),
+    db.lead.aggregate({
+      where: { stage: { notIn: ["WON", "LOST"] } },
+      _sum: { value: true },
+      _count: true,
+    }),
+    db.lead.findMany({
+      where: { followUpAt: { lte: endOfToday }, stage: { notIn: ["WON", "LOST"] } },
+      orderBy: { followUpAt: "asc" },
+      take: 5,
+      select: { id: true, name: true, followUpAt: true, stage: true },
+    }),
+    db.statDay.aggregate({
+      where: { day: { gte: since }, kind: "visitors" },
+      _sum: { count: true },
+    }),
+    db.statDay.aggregate({
+      where: { day: { gte: previous, lt: since }, kind: "visitors" },
+      _sum: { count: true },
+    }),
+    db.pageView.aggregate({ where: { day: { gte: previous, lt: since } }, _sum: { count: true } }),
+    db.invoice.count({ where: { status: { in: ["SENT", "OVERDUE"] } } }).catch(() => 0),
   ]);
+  const canEdit = can(admin.role, "edit");
+  const visitorsNow = visitors._sum.count ?? 0;
 
   const viewsTotal = views.reduce((sum, row) => sum + row.count, 0);
   const byPath = new Map<string, number>();
@@ -85,24 +142,105 @@ export default async function DashboardPage() {
         </ul>
       ) : null}
 
-      <ul className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-line px-5 py-3">
+        <p className="flex items-center gap-2.5 text-sm">
+          <span
+            aria-hidden="true"
+            className={`size-2.5 rounded-full ${settings.openToWork ? "bg-ok" : "bg-faint"}`}
+          />
+          {settings.openToWork
+            ? "Open to work: the badge shows on the site."
+            : "Not open to work: the badge is hidden."}
+        </p>
+        {canEdit ? (
+          <InlineAction
+            action={toggleOpenToWork}
+            hidden={{ value: String(!settings.openToWork) }}
+            label={settings.openToWork ? "Hide the badge" : "Show open to work"}
+          />
+        ) : null}
+      </div>
+
+      <ul className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-5">
         {[
-          { label: "New messages", value: unread, href: "/admin/messages" },
-          { label: "All messages", value: total, href: "/admin/messages" },
-          { label: "Page views · 7 days", value: viewsTotal, href: "#views" },
-          { label: "Pages viewed", value: byPath.size, href: "#views" },
+          {
+            label: "New leads",
+            value: newLeads,
+            href: "/admin/leads",
+            note: `${pipeline._count} open`,
+          },
+          {
+            label: "Open pipeline",
+            value: inr(pipeline._sum.value ?? 0),
+            href: "/admin/leads",
+            note: unpaid ? `${unpaid} unpaid invoices` : null,
+          },
+          {
+            label: "Visitors · 7 days",
+            value: visitorsNow,
+            href: "/admin/analytics?range=7",
+            note: change(visitorsNow, previousVisitors._sum.count ?? 0),
+          },
+          {
+            label: "Page views · 7 days",
+            value: viewsTotal,
+            href: "/admin/analytics?range=7",
+            note: change(viewsTotal, previousViews._sum.count ?? 0),
+          },
+          {
+            label: "Unread messages",
+            value: unread,
+            href: "/admin/messages",
+            note: `${total} in all`,
+          },
         ].map((stat) => (
-          <li key={stat.label}>
+          <li key={stat.label} className="last:max-lg:col-span-2">
             <Link
               href={stat.href}
-              className="surface flex flex-col gap-1 rounded-card border border-line p-5 transition-colors hover:border-line-2"
+              className="surface flex h-full flex-col gap-1 rounded-card border border-line p-5 transition-colors hover:border-line-2"
             >
               <span className="font-display text-3xl text-fg">{stat.value}</span>
-              <span className="text-sm text-muted">{stat.label}</span>
+              <span className="text-sm text-muted">
+                {stat.label}
+                {stat.note ? (
+                  <span
+                    className={`ml-2 font-mono text-xs ${stat.note.startsWith("-") ? "text-red" : stat.note.startsWith("+") ? "text-ok" : "text-faint"}`}
+                  >
+                    {stat.note}
+                  </span>
+                ) : null}
+              </span>
             </Link>
           </li>
         ))}
       </ul>
+
+      {followUps.length > 0 ? (
+        <section
+          aria-labelledby="followups-title"
+          className="mb-8 rounded-card border border-amber/30 bg-amber/8 p-5"
+        >
+          <h2 id="followups-title" className="mb-3 text-lg tracking-[-0.02em]">
+            Follow-ups due
+          </h2>
+          <ul className="flex flex-col divide-y divide-line text-sm">
+            {followUps.map((lead) => (
+              <li key={lead.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <Link
+                  href={`/admin/leads/${lead.id}`}
+                  className="font-medium text-fg hover:underline"
+                >
+                  {lead.name}
+                </Link>
+                <span className="text-muted">
+                  {lead.stage.toLowerCase()} ·{" "}
+                  {lead.followUpAt ? relativeDays(lead.followUpAt) : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section aria-label="Quick actions" className="mb-10 flex flex-wrap gap-2">
         {QUICK_ACTIONS.map((action) => (
@@ -150,7 +288,10 @@ export default async function DashboardPage() {
             )}
           </ul>
           <p className="text-xs text-faint">
-            Counted per page and day only. No cookies, IPs or trackers.
+            No cookies or trackers.{" "}
+            <Link href="/admin/analytics" className="text-c1-text hover:underline">
+              Full analytics →
+            </Link>
           </p>
         </section>
 

@@ -34,6 +34,6 @@ export const config = {
     "/api/admin/:path*",
     // Every other path except the site's own sections and files, so real pages never wait on
     // the proxy; only addresses that would be a 404 are looked up.
-    "/((?!(?:admin|api|_next|about|contact|estimate|experience|hire|notes|resume|skills|subscribe|work)(?:/|$))[^.]+)",
+    "/((?!(?:admin|api|_next|about|contact|estimate|experience|hire|notes|resume|skills|subscribe|testimonial|work)(?:/|$))[^.]+)",
   ],
 };

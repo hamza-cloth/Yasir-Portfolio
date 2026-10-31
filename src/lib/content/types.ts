@@ -28,6 +28,12 @@ export type ProjectDetail = ProjectSummary & {
   overview: string;
   decisions: ProjectDecision[];
   coverImageUrl: string | null;
+  // Set in the admin; the built-in content has none.
+  liveUrl?: string | null;
+  githubUrl?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  gallery?: string[];
 };
 
 export type ExperienceItem = {

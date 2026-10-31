@@ -18,8 +18,14 @@ export function getDb(): PrismaClient | null {
   if (!connectionString) return null;
 
   if (!globalForPrisma.prisma) {
+    // The local `prisma dev` server (PGlite) drops connections when several arrive at once, so a
+    // localhost database gets one connection and queries simply queue. Neon keeps the full pool.
+    const local = /@(localhost|127\.0\.0\.1)[:/]/.test(connectionString);
     globalForPrisma.prisma = new PrismaClient({
-      adapter: new PrismaPg({ connectionString: withExplicitSsl(connectionString) }),
+      adapter: new PrismaPg({
+        connectionString: withExplicitSsl(connectionString),
+        ...(local ? { max: 1 } : {}),
+      }),
     });
   }
   return globalForPrisma.prisma;

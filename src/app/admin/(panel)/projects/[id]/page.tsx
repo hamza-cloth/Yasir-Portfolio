@@ -147,6 +147,45 @@ export default async function ProjectEditPage({ params }: { params: Promise<{ id
           />
         </FormSection>
 
+        <FormSection title="Links, gallery and search">
+          <TextField
+            label="Live site"
+            name="liveUrl"
+            type="url"
+            defaultValue={project?.liveUrl ?? ""}
+            placeholder="https://…"
+          />
+          <TextField
+            label="Source code"
+            name="githubUrl"
+            type="url"
+            defaultValue={project?.githubUrl ?? ""}
+            placeholder="https://github.com/…"
+          />
+          <TextField
+            label="Search title"
+            name="seoTitle"
+            maxLength={70}
+            defaultValue={project?.seoTitle ?? ""}
+            hint="Optional. Replaces the title in Google and link previews. Up to 70 characters."
+          />
+          <TextField
+            label="Search description"
+            name="seoDescription"
+            maxLength={170}
+            defaultValue={project?.seoDescription ?? ""}
+            hint="Optional. Replaces the tagline in Google. Up to 170 characters."
+          />
+          <TextArea
+            label="Gallery"
+            name="gallery"
+            defaultValue={project?.gallery.join("\n") ?? ""}
+            rows={3}
+            className="md:col-span-2"
+            hint="Image URLs from the media library, one per line. Up to 12."
+          />
+        </FormSection>
+
         <FormSection title="Publishing">
           <TextField
             label="Order"
@@ -156,11 +195,16 @@ export default async function ProjectEditPage({ params }: { params: Promise<{ id
             defaultValue={project?.order ?? 0}
             hint="Lower numbers come first."
           />
-          <div className="flex items-end">
+          <div className="flex flex-wrap items-end gap-x-6">
             <CheckField
               label="Published on the site"
               name="published"
               defaultChecked={project?.published ?? true}
+            />
+            <CheckField
+              label="Featured (shown first)"
+              name="featured"
+              defaultChecked={project?.featured ?? false}
             />
           </div>
         </FormSection>
@@ -200,7 +244,7 @@ export default async function ProjectEditPage({ params }: { params: Promise<{ id
             action={deleteProject}
             label="Delete project"
             tone="danger"
-            confirm={`Delete “${project.title}” for good?`}
+            confirm={`Move “${project.title}” to the trash?`}
             hidden={{ id: project.id }}
           />
         </div>

@@ -65,6 +65,25 @@ export const projectSchema = z.object({
   decisions: decisionsSchema,
   published: z.boolean(),
   order,
+  featured: z.boolean(),
+  liveUrl: z.url("The live link must be a full https:// address.").max(300).nullable(),
+  githubUrl: z.url("The source link must be a full https:// address.").max(300).nullable(),
+  seoTitle: z.string().max(70, "Keep the search title under 70 characters.").nullable(),
+  seoDescription: z
+    .string()
+    .max(170, "Keep the search description under 170 characters.")
+    .nullable(),
+  // Images from the media library (Vercel Blob), shown on the case study.
+  gallery: z
+    .array(
+      z
+        .url()
+        .regex(
+          /^https:\/\/[\w-]+\.public\.blob\.vercel-storage\.com\//,
+          "Gallery images must come from the media library (copy their URL there).",
+        ),
+    )
+    .max(12, "Up to 12 gallery images."),
 });
 
 export const noteSchema = z.object({

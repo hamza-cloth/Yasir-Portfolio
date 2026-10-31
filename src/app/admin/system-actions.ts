@@ -330,6 +330,60 @@ export async function deleteSubscriber(form: FormData): Promise<void> {
   refresh();
 }
 
+// Sends a plain-text newsletter to every confirmed subscriber (or, as a test, to the admin only),
+// each with its own unsubscribe link. Ten at a time, so Resend's rate limit is respected.
+export async function sendNewsletter(_previous: FormResult, form: FormData): Promise<FormResult> {
+  const { db, admin } = await adminContext("manage");
+  const subject = text(form, "subject").slice(0, 160);
+  const body = text(form, "body").replace(/\r\n/g, "\n");
+  const testOnly = text(form, "mode") !== "all";
+  if (subject.length < 3) return { error: "Write a subject." };
+  if (body.length < 20) return { error: "Write the newsletter first (20 characters at least)." };
+  if (body.length > 20_000) return { error: "Keep it under 20,000 characters." };
+
+  const footer = (token: string | null) =>
+    token
+      ? `\n\n—\nYou get this because you subscribed at ${siteUrl()}.\nUnsubscribe: ${siteUrl()}/subscribe?token=${token}`
+      : "\n\n—\n(Test copy: real subscribers get an unsubscribe link here.)";
+
+  if (testOnly) {
+    const sent = await sendAdminEmail({
+      to: admin.email,
+      subject: `[Test] ${subject}`,
+      text: body + footer(null),
+    });
+    return sent
+      ? { ok: `Test sent to ${admin.email}. Check it, then send to everyone.` }
+      : { error: "Email is not configured (RESEND_API_KEY), or the send failed." };
+  }
+
+  const recipients = await db.subscriber.findMany({
+    where: { status: "CONFIRMED" },
+    select: { email: true, token: true },
+    take: 2000,
+  });
+  if (recipients.length === 0) return { error: "No confirmed subscribers yet." };
+  let sent = 0;
+  for (let index = 0; index < recipients.length; index += 10) {
+    const batch = recipients.slice(index, index + 10);
+    const results = await Promise.all(
+      batch.map((recipient) =>
+        sendAdminEmail({ to: recipient.email, subject, text: body + footer(recipient.token) }),
+      ),
+    );
+    sent += results.filter(Boolean).length;
+  }
+  await audit(
+    admin.email,
+    "create",
+    "newsletter",
+    `Sent “${subject}” to ${sent} of ${recipients.length}`,
+  );
+  return sent > 0
+    ? { ok: `Sent to ${sent} of ${recipients.length} subscribers.` }
+    : { error: "Nothing was sent. Check the email settings." };
+}
+
 // ---- Messages: labels and replies -----------------------------------------------------------
 
 export async function setMessageLabels(form: FormData): Promise<void> {

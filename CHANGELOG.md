@@ -20,6 +20,22 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 4 — project planner and the missing features (2026-10-31)
+
+- **Project planner (/estimate):** no price while requirements are gathered (project, platforms,
+  features, design and scale, extra services, review). "Analyse my project" opens a full-stack
+  report: range, timeline, complexity, cost by module, tech stack, phases and a 30/40/30 payment
+  plan; the PDF carries it too. Five new features and five extra services.
+- **Pricing (admin):** every base and feature price is editable; leads are recalculated with it.
+- **Dashboard:** KPIs with % change, follow-ups due, open-to-work switch.
+- **Projects:** featured first, live and source links, gallery, per-project search title and
+  description.
+- **Notes:** the last 20 versions are kept and can be restored.
+- **Testimonials:** clients write one at /testimonial; it waits for approval.
+- **Newsletter:** compose and send to confirmed subscribers, with a test copy first.
+- **Résumé:** downloads are counted.
+- Local `prisma dev` databases get a single connection, so busy pages no longer drop it.
+
 ### Phase 3 — admin upgrade (2026-10-31)
 
 - **Sign-in and security:** password reset by email (30-minute link), TOTP two-factor with a

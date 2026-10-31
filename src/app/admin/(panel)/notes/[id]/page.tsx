@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { AdminForm, InlineAction } from "@/components/admin/AdminForm";
 import { AdminHeader, NoDatabase } from "@/components/admin/AdminUi";
 import { CheckField, FormSection, TextArea, TextField } from "@/components/admin/fields";
+import { dateTime } from "@/lib/admin/format";
 import { requireAdmin } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 
-import { deleteNote, saveNote } from "../../../actions";
+import { deleteNote, restoreNoteRevision, saveNote } from "../../../actions";
 
 export const metadata = { title: "Edit note" };
 // Checks the session on every request, so navigating here may block (see admin/layout.tsx).
@@ -19,7 +20,17 @@ export default async function NoteEditPage({ params }: { params: Promise<{ id: s
 
   const { id } = await params;
   const isNew = id === "new";
-  const note = isNew ? null : await db.note.findUnique({ where: { id } });
+  const [note, revisions] = isNew
+    ? [null, []]
+    : await Promise.all([
+        db.note.findUnique({ where: { id } }),
+        db.noteRevision.findMany({
+          where: { noteId: id },
+          orderBy: { createdAt: "desc" },
+          take: 20,
+          select: { id: true, title: true, body: true, actor: true, createdAt: true },
+        }),
+      ]);
   if (!isNew && !note) notFound();
 
   return (
@@ -88,14 +99,50 @@ export default async function NoteEditPage({ params }: { params: Promise<{ id: s
         </FormSection>
       </AdminForm>
 
+      {note && revisions.length > 0 ? (
+        <section aria-labelledby="revisions-title" className="mt-10 flex flex-col gap-3">
+          <h2 id="revisions-title" className="text-lg tracking-[-0.02em]">
+            Earlier versions
+          </h2>
+          <p className="text-sm text-muted">
+            Saved each time the title, excerpt or text changed. Restoring keeps the current text as
+            a version too.
+          </p>
+          <ul className="surface divide-y divide-line rounded-card border border-line">
+            {revisions.map((revision) => (
+              <li
+                key={revision.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium text-fg">{revision.title}</p>
+                  <p className="text-xs text-faint">
+                    {dateTime.format(revision.createdAt)} · {revision.actor} ·{" "}
+                    {revision.body.split(/\s+/).length} words
+                  </p>
+                </div>
+                <InlineAction
+                  action={restoreNoteRevision}
+                  hidden={{ id: revision.id }}
+                  label="Restore"
+                  confirm="Replace the note's text with this version?"
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {note ? (
         <div className="mt-10 flex items-center justify-between gap-4 rounded-card border border-red/25 p-5">
-          <p className="text-sm text-muted">Deleting a note removes its page.</p>
+          <p className="text-sm text-muted">
+            Deleting a note removes its page; it stays in the trash for 30 days.
+          </p>
           <InlineAction
             action={deleteNote}
             label="Delete note"
             tone="danger"
-            confirm={`Delete “${note.title}” for good?`}
+            confirm={`Move “${note.title}” to the trash?`}
             hidden={{ id: note.id }}
           />
         </div>
