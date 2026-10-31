@@ -6,6 +6,7 @@ import {
   CHOICE_KEY,
   CURRENT_LOOK_KEY,
   DEFAULT_LOOK,
+  DEFAULT_LOOK_CONFIG,
   LAST_LOOK_KEY,
   LOOKS,
   nextLook,
@@ -123,9 +124,23 @@ describe("pre-paint look script", () => {
     expect(local.values.get(LAST_LOOK_KEY)).toBe(seen.at(-1));
   });
 
-  it("keeps the visit's look on inner pages", () => {
+  it("shows a new look on every refresh of an inner page too", () => {
+    const local = memoryStorage();
     const session = memoryStorage({ [CURRENT_LOOK_KEY]: "aurora" });
-    expect(runScript({ path: "/work", session }).look).toBe("aurora");
+    const seen: string[] = [];
+    for (let load = 0; load < 10; load += 1) {
+      seen.push(runScript({ path: "/work", local, session, random: (load * 0.61) % 1 }).look ?? "");
+    }
+    for (let index = 1; index < seen.length; index += 1) {
+      expect(seen[index]).not.toBe(seen[index - 1]);
+    }
+    expect(local.values.get(LAST_LOOK_KEY)).toBe(seen.at(-1));
+  });
+
+  it("defaults to random, so a refresh changes the look with no admin setup", () => {
+    expect(DEFAULT_LOOK_CONFIG.mode).toBe("random");
+    const local = memoryStorage({ [LAST_LOOK_KEY]: "midnight-ink" });
+    expect(runScript({ config: DEFAULT_LOOK_CONFIG, local }).look).not.toBe("midnight-ink");
   });
 
   it("keeps the admin on the default look and leaves the visitor's history alone", () => {
@@ -143,12 +158,13 @@ describe("pre-paint look script", () => {
     expect(data.look).toBe("porcelain");
   });
 
-  it("rewrites a stored Terminal look to Midnight Ops", () => {
-    const local = memoryStorage({ [LAST_LOOK_KEY]: "terminal" });
-    const session = memoryStorage({ [CURRENT_LOOK_KEY]: "terminal" });
-    expect(runScript({ path: "/work", local, session }).look).toBe("midnight-ops");
-    expect(local.values.get(LAST_LOOK_KEY)).toBe("midnight-ops");
-    expect(session.values.get(CURRENT_LOOK_KEY)).toBe("midnight-ops");
+  it("reads a stored Terminal look as Midnight Ops, so the refresh moves on from it", () => {
+    for (const random of [0, 0.3, 0.6, 0.999]) {
+      const local = memoryStorage({ [LAST_LOOK_KEY]: "terminal" });
+      const look = runScript({ path: "/work", local, random }).look;
+      expect(LOOKS).toContain(look);
+      expect(look).not.toBe("midnight-ops");
+    }
   });
 
   it("never shows Terminal on the home page, whatever is stored", () => {
@@ -166,34 +182,27 @@ describe("pre-paint look script", () => {
 describe("a visitor's own pick", () => {
   const fixedInk: LookConfig = { enabled: [...LOOKS], mode: "fixed", fixed: "midnight-ink" };
 
-  it("beats the admin's fixed rule on the home page, refresh after refresh", () => {
-    const local = memoryStorage({ [CHOICE_KEY]: "porcelain" });
-    for (let load = 0; load < 3; load++) {
-      expect(runScript({ config: fixedInk, path: "/", local }).look).toBe("porcelain");
+  it("lasts until the refresh, which moves on to a new look", () => {
+    // setLook() stores the pick as the choice and as the last look shown.
+    const local = memoryStorage({ [CHOICE_KEY]: "porcelain", [LAST_LOOK_KEY]: "porcelain" });
+    for (const random of [0, 0.4, 0.999]) {
+      expect(runScript({ local, random }).look).not.toBe("porcelain");
     }
   });
 
-  it("survives a browser restart (empty session) on inner pages", () => {
+  it("no longer comes back from storage or the cookie on a refresh", () => {
     const local = memoryStorage({ [CHOICE_KEY]: "aurora" });
-    expect(
-      runScript({ config: fixedInk, path: "/work", local, session: memoryStorage() }).look,
-    ).toBe("aurora");
-  });
-
-  it("falls back to the cookie when storage is blocked", () => {
+    expect(runScript({ config: fixedInk, path: "/work", local }).look).toBe("midnight-ink");
     const data = runScript({
       config: fixedInk,
       local: blocked,
       session: blocked,
       cookie: `x=1; ${CHOICE_KEY}=sunset-fibre`,
     });
-    expect(data.look).toBe("sunset-fibre");
-    expect(data.theme).toBe("light");
+    expect(data.look).toBe("midnight-ink");
   });
 
-  it("ignores an unknown stored value and still never touches the admin", () => {
-    const local = memoryStorage({ [CHOICE_KEY]: "neon" });
-    expect(runScript({ config: fixedInk, local }).look).toBe("midnight-ink");
+  it("never touches the admin", () => {
     const picked = memoryStorage({ [CHOICE_KEY]: "porcelain" });
     expect(runScript({ path: "/admin", local: picked }).look).toBe(DEFAULT_LOOK);
   });

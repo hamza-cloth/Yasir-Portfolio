@@ -20,6 +20,15 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 9 — a new look on every refresh (2026-11-01)
+
+- **Every refresh changes the look:** each full page load (the home page or any other page) picks
+  a new look at random, never the one shown last. Moving around the site keeps the current look.
+- A look picked with the look picker lasts until the next refresh, which moves on from it. This
+  replaces the phase 2a rule where a picked look stayed across refreshes and browser restarts.
+- Random is now the default, and a migration switches the saved setting from fixed to random.
+  Admin → Looks can still choose fixed (always one look) or sequential.
+
 ### Phase 8 — résumé redesign and a 3D profile (2026-11-01)
 
 - **Résumé (/resume):** a new professional sheet: an ink header band with a gold rule, the photo,

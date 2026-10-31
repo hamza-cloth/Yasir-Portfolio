@@ -70,9 +70,10 @@ model SiteSettings {
   principles   Json      @default("[]")
   nowItems     String[]
   nowUpdatedAt DateTime?
-  // Home-page looks: which are on, and how the next one is chosen (random, sequential, fixed).
+  // Site looks: which are on, and how the next one is chosen on each page load (random,
+  // sequential, fixed).
   looksEnabled String[]  @default(["midnight-ink", "porcelain", "midnight-ops", "sunset-fibre", "aurora"])
-  looksMode    String    @default("fixed")
+  looksMode    String    @default("random")
   looksFixed   String    @default("midnight-ink")
   openToWork   Boolean   @default(true)
   // Per-page SEO overrides: { "/about": { "title": "…", "description": "…" } }.

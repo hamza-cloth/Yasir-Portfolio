@@ -25,7 +25,7 @@ export default async function LooksPage() {
     <>
       <AdminHeader
         title="Home looks"
-        description="Every visit to the home page shows one of these complete looks. Choose which are on and how the next one is picked."
+        description="Every page load (a refresh, or opening any page) shows one of these complete looks. Choose which are on and how the next one is picked; random shows a new one on every refresh."
       />
       <AdminForm action={saveLooks}>
         <fieldset className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
