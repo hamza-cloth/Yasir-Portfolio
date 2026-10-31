@@ -20,6 +20,20 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 7 — home page redesign (2026-11-01)
+
+- **Hero:** a status pill (open to work, location), a larger name with a sheen on the surname, the
+  role, tagline and CTAs (the main one with a passing sheen), socials beside the look picker, and
+  a glass stats bar with icons. The photo sits in a tall card with a turning accent edge, a
+  caption bar, three floating badges and two orbits; the backdrop adds a faint grid, drifting
+  aurora light and a cursor light. On phones the text comes first, then the photo.
+- **Sections:** eyebrows become pills with a glowing dot, and sections are split by a fading
+  hairline with a soft glow instead of a plain rule (home only).
+- **Services:** a ghost number, an icon tile with a ring, an arrow that turns and an accent bar
+  on hover. **Process:** a rail that fills between the steps, step labels and a pulsing ring on
+  each number (also on Work and Experience). **Marquee:** a second row with the everyday stack,
+  running the other way.
+
 ### Phase 6 — launch pricing and the planner redesign (2026-11-01)
 
 - **Launch pricing:** no estimate goes above ₹1,50,000 for now. Bigger builds keep their full

@@ -117,6 +117,7 @@ export default async function HomePage() {
       <Hero
         name={settings.name}
         roleLine={settings.roleLine}
+        location={settings.location}
         photo={await getProfilePhoto(settings.photoUrl)}
         openToWork={settings.openToWork}
         stats={stats}
@@ -130,9 +131,12 @@ export default async function HomePage() {
           { title: `${experience.length} support roles`, detail: "technical support" },
         ]}
       />
-      {sections.home.map((id) => (
-        <Fragment key={id}>{blocks[id]}</Fragment>
-      ))}
+      {/* .home scopes the home-only section styling (eyebrows, dividers) in home.css. */}
+      <div className="home">
+        {sections.home.map((id) => (
+          <Fragment key={id}>{blocks[id]}</Fragment>
+        ))}
+      </div>
     </>
   );
 }

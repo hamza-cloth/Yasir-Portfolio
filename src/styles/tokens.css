@@ -11,7 +11,7 @@
   --display-tracking: -0.02em;
   --display-leading: 1.05;
   /* The hero name. Capped by height too, so the whole hero fits a 768px-tall laptop screen. */
-  --fs-hero-split: clamp(2.5rem, min(5vw, 9.5svh), 4.5rem);
+  --fs-hero-split: clamp(3rem, min(5.8vw, 10.5svh), 5.6rem);
   --fs-hero-stack: clamp(2.5rem, 9vw, 4rem);
   --r-pill: 999px;
   --r-field: 12px;

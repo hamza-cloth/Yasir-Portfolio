@@ -1,6 +1,6 @@
-// Background art behind the hero: two soft light pools and a few running fibre lines, all drawn
-// from the active look's colours, so every look gets the same art in its own palette.
-// Decorative only, and pure SVG/CSS, so it costs no JavaScript.
+// Background art behind the hero: a faint grid, two drifting aurora lights, two soft pools and a
+// few running fibre lines, all drawn from the active look's colours, so every look gets
+// the same art in its own palette. Decorative only, and pure SVG/CSS, so it costs no JavaScript.
 const FIBRES = [
   "M-40 620 C 300 520, 520 760, 860 560 S 1300 420, 1500 520",
   "M-40 700 C 260 640, 600 820, 900 640 S 1280 520, 1500 600",
@@ -10,6 +10,9 @@ const FIBRES = [
 export function HeroArt() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-clip">
+      <div className="hero-gridlines absolute inset-0" />
+      <div className="hero-aurora hero-aurora--one" />
+      <div className="hero-aurora hero-aurora--two" />
       <div className="hero-pool hero-pool--one" />
       <div className="hero-pool hero-pool--two" />
       <svg

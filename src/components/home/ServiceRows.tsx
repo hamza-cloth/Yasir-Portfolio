@@ -36,11 +36,14 @@ export function ServiceRows({ services }: { services: Service[] }) {
             return (
               <li key={service.title} className="min-w-0">
                 <Reveal delay={index * 90} className="h-full">
-                  <article className="spotlight tilt-3d surface group relative isolate flex h-full flex-col gap-5 overflow-hidden rounded-tile border border-line p-7 transition-[border-color,box-shadow] duration-500 ease-entrance hover:border-line-hover hover:shadow-(--shadow-lift)">
+                  <article className="service-card spotlight tilt-3d surface group relative isolate flex h-full flex-col gap-5 overflow-hidden rounded-tile border border-line p-7 transition-[border-color,box-shadow] duration-500 ease-entrance hover:border-line-hover hover:shadow-(--shadow-lift)">
+                    <span aria-hidden="true" className="service-ghost">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                     <div className="flex items-start justify-between gap-4">
                       <span
                         aria-hidden="true"
-                        className="grid size-12 place-items-center rounded-2xl bg-c1-soft text-c1-text transition-transform duration-500 ease-entrance group-hover:scale-110 group-hover:-rotate-6"
+                        className="service-icon grid size-14 place-items-center rounded-2xl text-c1-text transition-transform duration-500 ease-entrance group-hover:scale-110 group-hover:-rotate-6"
                       >
                         <svg viewBox="0 0 24 24" className="size-6" fill="none">
                           <path
@@ -52,8 +55,16 @@ export function ServiceRows({ services }: { services: Service[] }) {
                           />
                         </svg>
                       </span>
-                      <span aria-hidden="true" className="label-mono text-faint">
-                        {String(index + 1).padStart(2, "0")}
+                      <span aria-hidden="true" className="service-arrow">
+                        <svg viewBox="0 0 24 24" className="size-4" fill="none">
+                          <path
+                            d="M7 17 17 7M9 7h8v8"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
                       </span>
                     </div>
                     <h3 className="text-[1.45rem] leading-tight tracking-[-0.035em]">
@@ -70,6 +81,7 @@ export function ServiceRows({ services }: { services: Service[] }) {
                         </li>
                       ))}
                     </ul>
+                    <span aria-hidden="true" className="service-bar" />
                   </article>
                 </Reveal>
               </li>
