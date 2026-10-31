@@ -84,25 +84,31 @@ model SiteSettings {
 }
 
 model Project {
-  id            String            @id @default(cuid())
-  slug          String            @unique
-  title         String
-  tagline       String
-  summary       String
-  statusLabel   String
-  categories    ProjectCategory[]
-  role          String?
-  type          String?
-  stack         String[]
-  visual        ProjectVisual
-  overview      String            @db.Text
-  decisions     Json              @default("[]")
-  coverImageUrl String?
-  published     Boolean           @default(false)
-  publishedAt   DateTime?
-  order         Int               @default(0)
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  id             String            @id @default(cuid())
+  slug           String            @unique
+  title          String
+  tagline        String
+  summary        String
+  statusLabel    String
+  categories     ProjectCategory[]
+  role           String?
+  type           String?
+  stack          String[]
+  visual         ProjectVisual
+  overview       String            @db.Text
+  decisions      Json              @default("[]")
+  coverImageUrl  String?
+  featured       Boolean           @default(false)
+  liveUrl        String?
+  githubUrl      String?
+  gallery        String[]          @default([])
+  seoTitle       String?
+  seoDescription String?
+  published      Boolean           @default(false)
+  publishedAt    DateTime?
+  order          Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   @@index([published, order])
 }
@@ -151,6 +157,7 @@ model Certification {
   startYear     Int?
   endYear       Int?
   credentialUrl String?
+  fileUrl       String?
   published     Boolean          @default(false)
   publishedAt   DateTime?
   order         Int              @default(0)
@@ -184,6 +191,8 @@ model Skill {
   name        String
   layer       Int?
   domain      SkillDomain?
+  // 1-5, optional.
+  level       Int?
   published   Boolean      @default(true)
   publishedAt DateTime?
   order       Int          @default(0)
@@ -206,6 +215,7 @@ model Message {
   archived  Boolean      @default(false)
   spam      Boolean      @default(false)
   emailSent Boolean      @default(false)
+  labels    String[]     @default([])
   createdAt DateTime     @default(now())
 
   @@index([read, createdAt])
@@ -228,6 +238,12 @@ model User {
   image         String?
   // argon2id hash; only the admin account has one. Set by the seed from ADMIN_PASSWORD.
   passwordHash  String?
+  // OWNER, EDITOR or VIEWER. Checked on the server for every admin page and action.
+  role          String    @default("OWNER")
+  // TOTP two-factor: the secret is encrypted at rest; backup codes are stored as hashes.
+  totpSecret    String?
+  totpEnabled   Boolean   @default(false)
+  backupCodes   String[]  @default([])
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
@@ -254,12 +270,15 @@ model Account {
 }
 
 model Session {
-  sessionToken String   @unique
+  sessionToken String    @unique
   userId       String
   expires      DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipHash       String?
+  userAgent    String?
+  lastSeenAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -278,9 +297,12 @@ model AuditLog {
   entity    String
   entityId  String?
   summary   String
+  before    Json?
+  after     Json?
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+  @@index([entity, createdAt])
 }
 
 // Privacy-friendly page views: a count per path per day. No cookies, IPs or user agents.
@@ -302,6 +324,7 @@ model ResumeVersion {
   pathname  String
   size      Int
   active    Boolean  @default(false)
+  downloads Int      @default(0)
   createdAt DateTime @default(now())
 
   @@index([active])
@@ -317,7 +340,218 @@ model MediaAsset {
   size        Int
   width       Int?
   height      Int?
+  alt         String?
+  folder      String?
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ---- Admin upgrade ----
+
+// Every sign-in attempt, for the login history and lockout. IPs are stored as salted hashes.
+model LoginEvent {
+  id        String   @id @default(cuid())
+  email     String
+  success   Boolean
+  reason    String?
+  ipHash    String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([createdAt])
+}
+
+// An invitation for a new admin user; the token is stored as a hash.
+model Invite {
+  id         String    @id @default(cuid())
+  email      String
+  role       String
+  tokenHash  String    @unique
+  expires    DateTime
+  acceptedAt DateTime?
+  createdBy  String
+  createdAt  DateTime  @default(now())
+}
+
+// Site configuration by key: appearance, calculator pricing, home sections, navigation,
+// services, announcement, notifications. Every value is validated with zod when saved.
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// A prospective client: from the Hire Me form, the cost calculator, or added by hand.
+model Lead {
+  id          String     @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  source      String
+  stage       String     @default("NEW")
+  value       Int?
+  projectType String?
+  budget      String?
+  timeline    String?
+  details     String     @db.Text
+  notes       String?    @db.Text
+  followUpAt  DateTime?
+  position    Int        @default(0)
+  messageId   String?
+  clientId    String?
+  estimates   Estimate[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([stage, position])
+  @@index([createdAt])
+}
+
+// A saved cost-calculator estimate, which can become a quote.
+model Estimate {
+  id           String   @id @default(cuid())
+  number       String   @unique
+  leadId       String?
+  lead         Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  input        Json
+  low          Int
+  high         Int
+  weeksMin     Int
+  weeksMax     Int
+  summary      String   @db.Text
+  status       String   @default("DRAFT")
+  contactName  String?
+  contactEmail String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  company   String?
+  quote     String   @db.Text
+  rating    Int?
+  photoUrl  String?
+  status    String   @default("PENDING")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, order])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  kind      String
+  title     String
+  body      String?
+  href      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read, createdAt])
+}
+
+model Subscriber {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  status      String    @default("PENDING")
+  token       String    @unique
+  createdAt   DateTime  @default(now())
+  confirmedAt DateTime?
+}
+
+model Redirect {
+  id        String   @id @default(cuid())
+  from      String   @unique
+  to        String
+  permanent Boolean  @default(true)
+  hits      Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id        String    @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  company   String?
+  gstin     String?
+  address   String?   @db.Text
+  notes     String?   @db.Text
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Invoice {
+  id        String    @id @default(cuid())
+  number    String    @unique
+  clientId  String
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  items     Json
+  subtotal  Int
+  gstRate   Float     @default(0)
+  total     Int
+  status    String    @default("DRAFT")
+  issuedAt  DateTime  @default(now())
+  dueAt     DateTime?
+  paidAt    DateTime?
+  notes     String?   @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status, issuedAt])
+}
+
+// Earlier versions of a note, saved on every edit, restorable.
+model NoteRevision {
+  id        String   @id @default(cuid())
+  noteId    String
+  title     String
+  excerpt   String
+  body      String   @db.Text
+  actor     String
+  createdAt DateTime @default(now())
+
+  @@index([noteId, createdAt])
+}
+
+// Deleted content, kept as a snapshot for 30 days so it can be restored.
+model TrashItem {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  label     String
+  data      Json
+  deletedBy String
+  deletedAt DateTime @default(now())
+
+  @@index([deletedAt])
+}
+
+// Cookie-less analytics: one salted, daily-rotating hash per visitor per day, so unique
+// visitors can be counted without identifying anyone.
+model VisitorDay {
+  day  DateTime @db.Date
+  hash String
+
+  @@id([day, hash])
+}
+
+// Daily counts by dimension: kind is "referrer", "device" or "country".
+model StatDay {
+  day   DateTime @db.Date
+  kind  String
+  value String
+  count Int      @default(0)
+
+  @@id([day, kind, value])
+  @@index([kind, day])
 }
