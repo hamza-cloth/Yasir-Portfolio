@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -78,6 +79,18 @@ export function HireIntro({
                 </a>
               )}
             </div>
+            <Link href="/estimate" className="est-promo group">
+              <span className="flex flex-col gap-1">
+                <span className="font-semibold text-fg">Get an Instant Estimate</span>
+                <span className="text-sm text-muted">
+                  Select your project &amp; see the approximate cost in 60 seconds.
+                </span>
+              </span>
+              <span className="est-promo-cta">
+                Cost calculator
+                <Icon name="arrow-right" size={16} />
+              </span>
+            </Link>
           </div>
         </Reveal>
         {/* Its own boundary, so React hydrates it as a separate, shorter task. */}

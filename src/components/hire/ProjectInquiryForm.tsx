@@ -1,6 +1,14 @@
 "use client";
 
-import { startTransition, useActionState, useId, useRef, useState, type FormEvent } from "react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 
 import { sendProjectInquiry, type InquiryState } from "@/app/(site)/hire/actions";
 import { buttonClassName } from "@/components/ui/Button";
@@ -58,6 +66,38 @@ export function ProjectInquiryForm({ email }: { email: string }) {
   const id = useId();
   const errors = { ...state.fieldErrors, ...clientErrors };
   const values = state.values ?? {};
+
+  // "Get Exact Quote" from the cost calculator arrives with the project type, budget and a
+  // summary in the URL; they fill the form once, and only with values the form offers.
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const params = new URLSearchParams(window.location.search);
+    const fill = (name: string, allowed?: readonly string[]) => {
+      const value = params.get(name);
+      const field = form.elements.namedItem(name);
+      if (
+        !value ||
+        !(
+          field instanceof HTMLInputElement ||
+          field instanceof HTMLSelectElement ||
+          field instanceof HTMLTextAreaElement
+        )
+      )
+        return;
+      if (allowed && !allowed.includes(value)) return;
+      if (!field.value) field.value = value.slice(0, DETAILS_MAX);
+    };
+    fill("projectType", PROJECT_TYPES);
+    fill("budget", BUDGET_RANGES);
+    fill("details");
+    const details = form.elements.namedItem("details");
+    if (details instanceof HTMLTextAreaElement && details.value) {
+      const length = details.value.trim().length;
+      const frame = window.requestAnimationFrame(() => setDetailsLength(length));
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, []);
 
   // Validates in the browser first (same rules as the server), then submits without letting
   // React reset the form, so a server error never wipes what was typed.

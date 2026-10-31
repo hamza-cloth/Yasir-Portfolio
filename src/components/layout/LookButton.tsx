@@ -19,7 +19,11 @@ export function LookButton({ className }: { className?: string }) {
       {LOOKS.map((look) => (
         // 1024-1200px: only the dot shows, to make room for the inline nav; the name stays for
         // screen readers.
-        <span key={look} className="look-label laptop:max-[75rem]:sr-only" data-look-label={look}>
+        <span
+          key={look}
+          className="look-label whitespace-nowrap laptop:sr-only"
+          data-look-label={look}
+        >
           {LOOK_LABELS[look]}
         </span>
       ))}

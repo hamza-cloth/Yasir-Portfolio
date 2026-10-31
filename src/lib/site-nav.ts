@@ -10,6 +10,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/experience", label: "Experience" },
   { href: "/notes", label: "Notes" },
   { href: "/resume", label: "Resume" },
+  { href: "/estimate", label: "Estimate" },
 ];
 
 // Matches the `laptop:` breakpoint (64rem): from here up the header shows every link inline.

@@ -1,0 +1,471 @@
+/* The project cost calculator (/estimate). */
+
+/* Lets the result card's gold edge animate its angle (must sit outside any layer). */
+@property --sweep {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@layer components {
+  /* The "Get an Instant Estimate" card in the Hire me section. */
+  .est-promo {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border: 1px solid color-mix(in srgb, var(--c1) 55%, var(--line));
+    border-radius: var(--r-card);
+    background:
+      radial-gradient(
+        120% 140% at 100% 0%,
+        color-mix(in srgb, var(--c1) 14%, transparent),
+        transparent 60%
+      ),
+      var(--surface-solid);
+    padding: 18px 20px;
+    transition:
+      transform 250ms var(--easing-entrance),
+      border-color 250ms var(--easing-entrance);
+  }
+
+  .est-promo:hover {
+    transform: translateY(-3px);
+    border-color: var(--c1);
+  }
+
+  .est-promo-cta {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    border-radius: var(--r-button);
+    background: var(--accent-fill);
+    padding: 0 16px;
+    font-weight: 600;
+    color: var(--on-fill);
+  }
+
+  .est-legend {
+    font-family: var(--ff-display);
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+
+  .est-tab {
+    min-height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0 14px;
+    font-size: 0.875rem;
+    color: var(--muted);
+    transition:
+      border-color 200ms var(--easing-entrance),
+      color 200ms var(--easing-entrance),
+      background-color 200ms var(--easing-entrance);
+  }
+
+  .est-tab:hover {
+    color: var(--fg);
+  }
+
+  .est-tab[aria-pressed="true"] {
+    border-color: var(--c1);
+    background: color-mix(in srgb, var(--c1) 14%, transparent);
+    color: var(--c1-text);
+  }
+
+  /* ---- Selectable cards: one style for radios and checkboxes ---- */
+  .est-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--surface-solid);
+    padding: 20px;
+    transition:
+      transform 250ms var(--easing-entrance),
+      border-color 250ms var(--easing-entrance),
+      box-shadow 250ms var(--easing-entrance);
+  }
+
+  .est-card--row {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .est-card--compact {
+    gap: 4px;
+    padding: 16px 18px;
+  }
+
+  .est-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--line-2);
+  }
+
+  .est-card[data-selected="true"] {
+    border-color: var(--c1);
+    box-shadow:
+      0 0 0 0.5px var(--c1),
+      0 14px 34px -18px var(--c1);
+  }
+
+  .est-card:has(input:focus-visible) {
+    outline: 2px solid var(--c1);
+    outline-offset: 3px;
+  }
+
+  .est-card[data-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .est-card[data-disabled="true"]:hover {
+    transform: none;
+  }
+
+  .est-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--c1);
+    color: var(--c1-ink);
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity 200ms var(--easing-entrance),
+      transform 200ms var(--easing-entrance);
+  }
+
+  [data-selected="true"] > .est-check {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---- Feature chips ---- */
+  .est-chip {
+    display: inline-flex;
+    min-height: 48px;
+    max-width: 100%;
+    cursor: pointer;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface-solid);
+    padding: 8px 14px 8px 10px;
+    font-size: 0.9rem;
+    transition:
+      border-color 200ms var(--easing-entrance),
+      transform 200ms var(--easing-entrance);
+  }
+
+  .est-chip:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-2);
+  }
+
+  .est-chip[data-selected="true"] {
+    border-color: var(--c1);
+    box-shadow: 0 0 0 0.5px var(--c1);
+  }
+
+  .est-chip:has(input:focus-visible) {
+    outline: 2px solid var(--c1);
+    outline-offset: 3px;
+  }
+
+  .est-chip-box {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    flex: none;
+    place-items: center;
+    border: 1.5px solid var(--line-2);
+    border-radius: 6px;
+    color: transparent;
+    transition:
+      background-color 150ms,
+      border-color 150ms;
+  }
+
+  .est-chip[data-selected="true"] .est-chip-box {
+    border-color: var(--c1);
+    background: var(--c1);
+    color: var(--c1-ink);
+  }
+
+  .est-recommended {
+    margin-left: 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c1) 16%, transparent);
+    padding: 1px 7px;
+    font-family: var(--ff-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c1-text);
+    vertical-align: 1px;
+  }
+
+  .est-chip-price {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* On mouse devices the price appears on hover or focus; touch screens always show it. */
+  @media (hover: hover) and (pointer: fine) {
+    .est-chip-price {
+      height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 150ms;
+    }
+
+    .est-chip:hover .est-chip-price,
+    .est-chip:focus-within .est-chip-price {
+      height: auto;
+      opacity: 1;
+    }
+  }
+
+  /* ---- Progress ---- */
+  .est-progress {
+    height: 4px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--line);
+  }
+
+  .est-progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--c1);
+    transition: width 500ms var(--easing-reveal);
+  }
+
+  .est-step-link {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--faint);
+    text-align: left;
+  }
+
+  .est-step-link span:first-child {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    flex: none;
+    place-items: center;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    font-size: 0.75rem;
+  }
+
+  .est-step-link[data-done="true"],
+  .est-step-link[aria-current="step"] {
+    color: var(--fg);
+  }
+
+  .est-step-link[data-done="true"] span:first-child,
+  .est-step-link[aria-current="step"] span:first-child {
+    border-color: var(--c1);
+    background: var(--c1);
+    color: var(--c1-ink);
+  }
+
+  .est-step-link:not(:disabled):hover {
+    color: var(--c1-text);
+  }
+
+  /* ---- Step change: fade and a 12px slide ---- */
+  .est-panel {
+    animation: est-in 400ms var(--easing-reveal) both;
+  }
+
+  @keyframes est-in {
+    from {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+  }
+
+  /* ---- Live summary ---- */
+  .est-summary {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--surface-solid);
+    padding: 22px;
+  }
+
+  .est-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-header);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 12px;
+    border-top: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    padding: 10px max(16px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  /* ---- Result ---- */
+  .est-result {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    background: var(--surface-solid);
+    padding: clamp(22px, 4vw, 40px);
+  }
+
+  /* A gold edge that sweeps round the card once, when the result first appears. */
+  .est-result::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--sweep, 0deg),
+      transparent 0 70%,
+      var(--c1) 85%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    animation: est-sweep 1.6s var(--easing-reveal) 0.2s 1 both;
+  }
+
+  @keyframes est-sweep {
+    0% {
+      --sweep: 0deg;
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      --sweep: 360deg;
+      opacity: 0;
+    }
+  }
+
+  .est-result-glow {
+    position: absolute;
+    inset: -30% -10% auto;
+    z-index: -1;
+    height: 80%;
+    background: radial-gradient(closest-side, var(--glow), transparent 75%);
+  }
+
+  .est-range {
+    margin: 6px 0 8px;
+    font-family: var(--ff-display);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--c1-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .est-support summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+/* While the calculator's bottom bar is on screen, the floating buttons sit above it. Outside the
+   layers on purpose: it must beat the buttons' own utility classes. */
+@media (max-width: 69.99rem) {
+  body:has(.est-bar) .whatsapp-float {
+    bottom: calc(max(20px, env(safe-area-inset-bottom)) + 44px + 12px + 78px);
+  }
+
+  body:has(.est-bar) .back-to-top {
+    bottom: calc(max(20px, env(safe-area-inset-bottom)) + 78px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .est-panel,
+  .est-result::before {
+    animation: none;
+  }
+
+  .est-card,
+  .est-chip,
+  .est-progress span {
+    transition: none;
+  }
+
+  .est-card:hover,
+  .est-chip:hover {
+    transform: none;
+  }
+}
+
+/* ---- The printed estimate (Download Estimate → print to PDF) ---- */
+@media print {
+  .estimate-print {
+    color: #0e1220;
+    font-family: var(--ff-body);
+  }
+
+  .estimate-print table th {
+    width: 9rem;
+    vertical-align: top;
+  }
+
+  .estimate-print .text-muted {
+    color: #50566a;
+  }
+
+  .estimate-print .border-line {
+    border-color: #e2e5ec;
+  }
+
+  .whatsapp-float {
+    display: none !important;
+  }
+}

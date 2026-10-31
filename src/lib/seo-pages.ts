@@ -8,5 +8,6 @@ export const SEO_PAGES = [
   { path: "/notes", label: "Notes" },
   { path: "/resume", label: "Résumé" },
   { path: "/hire", label: "Hire me" },
+  { path: "/estimate", label: "Cost calculator" },
   { path: "/contact", label: "Contact" },
 ] as const;
