@@ -56,6 +56,15 @@ export const notificationPrefsSchema = z.object({
 });
 export type NotificationPrefs = z.infer<typeof notificationPrefsSchema>;
 
+// Calculator prices the admin changed (admin → Pricing); anything missing keeps the default from
+// src/config/pricing.ts.
+const price = z.number().int().min(0).max(100_000_000);
+export const pricingSchema = z.object({
+  base: z.record(z.string().max(40), price),
+  feature: z.record(z.string().max(40), price),
+});
+export type PricingOverrides = z.infer<typeof pricingSchema>;
+
 export const SITE_CONFIG = {
   appearance: {
     schema: appearanceSchema,
@@ -76,6 +85,10 @@ export const SITE_CONFIG = {
     schema: sectionsSchema,
     // Testimonials appear only once some are approved, even while listed here.
     defaults: { home: HOME_SECTIONS.map((section) => section.id) } satisfies Sections,
+  },
+  pricing: {
+    schema: pricingSchema,
+    defaults: { base: {}, feature: {} } satisfies PricingOverrides,
   },
   notifications: {
     schema: notificationPrefsSchema,

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getPriceTable } from "@/lib/data/pricing";
 import { getDb } from "@/lib/db";
 import { calculateEstimate, estimateInputFromParams } from "@/lib/estimate";
 import { notify } from "@/lib/notify";
@@ -24,7 +25,7 @@ export async function recordLead(inquiry: InquiryInput, estimateParams: string):
     const input = estimateParams
       ? estimateInputFromParams(new URLSearchParams(estimateParams))
       : null;
-    const estimate = input ? calculateEstimate(input) : null;
+    const estimate = input ? calculateEstimate(input, await getPriceTable()) : null;
     const lead = await db.lead.create({
       data: {
         name: inquiry.name,

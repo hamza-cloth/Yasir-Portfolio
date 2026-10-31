@@ -81,13 +81,13 @@ export function HireIntro({
             </div>
             <Link href="/estimate" className="est-promo group">
               <span className="flex flex-col gap-1">
-                <span className="font-semibold text-fg">Get an Instant Estimate</span>
+                <span className="font-semibold text-fg">Plan your project, get a full report</span>
                 <span className="text-sm text-muted">
-                  Select your project &amp; see the approximate cost in 60 seconds.
+                  Six quick questions, then cost by module, tech stack and timeline.
                 </span>
               </span>
               <span className="est-promo-cta">
-                Cost calculator
+                Project planner
                 <Icon name="arrow-right" size={16} />
               </span>
             </Link>

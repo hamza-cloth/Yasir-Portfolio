@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { buttonClassName } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import {
   DEFAULTS,
-  PLATFORMS,
+  FEATURES,
   PRICING,
   type DeliveryId,
   type DesignId,
@@ -15,8 +15,8 @@ import {
   type ProjectType,
   type ScaleId,
 } from "@/config/pricing";
-import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
 import {
+  analyseEstimate,
   calculateEstimate,
   estimateInputFromParams,
   estimateInputToParams,
@@ -24,13 +24,26 @@ import {
   formatInr,
   validateEstimateInput,
   type EstimateInput,
+  type PriceTable,
 } from "@/lib/estimate";
 import { WHATSAPP_NUMBER } from "@/lib/hire";
 
-import { EstimatePrint, ResultCard } from "./ResultCard";
-import { StepDesign, StepDevices, StepFeatures, StepHint, StepProjectType } from "./steps";
+import { Analysing } from "./Analysing";
+import { EstimatePrint, labelsFor, ProjectReport } from "./ResultCard";
+import {
+  StepDesign,
+  StepDevices,
+  StepExtras,
+  StepFeatures,
+  StepHint,
+  StepProjectType,
+  StepReview,
+  type ReviewRow,
+} from "./steps";
 
-const STEPS = ["Project Type", "Devices", "Features", "Design & Scale", "Your Estimate"] as const;
+// Six requirement steps, then the report. No price is shown before the report.
+const STEPS = ["Project", "Platforms", "Features", "Design & scale", "Extras", "Review"] as const;
+const REPORT = STEPS.length + 1;
 const STORAGE_KEY = "ya-estimate";
 
 type State = {
@@ -58,7 +71,7 @@ function readSaved(): State | null {
   const fromParams = (params: URLSearchParams): State | null => {
     const input = estimateInputFromParams(params);
     if (!input) return null;
-    return { ...input, step: Math.min(5, Math.max(1, Number(params.get("step")) || 1)) };
+    return { ...input, step: Math.min(REPORT, Math.max(1, Number(params.get("step")) || 1)) };
   };
 
   const shared = fromParams(new URLSearchParams(window.location.search));
@@ -78,11 +91,12 @@ function toParams(state: State): string {
   return params.toString();
 }
 
-type EstimateWizardProps = { email: string; location: string; site: string };
+type EstimateWizardProps = { email: string; location: string; site: string; prices: PriceTable };
 
-export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
+export function EstimateWizard({ email, location, site, prices }: EstimateWizardProps) {
   const [state, setState] = useState<State>(INITIAL);
   const [restored, setRestored] = useState(false);
+  const [analysing, setAnalysing] = useState(false);
   const [printMeta, setPrintMeta] = useState<{ id: string; date: string } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -121,15 +135,13 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
       }
     : null;
   const problem = validateEstimateInput(input ?? {});
-  const estimate = input && !problem ? calculateEstimate(input) : null;
-
-  const low = useAnimatedNumber(estimate?.low ?? 0);
-  const high = useAnimatedNumber(estimate?.high ?? 0);
+  const estimate = input && !problem ? calculateEstimate(input, prices) : null;
+  const analysis = input && estimate ? analyseEstimate(input, estimate) : null;
+  const labels = input ? labelsFor(input) : null;
 
   // Which steps are done enough to move past (and to jump back to).
   const stepValid = (step: number) => {
     if (step === 1) return Boolean(type);
-    if (step === 2) return Boolean(type) && !problem;
     return Boolean(estimate);
   };
   const hint =
@@ -139,24 +151,44 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
         ? problem
         : null;
 
-  function go(step: number) {
-    setState((current) => ({ ...current, step }));
-    // Move focus to the new step's panel, so keyboard and screen-reader users land on it.
+  const scrollToPanel = useCallback(() => {
     window.requestAnimationFrame(() => {
       panelRef.current?.focus({ preventScroll: true });
       panelRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     });
+  }, []);
+
+  function go(step: number) {
+    setAnalysing(false);
+    setState((current) => ({ ...current, step }));
+    // Move focus to the new step's panel, so keyboard and screen-reader users land on it.
+    scrollToPanel();
+  }
+
+  const finishAnalysis = useCallback(() => {
+    setAnalysing(false);
+    setState((current) => ({ ...current, step: REPORT }));
+    scrollToPanel();
+  }, [scrollToPanel]);
+
+  function analyse() {
+    setAnalysing(true);
+    scrollToPanel();
   }
 
   function chooseType(next: ProjectType) {
-    setState((current) =>
-      current.type === next.id
-        ? current
-        : { ...current, type: next.id, features: [...next.recommended] },
-    );
+    setState((current) => {
+      if (current.type === next.id) return current;
+      // Keep the extra services already chosen; the features start from the new recommendation.
+      const services = current.features.filter(
+        (id) => FEATURES.find((feature) => feature.id === id)?.group === "services",
+      );
+      return { ...current, type: next.id, features: [...next.recommended, ...services] };
+    });
   }
 
   function startOver() {
+    setAnalysing(false);
     setState(INITIAL);
     window.requestAnimationFrame(() => panelRef.current?.focus({ preventScroll: true }));
   }
@@ -172,13 +204,51 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
     window.setTimeout(() => window.print(), 50);
   }
 
-  const range = estimate ? `${formatInr(low)} – ${formatInr(high)}` : "—";
-  const announce = estimate
-    ? `Approximate estimate ${formatInr(estimate.low)} to ${formatInr(estimate.high)}, ${estimate.weeksMin} to ${estimate.weeksMax} weeks.`
-    : "";
+  const reviewRows: ReviewRow[] =
+    type && labels
+      ? [
+          { label: "Project", value: type.label, step: 1 },
+          { label: "Platforms", value: labels.devices.join(", ") || "—", step: 2 },
+          { label: "Features", value: labels.features.join(", ") || "None selected", step: 3 },
+          { label: "Design", value: labels.design, step: 4 },
+          { label: "Expected users", value: labels.scale, step: 4 },
+          { label: "Delivery", value: labels.delivery, step: 4 },
+          { label: "Extra services", value: labels.services.join(", ") || "None", step: 5 },
+        ]
+      : [];
+
+  const onReport = state.step === REPORT && !analysing;
+  const announce =
+    onReport && estimate
+      ? `Approximate estimate ${formatInr(estimate.low)} to ${formatInr(estimate.high)}, ${estimate.weeksMin} to ${estimate.weeksMax} weeks.`
+      : "";
   const whatsappDisplay = WHATSAPP_NUMBER
     ? `+${WHATSAPP_NUMBER.slice(0, 2)} ${WHATSAPP_NUMBER.slice(2, 7)} ${WHATSAPP_NUMBER.slice(7)}`
     : null;
+  const progressStep = onReport ? STEPS.length : Math.min(state.step - 1, STEPS.length);
+  const checklist = [
+    { label: "Project", value: type?.label, step: 1 },
+    { label: "Platforms", value: labels?.devices.join(", "), step: 2 },
+    {
+      label: "Features",
+      value: labels ? `${labels.features.length} selected` : undefined,
+      step: 3,
+    },
+    {
+      label: "Design & scale",
+      value: labels ? `${labels.design} · ${labels.delivery}` : undefined,
+      step: 4,
+    },
+    {
+      label: "Extras",
+      value: labels
+        ? labels.services.length
+          ? `${labels.services.length} added`
+          : "None"
+        : undefined,
+      step: 5,
+    },
+  ];
 
   return (
     <>
@@ -190,24 +260,25 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
         {/* Progress */}
         <nav aria-label="Calculator steps" className="mb-8">
           <div className="est-progress" aria-hidden="true">
-            <span style={{ width: `${((state.step - 1) / (STEPS.length - 1)) * 100}%` }} />
+            <span style={{ width: `${(progressStep / STEPS.length) * 100}%` }} />
           </div>
-          <ol className="mt-4 grid grid-cols-5 gap-2">
-            {STEPS.map((label, index) => {
+          <ol className="mt-4 grid grid-cols-7 gap-1.5">
+            {[...STEPS, "Report"].map((label, index) => {
               const step = index + 1;
-              const reachable = step === 1 || stepValid(step - 1);
+              const reachable =
+                step === 1 || (step === REPORT ? stepValid(REPORT) : stepValid(step - 1));
               return (
                 <li key={label}>
                   <button
                     type="button"
-                    onClick={() => go(step)}
-                    disabled={!reachable || step === state.step}
+                    onClick={() => (step === REPORT ? analyse() : go(step))}
+                    disabled={!reachable || (step === state.step && !analysing)}
                     aria-current={step === state.step ? "step" : undefined}
                     className="est-step-link"
                     data-done={step < state.step}
                   >
-                    <span className="font-mono">{step}</span>
-                    <span className="max-sm:sr-only">{label}</span>
+                    <span className="font-mono">{step === REPORT ? "★" : step}</span>
+                    <span className="max-xl:sr-only">{label}</span>
                   </button>
                 </li>
               );
@@ -215,31 +286,42 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
           </ol>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <div
+          className={
+            onReport || analysing
+              ? "flex flex-col"
+              : "grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start"
+          }
+        >
           <div
             ref={panelRef}
             tabIndex={-1}
-            aria-label={`Step ${state.step} of ${STEPS.length}: ${STEPS[state.step - 1]}`}
+            aria-label={
+              onReport
+                ? "Your project report"
+                : `Step ${Math.min(state.step, STEPS.length)} of ${STEPS.length}: ${STEPS[Math.min(state.step, STEPS.length) - 1]}`
+            }
             className="scroll-mt-28 outline-none"
           >
-            <div key={state.step} className="est-panel">
-              {state.step === 1 ? (
+            <div key={analysing ? "analysing" : state.step} className="est-panel">
+              {analysing ? <Analysing onDone={finishAnalysis} /> : null}
+              {!analysing && state.step === 1 ? (
                 <StepProjectType value={state.type} onChange={chooseType} />
               ) : null}
-              {state.step === 2 ? (
+              {!analysing && state.step === 2 ? (
                 <StepDevices
                   value={state.platforms}
                   onChange={(platforms) => setState((current) => ({ ...current, platforms }))}
                 />
               ) : null}
-              {state.step === 3 ? (
+              {!analysing && state.step === 3 ? (
                 <StepFeatures
                   value={state.features}
                   recommended={type?.recommended ?? []}
                   onChange={(features) => setState((current) => ({ ...current, features }))}
                 />
               ) : null}
-              {state.step === 4 ? (
+              {!analysing && state.step === 4 ? (
                 <StepDesign
                   design={state.design}
                   scale={state.scale}
@@ -247,29 +329,133 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
                   onChange={(patch) => setState((current) => ({ ...current, ...patch }))}
                 />
               ) : null}
-              {state.step === 5 && estimate && type && input ? (
-                <ResultCard
+              {!analysing && state.step === 5 ? (
+                <StepExtras
+                  value={state.features}
+                  onChange={(features) => setState((current) => ({ ...current, features }))}
+                />
+              ) : null}
+              {!analysing && state.step === 6 && estimate ? (
+                <StepReview rows={reviewRows} onEdit={go} onAnalyse={analyse} />
+              ) : null}
+              {onReport && estimate && analysis && type && input ? (
+                <ProjectReport
                   estimate={estimate}
+                  analysis={analysis}
                   input={input}
                   type={type}
-                  onEdit={go}
+                  onEdit={() => go(6)}
                   onPrint={print}
                 />
               ) : null}
-              {state.step === 5 && !estimate ? (
-                <StepHint>Choose a project type and at least one device first.</StepHint>
+              {!analysing && state.step >= 6 && !estimate ? (
+                <StepHint>Choose a project type and at least one platform first.</StepHint>
               ) : null}
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-line pt-6 max-lg:hidden">
+            {!onReport && !analysing ? (
+              <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-line pt-6 max-lg:hidden">
+                {state.step > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => go(state.step - 1)}
+                    className={buttonClassName("line", "md")}
+                  >
+                    <Icon name="arrow-right" size={16} className="rotate-180" />
+                    Back
+                  </button>
+                ) : null}
+                {state.step < STEPS.length ? (
+                  <button
+                    type="button"
+                    onClick={() => go(state.step + 1)}
+                    disabled={!stepValid(state.step)}
+                    className={buttonClassName("accent", "md")}
+                  >
+                    {state.step === 5 ? "Review" : "Next"}
+                    <Icon name="arrow-right" size={16} />
+                  </button>
+                ) : null}
+                {hint ? <StepHint>{hint}</StepHint> : null}
+                {state.type ? (
+                  <button
+                    type="button"
+                    onClick={startOver}
+                    className="ml-auto text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+                  >
+                    Start over
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+            {onReport ? (
+              <button
+                type="button"
+                onClick={startOver}
+                className="mt-6 self-start text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+              >
+                Start a new estimate
+              </button>
+            ) : null}
+          </div>
+
+          {/* Requirements so far: a sticky sidebar on desktop. No price until the report. */}
+          {!onReport && !analysing ? (
+            <aside aria-label="Your requirements" className="est-summary max-lg:hidden">
+              <p className="label-mono text-faint">Your requirements</p>
+              <ol className="mt-2 flex flex-col gap-3">
+                {checklist.map((item) => {
+                  const done = state.step > item.step && Boolean(item.value);
+                  return (
+                    <li key={item.label} className="flex gap-3">
+                      <span className="est-stage-dot mt-0.5" data-done={done}>
+                        {done ? <Icon name="check" size={11} /> : null}
+                      </span>
+                      <span className="flex min-w-0 flex-col">
+                        <span className="text-sm font-semibold text-fg">{item.label}</span>
+                        <span className="truncate text-sm text-muted">
+                          {done ? item.value : "—"}
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+              <div className="mt-4 flex items-start gap-2.5 rounded-field bg-c1-soft p-3 text-sm text-c1-text">
+                <Icon name="sparkle" size={16} className="mt-0.5 flex-none" />
+                <span>
+                  Your cost, timeline and tech stack appear after the analysis, worked out from
+                  every answer.
+                </span>
+              </div>
+              <p className="mt-1 inline-flex w-fit items-center gap-2 text-xs text-muted">
+                <Icon name="shield" size={13} />
+                {PRICING.supportMonths} months support free with every build
+              </p>
+            </aside>
+          ) : null}
+        </div>
+
+        {/* Navigation: a sticky bar on phones and tablets */}
+        {!onReport && !analysing ? (
+          <div className="est-bar lg:hidden">
+            <div className="min-w-0">
+              <p className="label-mono text-faint">
+                Step {Math.min(state.step, STEPS.length)} of {STEPS.length}
+              </p>
+              <p className="truncate font-display text-base font-semibold text-fg">
+                {STEPS[Math.min(state.step, STEPS.length) - 1]}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
               {state.step > 1 ? (
                 <button
                   type="button"
                   onClick={() => go(state.step - 1)}
-                  className={buttonClassName("line", "md")}
+                  aria-label="Back"
+                  className={buttonClassName("line", "sm", "px-3")}
                 >
                   <Icon name="arrow-right" size={16} className="rotate-180" />
-                  Back
                 </button>
               ) : null}
               {state.step < STEPS.length ? (
@@ -277,105 +463,32 @@ export function EstimateWizard({ email, location, site }: EstimateWizardProps) {
                   type="button"
                   onClick={() => go(state.step + 1)}
                   disabled={!stepValid(state.step)}
-                  className={buttonClassName("accent", "md")}
+                  className={buttonClassName("accent", "sm")}
                 >
-                  {state.step === 4 ? "See my estimate" : "Next"}
+                  {state.step === 5 ? "Review" : "Next"}
                   <Icon name="arrow-right" size={16} />
                 </button>
-              ) : null}
-              {hint ? <StepHint>{hint}</StepHint> : null}
-              {state.type ? (
+              ) : (
                 <button
                   type="button"
-                  onClick={startOver}
-                  className="ml-auto text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+                  onClick={analyse}
+                  disabled={!estimate}
+                  className={buttonClassName("accent", "sm")}
                 >
-                  Start over
+                  <Icon name="sparkle" size={16} />
+                  Analyse
                 </button>
-              ) : null}
+              )}
             </div>
+            {hint ? <StepHint className="basis-full text-xs">{hint}</StepHint> : null}
           </div>
-
-          {/* Live summary: a sticky sidebar on desktop */}
-          <aside aria-label="Live estimate" className="est-summary max-lg:hidden">
-            <p className="label-mono text-faint">Approx. estimate</p>
-            <p className="font-display text-[1.6rem] leading-tight font-semibold text-c1-text">
-              {range}
-            </p>
-            <p className="text-sm text-muted">
-              {estimate
-                ? `Approx. ${estimate.weeksMin} – ${estimate.weeksMax} weeks`
-                : "Choose a project type to start."}
-            </p>
-            <p className="mt-1 inline-flex w-fit items-center gap-2 rounded-pill border border-c1 px-3 py-1 text-xs font-semibold text-c1-text">
-              <Icon name="shield" size={13} />
-              {PRICING.supportMonths} months support free
-            </p>
-            {type ? (
-              <dl className="mt-3 flex flex-col gap-2 border-t border-line pt-3 text-sm">
-                <div>
-                  <dt className="label-mono text-faint">Project</dt>
-                  <dd className="text-fg">{type.label}</dd>
-                </div>
-                <div>
-                  <dt className="label-mono text-faint">Devices</dt>
-                  <dd className="text-fg">
-                    {PLATFORMS.filter((item) => state.platforms.includes(item.id))
-                      .map((item) => item.label)
-                      .join(", ") || "—"}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="label-mono text-faint">Features</dt>
-                  <dd className="text-fg">{state.features.length} selected</dd>
-                </div>
-              </dl>
-            ) : null}
-          </aside>
-        </div>
-
-        {/* Live summary and navigation: a sticky bar on phones and tablets */}
-        <div className="est-bar lg:hidden">
-          <div className="min-w-0">
-            <p className="label-mono text-faint">Approx.</p>
-            <p className="truncate font-display text-base font-semibold text-c1-text sm:text-lg">
-              {range}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {state.step > 1 ? (
-              <button
-                type="button"
-                onClick={() => go(state.step - 1)}
-                aria-label="Back"
-                className={buttonClassName("line", "sm", "px-3")}
-              >
-                <Icon name="arrow-right" size={16} className="rotate-180" />
-              </button>
-            ) : null}
-            {state.step < STEPS.length ? (
-              <button
-                type="button"
-                onClick={() => go(state.step + 1)}
-                disabled={!stepValid(state.step)}
-                className={buttonClassName("accent", "sm")}
-              >
-                {state.step === 4 ? "Estimate" : "Next"}
-                <Icon name="arrow-right" size={16} />
-              </button>
-            ) : (
-              <button type="button" onClick={startOver} className={buttonClassName("line", "sm")}>
-                Start over
-              </button>
-            )}
-          </div>
-          {hint ? <StepHint className="basis-full text-xs">{hint}</StepHint> : null}
-        </div>
+        ) : null}
       </div>
 
-      {estimate && type && input ? (
+      {estimate && analysis && type && input ? (
         <EstimatePrint
           estimate={estimate}
+          analysis={analysis}
           input={input}
           type={type}
           meta={printMeta}

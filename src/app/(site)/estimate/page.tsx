@@ -4,13 +4,14 @@ import { EstimateWizard } from "@/components/estimate/EstimateWizard";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { PRICING } from "@/config/pricing";
+import { getPriceTable } from "@/lib/data/pricing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 
 const TITLE = "Project Cost Calculator — Yasir Abdullah";
 const DESCRIPTION =
-  "Instant website & app development cost estimate in India — websites, e-commerce, CRM, social, gaming and AI apps, with 6 months of free support.";
+  "Plan your website, app or software in six steps and get a full-stack project report: cost by module, tech stack, timeline and payment plan, with 6 months of free support.";
 
 export async function generateMetadata() {
   const metadata = await pageMetadata({
@@ -28,7 +29,7 @@ export async function generateMetadata() {
 }
 
 export default async function EstimatePage() {
-  const settings = await getSiteSettings();
+  const [settings, prices] = await Promise.all([getSiteSettings(), getPriceTable()]);
 
   return (
     <section
@@ -39,11 +40,12 @@ export default async function EstimatePage() {
         <header className="flex max-w-3xl flex-col gap-5 print:hidden">
           <Eyebrow>Project cost calculator</Eyebrow>
           <h1 id="estimate-title" className="text-h1 leading-[1.02]">
-            How Much Will Your Website or App Cost?
+            Plan your project, then see the real cost
           </h1>
           <p className="text-lg leading-relaxed text-muted">
-            Select what you need and get an approximate estimate instantly — with{" "}
-            {PRICING.supportMonths} months of support FREE.
+            Tell me what you need in six quick steps. Then the planner analyses your requirements
+            and builds a full-stack report: cost by module, tech stack, timeline and payment plan —
+            with {PRICING.supportMonths} months of support free.
           </p>
         </header>
         {/* Its own boundary, so React hydrates the calculator as a separate task. */}
@@ -52,6 +54,7 @@ export default async function EstimatePage() {
             email={settings.email}
             location={settings.location}
             site={SITE_URL.replace(/^https?:\/\//, "")}
+            prices={prices}
           />
         </Suspense>
       </Container>

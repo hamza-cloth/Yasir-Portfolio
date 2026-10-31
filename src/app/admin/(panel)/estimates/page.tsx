@@ -28,7 +28,7 @@ export default async function EstimatesPage() {
     <>
       <AdminHeader
         title="Estimates"
-        description="Saved from the cost calculator when a visitor asks for an exact quote. Numbers are recalculated on the server from the prices in src/config/pricing.ts."
+        description="Saved from the cost calculator when a visitor asks for an exact quote. Numbers are recalculated on the server with the prices set under Pricing."
       />
       {estimates.length === 0 ? (
         <p className="surface rounded-card border border-dashed border-line-2 p-8 text-center text-muted">

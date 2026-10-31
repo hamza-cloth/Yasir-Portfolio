@@ -413,6 +413,221 @@
   .est-support summary::-webkit-details-marker {
     display: none;
   }
+
+  /* ---- Planner v2: icons, report panels, analysis ---- */
+  .est-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--c1) 12%, transparent);
+    color: var(--c1-text);
+    transition:
+      background-color 250ms var(--easing-entrance),
+      color 250ms var(--easing-entrance);
+  }
+
+  [data-selected="true"] > .est-icon {
+    background: var(--c1);
+    color: var(--c1-ink);
+  }
+
+  .est-card[data-selected="true"] {
+    background:
+      radial-gradient(
+        120% 120% at 100% 0%,
+        color-mix(in srgb, var(--c1) 10%, transparent),
+        transparent 60%
+      ),
+      var(--surface-solid);
+  }
+
+  .est-badge {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid color-mix(in srgb, var(--c1) 45%, var(--line));
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--c1-text);
+  }
+
+  .est-report-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--surface-solid);
+    padding: clamp(18px, 3vw, 28px);
+    animation: est-in 500ms var(--easing-reveal) both;
+  }
+
+  .est-report-panel:nth-of-type(2) {
+    animation-delay: 80ms;
+  }
+
+  .est-bar-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--line);
+  }
+
+  .est-bar-track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      var(--c1),
+      color-mix(in srgb, var(--c1) 55%, var(--c2, var(--c1)))
+    );
+    transition: width 700ms var(--easing-reveal);
+  }
+
+  .est-phase-bar {
+    display: flex;
+    height: 12px;
+    gap: 3px;
+    overflow: hidden;
+    border-radius: 999px;
+  }
+
+  .est-phase-bar span,
+  .est-phase-dot {
+    background: var(--c1);
+  }
+
+  .est-phase-bar span {
+    flex-basis: 0;
+  }
+
+  .est-phase-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+  }
+
+  .est-stage-dot {
+    display: grid;
+    width: 18px;
+    height: 18px;
+    flex: none;
+    place-items: center;
+    border: 1.5px solid var(--line-2);
+    border-radius: 999px;
+    color: var(--c1-ink);
+    transition:
+      background-color 250ms,
+      border-color 250ms;
+  }
+
+  [data-state="done"] > .est-stage-dot,
+  .est-stage-dot[data-done="true"] {
+    border-color: var(--c1);
+    background: var(--c1);
+  }
+
+  [data-state="active"] > .est-stage-dot {
+    border-color: var(--c1);
+    animation: est-pulse 900ms ease-in-out infinite;
+  }
+
+  @keyframes est-pulse {
+    50% {
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--c1) 22%, transparent);
+    }
+  }
+
+  .est-analysing {
+    display: flex;
+    min-height: 420px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    background:
+      radial-gradient(60% 50% at 50% 0%, var(--glow), transparent 70%), var(--surface-solid);
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .est-orbit {
+    position: relative;
+    display: grid;
+    width: 96px;
+    height: 96px;
+    place-items: center;
+    color: var(--c1-text);
+  }
+
+  .est-orbit span {
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-top-color: var(--c1);
+    border-radius: 999px;
+    animation: est-spin 1.1s linear infinite;
+  }
+
+  .est-orbit span + span {
+    inset: 14px;
+    border-top-color: transparent;
+    border-right-color: color-mix(in srgb, var(--c1) 60%, transparent);
+    animation-duration: 1.6s;
+    animation-direction: reverse;
+  }
+
+  @keyframes est-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .est-analyse-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid color-mix(in srgb, var(--c1) 50%, var(--line));
+    border-radius: var(--r-card);
+    background:
+      radial-gradient(
+        120% 160% at 100% 0%,
+        color-mix(in srgb, var(--c1) 16%, transparent),
+        transparent 60%
+      ),
+      var(--surface-solid);
+    padding: 20px 22px;
+  }
+
+  .est-analyse-button {
+    display: inline-flex;
+    min-height: 52px;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--r-button);
+    background: var(--accent-fill);
+    padding: 0 24px;
+    font-weight: 700;
+    color: var(--on-fill);
+    box-shadow: 0 12px 28px -12px var(--c1);
+    transition:
+      transform 250ms var(--easing-entrance),
+      box-shadow 250ms var(--easing-entrance);
+  }
+
+  .est-analyse-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px -14px var(--c1);
+  }
 }
 
 /* While the calculator's bottom bar is on screen, the floating buttons sit above it. Outside the
@@ -429,7 +644,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .est-panel,
-  .est-result::before {
+  .est-result::before,
+  .est-report-panel,
+  .est-orbit span,
+  [data-state="active"] > .est-stage-dot {
     animation: none;
   }
 

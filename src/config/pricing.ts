@@ -1,5 +1,6 @@
-// Every price, multiplier, timeline and text the cost calculator uses. Change numbers here; the
-// calculator (src/lib/estimate.ts) and its UI only read them. All amounts are in INR.
+// Every price, multiplier, timeline and text the cost calculator uses. All amounts are in INR.
+// Base and feature prices here are the defaults: the admin can override them (admin → Pricing),
+// and the calculator (src/lib/estimate.ts) reads the result as a PriceTable.
 
 export const PRICING = {
   currency: "INR",
@@ -61,7 +62,17 @@ export type FeatureId =
   | "multiLang"
   | "seo"
   | "contactForm"
-  | "api";
+  | "api"
+  | "security"
+  | "search"
+  | "reviews"
+  | "subscriptions"
+  | "offline"
+  | "contentWriting"
+  | "branding"
+  | "deployment"
+  | "migration"
+  | "training";
 
 // The project types offered in the Hire me inquiry form, so "Get Exact Quote" can pre-fill it.
 type InquiryType =
@@ -293,8 +304,9 @@ export const PROJECT_TYPES: ProjectType[] = [
 ];
 
 export type FeatureGroupId =
-  "users" | "money" | "communication" | "content" | "business" | "advanced";
+  "users" | "money" | "communication" | "content" | "business" | "advanced" | "services";
 
+// "services" are the extras asked about on their own step (content, branding, launch help).
 export const FEATURE_GROUPS: { id: FeatureGroupId; label: string }[] = [
   { id: "users", label: "Users & Access" },
   { id: "money", label: "Payments & Money" },
@@ -302,49 +314,284 @@ export const FEATURE_GROUPS: { id: FeatureGroupId; label: string }[] = [
   { id: "content", label: "Content & Media" },
   { id: "business", label: "Business Tools" },
   { id: "advanced", label: "Advanced" },
+  { id: "services", label: "Extra services" },
 ];
 
-export type Feature = { id: FeatureId; label: string; price: number; group: FeatureGroupId };
+// The part of a full-stack build each piece of work lands in, for the result's breakdown.
+export type ModuleId =
+  | "discovery"
+  | "frontend"
+  | "backend"
+  | "database"
+  | "admin"
+  | "integrations"
+  | "apps"
+  | "qa"
+  | "launch";
+
+export const MODULES: { id: ModuleId; label: string; description: string }[] = [
+  {
+    id: "discovery",
+    label: "Discovery & UI/UX design",
+    description: "Scope, user flows, wireframes and the visual design",
+  },
+  {
+    id: "frontend",
+    label: "Frontend",
+    description: "Every screen, responsive, fast and accessible",
+  },
+  {
+    id: "backend",
+    label: "Backend & APIs",
+    description: "Business logic, sign-in, permissions and APIs",
+  },
+  { id: "database", label: "Database", description: "Data model, migrations, backups and indexes" },
+  { id: "admin", label: "Admin panel", description: "Dashboards and tools to run it yourself" },
+  {
+    id: "integrations",
+    label: "Integrations",
+    description: "Payments, messaging, maps, AI and other services",
+  },
+  {
+    id: "apps",
+    label: "Mobile & desktop apps",
+    description: "Store-ready apps beyond the website",
+  },
+  { id: "qa", label: "Testing & QA", description: "Automated tests and checks on real devices" },
+  {
+    id: "launch",
+    label: "Deployment & launch",
+    description: "Hosting, domain, monitoring and go-live",
+  },
+];
+
+// How a project type's base price splits across modules (shares add up to 1).
+export const BASE_SPLIT: Partial<Record<ModuleId, number>> = {
+  discovery: 0.15,
+  frontend: 0.32,
+  backend: 0.25,
+  database: 0.08,
+  qa: 0.12,
+  launch: 0.08,
+};
+
+export type Feature = {
+  id: FeatureId;
+  label: string;
+  price: number;
+  group: FeatureGroupId;
+  module: ModuleId;
+  // One line under the label, for the extra services.
+  description?: string;
+};
 
 export const FEATURES: Feature[] = [
-  { id: "login", label: "User login & profiles", price: 8_000, group: "users" },
-  { id: "socialLogin", label: "Google / social login", price: 5_000, group: "users" },
-  { id: "admin", label: "Admin panel / dashboard", price: 20_000, group: "users" },
-  { id: "roles", label: "Multiple user roles & permissions", price: 12_000, group: "users" },
+  { id: "login", label: "User login & profiles", price: 8_000, group: "users", module: "backend" },
+  {
+    id: "socialLogin",
+    label: "Google / social login",
+    price: 5_000,
+    group: "users",
+    module: "integrations",
+  },
+  { id: "admin", label: "Admin panel / dashboard", price: 20_000, group: "users", module: "admin" },
+  {
+    id: "roles",
+    label: "Multiple user roles & permissions",
+    price: 12_000,
+    group: "users",
+    module: "backend",
+  },
   {
     id: "payment",
     label: "Payment gateway — UPI / cards / Razorpay",
     price: 12_000,
     group: "money",
+    module: "integrations",
   },
-  { id: "wallet", label: "Wallet, rewards & referral system", price: 25_000, group: "money" },
-  { id: "billing", label: "Invoices & GST billing", price: 15_000, group: "money" },
-  { id: "chat", label: "Real-time chat", price: 30_000, group: "communication" },
-  { id: "push", label: "Push notifications", price: 8_000, group: "communication" },
+  {
+    id: "wallet",
+    label: "Wallet, rewards & referral system",
+    price: 25_000,
+    group: "money",
+    module: "backend",
+  },
+  {
+    id: "billing",
+    label: "Invoices & GST billing",
+    price: 15_000,
+    group: "money",
+    module: "backend",
+  },
+  { id: "chat", label: "Real-time chat", price: 30_000, group: "communication", module: "backend" },
+  {
+    id: "push",
+    label: "Push notifications",
+    price: 8_000,
+    group: "communication",
+    module: "integrations",
+  },
   {
     id: "notifications",
     label: "Email / SMS / WhatsApp alerts",
     price: 10_000,
     group: "communication",
+    module: "integrations",
   },
-  { id: "contactForm", label: "Contact / inquiry forms", price: 3_000, group: "communication" },
-  { id: "media", label: "Photo / video uploads", price: 20_000, group: "content" },
-  { id: "video", label: "Video courses / streaming", price: 30_000, group: "content" },
+  {
+    id: "contactForm",
+    label: "Contact / inquiry forms",
+    price: 3_000,
+    group: "communication",
+    module: "frontend",
+  },
+  {
+    id: "media",
+    label: "Photo / video uploads",
+    price: 20_000,
+    group: "content",
+    module: "backend",
+  },
+  {
+    id: "video",
+    label: "Video courses / streaming",
+    price: 30_000,
+    group: "content",
+    module: "backend",
+  },
   {
     id: "multiLang",
     label: "Multi-language, e.g. Hindi + English",
     price: 10_000,
     group: "content",
+    module: "frontend",
   },
-  { id: "seo", label: "SEO setup", price: 8_000, group: "content" },
-  { id: "inventory", label: "Inventory / stock management", price: 20_000, group: "business" },
-  { id: "vendorPanel", label: "Seller / vendor panel", price: 40_000, group: "business" },
-  { id: "booking", label: "Booking calendar & slots", price: 15_000, group: "business" },
-  { id: "reports", label: "Reports & analytics", price: 15_000, group: "business" },
-  { id: "maps", label: "Maps & live location tracking", price: 20_000, group: "advanced" },
-  { id: "leaderboard", label: "Leaderboards & in-game rewards", price: 20_000, group: "advanced" },
-  { id: "ai", label: "AI chatbot / AI features", price: 25_000, group: "advanced" },
-  { id: "api", label: "Third-party API integration", price: 10_000, group: "advanced" },
+  { id: "seo", label: "SEO setup", price: 8_000, group: "content", module: "frontend" },
+  {
+    id: "inventory",
+    label: "Inventory / stock management",
+    price: 20_000,
+    group: "business",
+    module: "backend",
+  },
+  {
+    id: "vendorPanel",
+    label: "Seller / vendor panel",
+    price: 40_000,
+    group: "business",
+    module: "admin",
+  },
+  {
+    id: "booking",
+    label: "Booking calendar & slots",
+    price: 15_000,
+    group: "business",
+    module: "backend",
+  },
+  {
+    id: "reports",
+    label: "Reports & analytics",
+    price: 15_000,
+    group: "business",
+    module: "admin",
+  },
+  {
+    id: "maps",
+    label: "Maps & live location tracking",
+    price: 20_000,
+    group: "advanced",
+    module: "integrations",
+  },
+  {
+    id: "leaderboard",
+    label: "Leaderboards & in-game rewards",
+    price: 20_000,
+    group: "advanced",
+    module: "backend",
+  },
+  {
+    id: "ai",
+    label: "AI chatbot / AI features",
+    price: 25_000,
+    group: "advanced",
+    module: "integrations",
+  },
+  {
+    id: "api",
+    label: "Third-party API integration",
+    price: 10_000,
+    group: "advanced",
+    module: "integrations",
+  },
+  {
+    id: "security",
+    label: "Two-factor sign-in & audit log",
+    price: 10_000,
+    group: "users",
+    module: "backend",
+  },
+  { id: "search", label: "Search & filters", price: 8_000, group: "content", module: "backend" },
+  {
+    id: "reviews",
+    label: "Ratings & reviews",
+    price: 8_000,
+    group: "communication",
+    module: "backend",
+  },
+  {
+    id: "subscriptions",
+    label: "Subscriptions & recurring billing",
+    price: 18_000,
+    group: "money",
+    module: "integrations",
+  },
+  {
+    id: "offline",
+    label: "Offline mode & sync",
+    price: 15_000,
+    group: "advanced",
+    module: "frontend",
+  },
+  {
+    id: "contentWriting",
+    label: "Content writing for every page",
+    price: 6_000,
+    group: "services",
+    module: "discovery",
+    description: "Clear, search-friendly text for every page, in your voice",
+  },
+  {
+    id: "branding",
+    label: "Logo & brand kit",
+    price: 8_000,
+    group: "services",
+    module: "discovery",
+    description: "Logo, colours and fonts, ready for the site and social media",
+  },
+  {
+    id: "deployment",
+    label: "Domain, hosting & email setup",
+    price: 4_000,
+    group: "services",
+    module: "launch",
+    description: "Domain, hosting, SSL and business email, set up and connected",
+  },
+  {
+    id: "migration",
+    label: "Move data from an old system",
+    price: 12_000,
+    group: "services",
+    module: "database",
+    description: "Customers, products or records moved over safely",
+  },
+  {
+    id: "training",
+    label: "Admin training & handover docs",
+    price: 3_000,
+    group: "services",
+    module: "launch",
+    description: "A walkthrough of the admin panel and written guides",
+  },
 ];
 
 export type PlatformId = "web" | "pwa" | "android" | "ios" | "desktop";
@@ -393,6 +640,21 @@ export const SCALES: Choice<ScaleId>[] = [
 export const DELIVERY: Choice<DeliveryId>[] = [
   { id: "standard", label: "Standard", description: "Normal timeline", factor: 1.0 },
   { id: "priority", label: "Priority", description: "Fast-track, about 25% sooner", factor: 1.25 },
+];
+
+// How payment is usually split; shown on the result.
+export const MILESTONES = [
+  { label: "Advance, to start", share: 0.3 },
+  { label: "Working beta, ready to review", share: 0.4 },
+  { label: "Launch and handover", share: 0.3 },
+];
+
+// The timeline's phases, as shares of the total weeks.
+export const PHASES = [
+  { label: "Discovery & design", share: 0.18 },
+  { label: "Development", share: 0.57 },
+  { label: "Testing & fixes", share: 0.15 },
+  { label: "Launch & handover", share: 0.1 },
 ];
 
 export const DEFAULTS = {

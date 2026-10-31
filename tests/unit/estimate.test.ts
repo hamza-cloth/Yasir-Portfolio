@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import { FEATURES, PROJECT_TYPES } from "@/config/pricing";
 import {
+  analyseEstimate,
   budgetRangeFor,
   calculateEstimate,
+  DEFAULT_PRICES,
   EstimateInputError,
   formatInr,
   platformFactorFor,
+  priceTableWith,
   roundTo,
   validateEstimateInput,
   type EstimateInput,
@@ -149,5 +152,80 @@ describe("pricing config", () => {
     )) {
       expect(type.legalNote, type.id).toBe(true);
     }
+  });
+});
+
+describe("analyseEstimate", () => {
+  const cases: Partial<EstimateInput>[] = [
+    { type: "portfolio" },
+    { type: "ecommerce", platforms: ["web", "android", "ios"], delivery: "priority" },
+    { type: "social", platforms: ["web", "pwa", "desktop"], design: "premium", scale: "large" },
+    { type: "custom", features: ["contentWriting", "branding", "deployment"] },
+  ];
+
+  it("splits every estimate into modules that add up to the subtotal", () => {
+    for (const overrides of cases) {
+      const selection = input(overrides);
+      const estimate = calculateEstimate(selection);
+      const analysis = analyseEstimate(selection, estimate);
+      const total = sum(analysis.modules.map((module) => module.amount));
+      expect(total, overrides.type).toBeCloseTo(estimate.subtotal, 4);
+      expect(sum(analysis.modules.map((module) => module.share))).toBeCloseTo(1, 6);
+    }
+  });
+
+  it("puts app work only where apps were chosen, and names the platforms", () => {
+    const webOnly = analyseEstimate(input({}), calculateEstimate(input({})));
+    expect(webOnly.modules.some((module) => module.id === "apps")).toBe(false);
+    const mobileInput = input({ type: "ecommerce", platforms: ["web", "android", "ios"] });
+    const mobile = analyseEstimate(mobileInput, calculateEstimate(mobileInput));
+    expect(mobile.modules.find((module) => module.id === "apps")?.items).toEqual([
+      "Android",
+      "iOS",
+    ]);
+    expect(mobile.stack.some((row) => row.layer === "Mobile")).toBe(true);
+    expect(mobile.stack.some((row) => row.layer === "Payments")).toBe(true);
+  });
+
+  it("files each feature under its module", () => {
+    const selection = input({ type: "crm" });
+    const analysis = analyseEstimate(selection, calculateEstimate(selection));
+    expect(analysis.modules.find((module) => module.id === "admin")?.items).toContain(
+      "Admin panel / dashboard",
+    );
+  });
+
+  it("scores complexity from 1 to 10 and splits payments 30/40/30", () => {
+    const small = input({ type: "landing", features: [] });
+    const big = input({
+      type: "multiGame",
+      platforms: ["web", "android", "ios", "desktop"],
+      design: "premium",
+      scale: "large",
+    });
+    const smallAnalysis = analyseEstimate(small, calculateEstimate(small));
+    const bigAnalysis = analyseEstimate(big, calculateEstimate(big));
+    expect(smallAnalysis.complexity.score).toBeLessThan(bigAnalysis.complexity.score);
+    expect(bigAnalysis.complexity.score).toBeLessThanOrEqual(10);
+    expect(smallAnalysis.milestones.map((milestone) => milestone.share)).toEqual([0.3, 0.4, 0.3]);
+    expect(smallAnalysis.phases).toHaveLength(4);
+  });
+});
+
+describe("admin price overrides", () => {
+  it("uses an overridden base and feature price, and ignores junk", () => {
+    const prices = priceTableWith({
+      base: { portfolio: 15_000, casino: 1 },
+      feature: { seo: 5_000, contactForm: -4 },
+    });
+    expect(prices.base.portfolio).toBe(15_000);
+    expect(prices.base).not.toHaveProperty("casino");
+    expect(prices.feature.contactForm).toBe(3_000);
+    // 15,000 + 5,000 SEO + 3,000 contact form
+    expect(calculateEstimate(input({ type: "portfolio" }), prices).subtotal).toBe(23_000);
+  });
+
+  it("falls back to the defaults with no overrides", () => {
+    expect(priceTableWith(null)).toEqual(DEFAULT_PRICES);
   });
 });

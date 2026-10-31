@@ -96,6 +96,13 @@ export const NAV_GROUPS: NavGroup[] = [
         keywords: "quotes calculator",
       },
       {
+        href: "/admin/pricing",
+        label: "Pricing",
+        icon: "M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
+        permission: "manage",
+        keywords: "calculator rates estimate prices",
+      },
+      {
         href: "/admin/clients",
         label: "Clients",
         icon: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 11a3 3 0 1 0 0-6M21 20a6 6 0 0 0-4-5.6",

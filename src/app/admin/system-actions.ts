@@ -28,6 +28,7 @@ import {
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { getDb } from "@/lib/db";
 import { sendAdminEmail } from "@/lib/email";
+import { DEFAULT_PRICES } from "@/lib/estimate";
 import { reportError } from "@/lib/monitoring";
 import { requestIpHash, takeRateLimit } from "@/lib/rate-limit";
 import { HOME_SECTIONS, SITE_CONFIG, type SiteConfigKey } from "@/lib/site-config";
@@ -209,6 +210,30 @@ export async function saveNotificationPrefs(
     emailOnLead: bool(form, "emailOnLead"),
     emailOnMessage: bool(form, "emailOnMessage"),
   });
+}
+
+// Calculator prices: only the ones that differ from the defaults are stored, so a default changed
+// in src/config/pricing.ts still reaches every price the admin never touched.
+export async function savePricing(_previous: FormResult, form: FormData): Promise<FormResult> {
+  const changed = (defaults: Record<string, number>, prefix: string) => {
+    const result: Record<string, number> = {};
+    for (const [id, fallback] of Object.entries(defaults)) {
+      const raw = text(form, `${prefix}-${id}`).replace(/[,\s₹]/g, "");
+      if (raw === "") continue;
+      const value = Number(raw);
+      if (!Number.isInteger(value) || value < 0) continue;
+      if (value !== fallback) result[id] = value;
+    }
+    return result;
+  };
+  return saveConfig("pricing", {
+    base: changed(DEFAULT_PRICES.base, "base"),
+    feature: changed(DEFAULT_PRICES.feature, "feature"),
+  });
+}
+
+export async function resetPricing(): Promise<void> {
+  await saveConfig("pricing", { base: {}, feature: {} });
 }
 
 // ---- Testimonials --------------------------------------------------------------------------
