@@ -1,0 +1,498 @@
+/* The mobile menu and its three-line toggle (below the laptop breakpoint). */
+
+@layer components {
+  /* ---- Toggle: three lines that fold into a cross; open, an accent pill reading "Close" ---- */
+  .menu-toggle {
+    display: inline-flex;
+    height: 44px;
+    min-width: 44px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    padding: 0 13px;
+    color: var(--fg);
+    transition:
+      background-color 300ms var(--easing-entrance),
+      color 300ms var(--easing-entrance),
+      box-shadow 300ms var(--easing-entrance),
+      padding 450ms var(--easing-entrance);
+  }
+
+  .menu-toggle:hover {
+    background: color-mix(in srgb, var(--fg) 11%, transparent);
+  }
+
+  .menu-toggle[data-open="true"] {
+    background: var(--accent-fill);
+    padding-right: 16px;
+    color: var(--on-fill);
+    box-shadow: 0 12px 28px -14px var(--c1);
+  }
+
+  .menu-toggle-icon {
+    position: relative;
+    width: 18px;
+    height: 14px;
+    flex: none;
+  }
+
+  .menu-line {
+    position: absolute;
+    right: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      transform 450ms var(--easing-entrance),
+      opacity 250ms var(--easing-entrance),
+      width 400ms var(--easing-entrance);
+  }
+
+  .menu-line:nth-child(1) {
+    top: 0;
+    width: 18px;
+  }
+
+  .menu-line:nth-child(2) {
+    top: 6px;
+    width: 11px;
+  }
+
+  .menu-line:nth-child(3) {
+    top: 12px;
+    width: 15px;
+  }
+
+  .menu-toggle:hover .menu-line {
+    width: 18px;
+  }
+
+  .menu-toggle[data-open="true"] .menu-line {
+    width: 18px;
+  }
+
+  .menu-toggle[data-open="true"] .menu-line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .menu-toggle[data-open="true"] .menu-line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-10px) scaleX(0.2);
+  }
+
+  .menu-toggle[data-open="true"] .menu-line:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .menu-toggle-label {
+    max-width: 0;
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition:
+      max-width 450ms var(--easing-entrance),
+      margin 450ms var(--easing-entrance),
+      opacity 250ms var(--easing-entrance);
+  }
+
+  .menu-toggle[data-open="true"] .menu-toggle-label {
+    max-width: 60px;
+    margin-left: 9px;
+    opacity: 1;
+  }
+
+  /* ---- Backdrop ---- */
+  /* Fixed, so it stays behind the links while they scroll; the panel clip still applies. */
+  .mm-backdrop {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .mm-orb {
+    position: absolute;
+    border-radius: 999px;
+    animation: mm-drift 14s ease-in-out infinite alternate;
+  }
+
+  .mm-orb--one {
+    top: -12%;
+    right: -30%;
+    width: 120vw;
+    aspect-ratio: 1;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c1) 22%, transparent),
+      transparent
+    );
+  }
+
+  .mm-orb--two {
+    bottom: -20%;
+    left: -40%;
+    width: 110vw;
+    aspect-ratio: 1;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c2, var(--c1)) 16%, transparent),
+      transparent
+    );
+    animation-delay: -6s;
+  }
+
+  @keyframes mm-drift {
+    to {
+      transform: translate3d(-8%, 6%, 0) scale(1.12);
+    }
+  }
+
+  .mm-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(90% 50% at 70% 0%, #000, transparent 75%);
+    mask-image: radial-gradient(90% 50% at 70% 0%, #000, transparent 75%);
+    opacity: 0.6;
+  }
+
+  /* ---- Content ---- */
+  .mm-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c1-text);
+  }
+
+  .mm-eyebrow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--c1);
+    box-shadow: 0 0 10px var(--c1);
+    animation: mm-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes mm-pulse {
+    50% {
+      box-shadow:
+        0 0 0 5px color-mix(in srgb, var(--c1) 18%, transparent),
+        0 0 10px var(--c1);
+    }
+  }
+
+  .mm-link {
+    display: flex;
+    min-height: 62px;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid transparent;
+    border-radius: 18px;
+    padding: 9px 10px;
+    transition:
+      background-color 250ms,
+      border-color 250ms,
+      transform 300ms var(--easing-entrance);
+  }
+
+  .mm-link:hover,
+  .mm-link:focus-visible {
+    border-color: var(--line);
+    background: color-mix(in srgb, var(--surface-solid) 70%, transparent);
+  }
+
+  .mm-link:active {
+    transform: scale(0.98);
+  }
+
+  .mm-link--active {
+    border-color: color-mix(in srgb, var(--c1) 38%, var(--line));
+    background:
+      linear-gradient(110deg, color-mix(in srgb, var(--c1) 15%, transparent), transparent 80%),
+      color-mix(in srgb, var(--surface-solid) 60%, transparent);
+  }
+
+  .mm-index {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    transition:
+      background-color 250ms,
+      color 250ms,
+      border-color 250ms;
+  }
+
+  .mm-link--active .mm-index {
+    border-color: transparent;
+    background: var(--accent-fill);
+    color: var(--on-fill);
+    box-shadow: 0 8px 20px -10px var(--c1);
+  }
+
+  .mm-label {
+    font-family: var(--ff-display);
+    font-size: clamp(1.3rem, 6vw, 1.7rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--fg);
+  }
+
+  .mm-link--active .mm-label {
+    color: var(--c1-text);
+  }
+
+  .mm-detail {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .mm-arrow {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--faint);
+    transition:
+      transform 350ms var(--easing-entrance),
+      color 250ms,
+      border-color 250ms;
+  }
+
+  .mm-link:hover .mm-arrow,
+  .mm-link--active .mm-arrow {
+    border-color: color-mix(in srgb, var(--c1) 55%, transparent);
+    color: var(--c1-text);
+  }
+
+  .mm-link:active .mm-arrow {
+    transform: translateX(4px);
+  }
+
+  /* ---- Quick actions ---- */
+  .mm-tile {
+    position: relative;
+    display: flex;
+    min-height: 66px;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--surface-solid) 75%, transparent);
+    padding: 14px 16px;
+    transition: transform 300ms var(--easing-entrance);
+  }
+
+  .mm-tile:active {
+    transform: scale(0.97);
+  }
+
+  .mm-tile--accent {
+    justify-content: space-between;
+    border-color: transparent;
+    background: var(--accent-fill);
+    color: var(--on-fill);
+    box-shadow: 0 18px 40px -22px var(--c1);
+  }
+
+  /* A sheen crosses the hire tile every few seconds. */
+  .mm-tile--accent::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      color-mix(in srgb, white 35%, transparent) 50%,
+      transparent 70%
+    );
+    transform: translateX(-130%);
+    animation: mm-sheen 4s ease-in-out 1s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes mm-sheen {
+    45%,
+    100% {
+      transform: translateX(130%);
+    }
+  }
+
+  .mm-tile-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: none;
+    place-items: center;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--on-fill) 18%, transparent);
+  }
+
+  .mm-tile-icon--soft {
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--c1) 13%, transparent);
+    color: var(--c1-text);
+  }
+
+  /* ---- Admin panel ---- */
+  .mm-admin {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--c1) 30%, var(--line));
+    border-radius: 22px;
+    background:
+      radial-gradient(
+        120% 140% at 100% 0%,
+        color-mix(in srgb, var(--c1) 14%, transparent),
+        transparent 60%
+      ),
+      color-mix(in srgb, var(--surface-solid) 80%, transparent);
+    padding: 16px;
+  }
+
+  .mm-admin-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: none;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .mm-admin-link {
+    display: inline-flex;
+    min-height: 44px;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    background: var(--fg);
+    padding: 0 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--bg);
+    transition: transform 300ms var(--easing-entrance);
+  }
+
+  .mm-admin-link:active {
+    transform: scale(0.96);
+  }
+
+  .mm-look {
+    display: flex;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--surface-solid) 60%, transparent);
+    padding: 12px;
+  }
+
+  /* ---- Close ---- */
+  .mm-close {
+    display: inline-flex;
+    min-height: 52px;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface-solid) 75%, transparent);
+    padding: 0 22px 0 8px;
+    font-weight: 600;
+    color: var(--fg);
+    transition: transform 300ms var(--easing-entrance);
+  }
+
+  .mm-close:active {
+    transform: scale(0.96);
+  }
+
+  .mm-close-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--accent-fill);
+    color: var(--on-fill);
+    transition: transform 400ms var(--easing-entrance);
+  }
+
+  .mm-close:hover .mm-close-icon {
+    transform: rotate(90deg);
+  }
+}
+
+/* Opening: the panel grows as a circle from the toggle and its blocks rise in, one after another;
+   reversed on close. Outside the layers so it beats the panel's utilities. Closed, it is invisible
+   to pointers and assistive tech (it is also inert). */
+.mobile-menu {
+  clip-path: circle(0 at calc(100% - 44px) 44px);
+  visibility: hidden;
+  transition:
+    clip-path 0.55s var(--easing-wipe),
+    visibility 0s linear 0.55s;
+}
+
+.mobile-menu[data-open="true"] {
+  clip-path: circle(160% at calc(100% - 44px) 44px);
+  visibility: visible;
+  transition: clip-path 0.75s var(--easing-wipe);
+}
+
+.mm-item {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 0.3s var(--easing-entrance),
+    transform 0.3s var(--easing-entrance);
+}
+
+.mobile-menu[data-open="true"] .mm-item {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s var(--easing-entrance) calc(0.16s + var(--i, 0) * 40ms),
+    transform 0.6s var(--easing-entrance) calc(0.16s + var(--i, 0) * 40ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu,
+  .mobile-menu[data-open="true"],
+  .mm-item,
+  .mobile-menu[data-open="true"] .mm-item {
+    transition: none;
+  }
+
+  .mm-orb,
+  .mm-eyebrow-dot,
+  .mm-tile--accent::after {
+    animation: none;
+  }
+}

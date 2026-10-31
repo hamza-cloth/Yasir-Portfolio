@@ -8,6 +8,7 @@ import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { cn } from "@/lib/cn";
 import { INLINE_NAV_QUERY } from "@/lib/site-nav";
 
 import { CommandButton } from "./CommandButton";
@@ -38,7 +39,12 @@ export function Header({ announcement }: { announcement?: ReactNode }) {
         data-hidden={hidden && !menuOpen}
         data-scrolled={scrolled}
         data-menu-open={menuOpen}
-        className="site-header fixed inset-x-0 top-0 z-(--z-header) pt-[env(safe-area-inset-top)]"
+        // Open, the header sits above the menu (a utility, so it beats z-(--z-header)), keeping
+        // the close button in view.
+        className={cn(
+          "site-header fixed inset-x-0 top-0 pt-[env(safe-area-inset-top)]",
+          menuOpen ? "z-[calc(var(--z-overlay)+1)]" : "z-(--z-header)",
+        )}
       >
         {announcement}
         <Container className="flex h-[calc(var(--header-h)-var(--announce-h))] items-center">

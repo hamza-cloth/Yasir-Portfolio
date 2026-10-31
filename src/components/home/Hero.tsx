@@ -105,23 +105,28 @@ export function Hero({
             </p>
 
             <div
-              className="intro flex flex-wrap items-center justify-center gap-3 pt-1 laptop:justify-start"
+              className="intro flex w-full flex-wrap items-center justify-center gap-3 pt-1 max-sm:flex-col max-sm:items-stretch laptop:justify-start"
               style={cssVars({ "--i": 5 })}
             >
               <Magnetic>
-                <Button href="/work" variant="accent" size="lg" className="hero-cta">
+                <Button href="/work" variant="accent" size="lg" className="hero-cta max-sm:w-full">
                   See my work
                   <Icon name="arrow-right" />
                 </Button>
               </Magnetic>
-              <Button href="#hire" variant="line" size="lg" className="hero-cta-ghost">
+              <Button
+                href="#hire"
+                variant="line"
+                size="lg"
+                className="hero-cta-ghost max-sm:w-full"
+              >
                 Start a Project
                 <Icon name="arrow-up-right" size={16} />
               </Button>
             </div>
 
             <div
-              className="intro flex flex-wrap items-center justify-center gap-x-6 gap-y-4 laptop:justify-start"
+              className="intro flex flex-wrap items-center justify-center gap-x-3 gap-y-4 sm:gap-x-6 laptop:justify-start"
               style={cssVars({ "--i": 6 })}
             >
               {socials.length > 0 ? (
@@ -140,7 +145,7 @@ export function Hero({
                   ))}
                 </ul>
               ) : null}
-              <LookPicker />
+              <LookPicker labelClassName="max-sm:hidden" />
             </div>
           </div>
 

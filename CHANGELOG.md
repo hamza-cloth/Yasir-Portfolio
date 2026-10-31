@@ -20,6 +20,18 @@
   viewport (1280×720: top 137px, was 258px).
 - Look picker wraps on small phones instead of spilling past the edge at 360px.
 
+### Phase 10 — mobile menu and phone polish (2026-11-01)
+
+- **Menu button:** three lines that fold into a cross; open, it becomes an accent pill reading
+  "Close". Fixed a bug where the open menu covered the header, hiding the close button.
+- **Mobile menu:** opens as a circle from the button over a drifting backdrop; each page has a
+  number, a one-line description and an arrow, with "You’re here" on the current one; quick
+  actions (Hire me, Estimate, WhatsApp); a new **Admin panel** section linking to the admin
+  sign-in; the look picker; and a large "Close menu" button within thumb reach. Blocks rise in
+  one after another. Esc, the header button and the bottom button all close it.
+- **Phones:** the hero buttons span the width, the email link and look picker share one line,
+  and look swatches are 44px tap targets.
+
 ### Phase 9 — a new look on every refresh (2026-11-01)
 
 - **Every refresh changes the look:** each full page load (the home page or any other page) picks

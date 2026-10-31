@@ -10,6 +10,7 @@ type MenuButtonProps = {
   className?: string;
 };
 
+// Three lines that fold into a cross; open, the button becomes an accent pill reading "Close".
 export function MenuButton({ open, onToggle, controls, ref, className }: MenuButtonProps) {
   return (
     <button
@@ -18,11 +19,18 @@ export function MenuButton({ open, onToggle, controls, ref, className }: MenuBut
       onClick={onToggle}
       aria-expanded={open}
       aria-controls={controls}
-      className={cn("relative size-11 flex-none rounded-pill bg-fg/5 text-fg", className)}
+      data-open={open}
+      className={cn("menu-toggle", className)}
     >
-      <span className="menu-bar" aria-hidden="true" />
+      <span aria-hidden="true" className="menu-toggle-icon">
+        <span className="menu-line" />
+        <span className="menu-line" />
+        <span className="menu-line" />
+      </span>
+      <span aria-hidden="true" className="menu-toggle-label">
+        Close
+      </span>
       <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-      <span className="menu-bar" aria-hidden="true" />
     </button>
   );
 }
